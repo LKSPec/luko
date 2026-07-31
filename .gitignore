@@ -1,0 +1,17 @@
+.DS_Store
+.idea/
+.vscode/
+node_modules/
+.env
+.env.*
+artifacts/
+cache/
+out/
+broadcast/
+*.pdf
+deployments.local/
+deployment.local.json
+secrets/
+.secrets*
+*.key
+*.pem
