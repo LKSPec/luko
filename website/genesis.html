@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LUKO — Genesis allocation</title>
+  <meta name="description" content="Genesis allocation record for LUKO. All entries verifiable on-chain.">
+  <link rel="icon" href="assets/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
+  <meta property="og:title" content="LUKO — Genesis allocation">
+  <meta property="og:description" content="Genesis allocation record. All entries verifiable on-chain.">
+  <meta property="og:url" content="https://meetluko.eu/genesis">
+  <meta property="og:image" content="https://meetluko.eu/assets/social-1200x630.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="lockup">
+      <img src="assets/logo-mark-dark.svg" alt="" width="26" height="26">
+      <span class="wordmark">LUKO</span>
+    </div>
+    <nav class="site-nav" aria-label="Sections">
+      <a href="/#token">Token</a>
+      <a href="/#links">Links</a>
+      <a href="/genesis">Genesis</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero" aria-labelledby="genesis-title">
+      <h1 id="genesis-title">GENESIS</h1>
+      <p class="tagline">Allocation record. All entries verifiable on-chain.</p>
+    </section>
+
+    <section id="allocation" class="panel" aria-labelledby="allocation-label">
+      <h2 id="allocation-label" class="label">Holder allocation</h2>
+      <dl class="facts">
+        <div class="fact"><dt>Immediate allocation</dt><dd class="accent">50,000 LUKO</dd></div>
+        <div class="fact"><dt>Streaming allocation</dt><dd class="accent">140,000 LUKO</dd></div>
+        <div class="fact"><dt>Stream ends</dt><dd>24 Aug 2027</dd></div>
+        <div class="fact"><dt>Stream status</dt><dd class="pending">Pending activation</dd></div>
+        <!-- Replace with the real Sablier stream URL when available -->
+        <div class="fact"><dt>Sablier stream</dt><dd class="pending">[pending]</dd></div>
+      </dl>
+    </section>
+
+    <section id="market" class="panel" aria-labelledby="market-label">
+      <h2 id="market-label" class="label">Live market</h2>
+      <dl class="facts">
+        <div class="fact"><dt>Price</dt><dd id="market-price">—</dd></div>
+        <div class="fact"><dt>Pool depth</dt><dd id="market-depth">—</dd></div>
+        <div class="fact"><dt>Value of 50,000 LUKO</dt><dd id="market-value">—</dd></div>
+      </dl>
+    </section>
+
+    <section id="links" class="panel" aria-labelledby="links-label">
+      <h2 id="links-label" class="label">Links</h2>
+      <div class="link-rows">
+        <div class="link-row">
+          <span class="link-name">Market</span>
+          <a href="https://aerodrome.finance/swap?from=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913&amp;to=0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1" rel="noopener">Trade on Aerodrome →</a>
+        </div>
+        <div class="link-row">
+          <span class="link-name">Chart</span>
+          <a href="https://dexscreener.com/base/0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1" rel="noopener">DexScreener →</a>
+        </div>
+        <div class="link-row">
+          <span class="link-name">Token</span>
+          <a href="https://basescan.org/token/0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1" rel="noopener">View on BaseScan →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Built by LKSPec · <span lang="lt">Su niekuo nesuderinta</span></p>
+  </footer>
+
+  <script src="genesis.js" defer></script>
+</body>
+</html>
