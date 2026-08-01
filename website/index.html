@@ -1,11 +1,88 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Meet LUKO</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LUKO — Genesis token on Base</title>
+  <meta name="description" content="LUKO is a fixed-supply ERC-20 token on Base. Total supply 1,000,000. No further minting. No owner privileges.">
+  <link rel="icon" href="assets/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
+  <meta property="og:title" content="LUKO — Genesis token on Base">
+  <meta property="og:description" content="Fixed-supply ERC-20 token on Base. Total supply 1,000,000. No further minting. No owner privileges.">
+  <meta property="og:url" content="https://meetluko.eu/">
+  <meta property="og:image" content="https://meetluko.eu/assets/social-1200x630.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>Meet LUKO</h1>
-  <p>Genesis is coming.</p>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="lockup">
+      <img src="assets/logo-mark-dark.svg" alt="" width="26" height="26">
+      <span class="wordmark">LUKO</span>
+    </div>
+    <nav class="site-nav" aria-label="Sections">
+      <a href="#token">Token</a>
+      <a href="#genesis">Genesis</a>
+      <a href="#links">Links</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero" aria-labelledby="hero-title">
+      <img class="hero-mark" src="assets/luko-logo.png" alt="LUKO mark" width="96" height="96">
+      <h1 id="hero-title">LUKO</h1>
+      <p class="tagline">Genesis token on Base</p>
+    </section>
+
+    <section id="token" class="panel" aria-labelledby="token-label">
+      <h2 id="token-label" class="label">Token</h2>
+      <dl class="facts">
+        <div class="fact"><dt>Total supply</dt><dd class="accent">1,000,000 LUKO</dd></div>
+        <div class="fact"><dt>Network</dt><dd>Base</dd></div>
+        <div class="fact"><dt>Standard</dt><dd>ERC-20</dd></div>
+        <div class="fact"><dt>Further minting</dt><dd>Impossible</dd></div>
+        <div class="fact"><dt>Owner privileges</dt><dd>None</dd></div>
+        <div class="fact"><dt>Genesis allocation</dt><dd class="pending">Pending final publication</dd></div>
+      </dl>
+    </section>
+
+    <section id="genesis" class="panel" aria-labelledby="genesis-label">
+      <h2 id="genesis-label" class="label">Genesis</h2>
+      <p class="prose">Minted in a single transaction at block 49364826 on Base. The full supply existed from the first second. Nothing can be added.</p>
+    </section>
+
+    <section id="links" class="panel" aria-labelledby="links-label">
+      <h2 id="links-label" class="label">Links</h2>
+      <div class="link-rows">
+        <div class="link-row contract-row">
+          <span class="link-name">Contract</span>
+          <div class="contract">
+            <code class="address" id="contract-address">0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1</code>
+            <div class="contract-actions">
+              <button type="button" class="copy-button" id="copy-address" hidden>Copy</button>
+              <a href="https://basescan.org/token/0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1" rel="noopener">View on BaseScan →</a>
+            </div>
+          </div>
+        </div>
+        <div class="link-row">
+          <span class="link-name">GitHub</span>
+          <a href="https://github.com/LKSPec/luko" rel="noopener">github.com/LKSPec/luko</a>
+        </div>
+        <div class="link-row">
+          <span class="link-name">Network</span>
+          <a href="https://base.org" rel="noopener">Base</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Built by LKSPec · <span lang="lt">Su niekuo nesuderinta</span></p>
+  </footer>
+
+  <script src="app.js" defer></script>
 </body>
 </html>
