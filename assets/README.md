@@ -1,12 +1,16 @@
 # Brand Assets
 
-Official LUKO brand assets will be stored in this directory.
+This directory contains the official LUKO brand assets and their usage guide.
 
-Possible future files include:
+## Naming
 
-- `logo.svg`
-- `logo.png`
-- `icon.png`
-- `banner.png`
+- `dark` — logo on a matte-black circular tile
+- `light` — logo intended for light backgrounds
+- `transparent` — gold logo and ring without a background tile
+- `mark` — ringless symbol for lockups and compact interfaces
+- `mono` — single-colour version that inherits `currentColor`
 
-No official brand assets have been added yet.
+Raster logo filenames include their pixel size, for example `logo-dark-256.png` and
+`logo-transparent-256.png`.
+
+See [brand-guide.md](brand-guide.md) for colours, minimum sizes and usage guidance.
