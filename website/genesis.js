@@ -69,4 +69,56 @@
       load().catch(function () { /* keep "—" */ });
     }, 3000);
   });
+
+  /* Vested-so-far counter — Sablier Lockup v4.0 stream on Base.
+     The stream is linear, so time math reproduces the exact on-chain curve;
+     timestamps and deposit below were read from the contract for stream 902.
+     One streamedAmountOf(uint256) call (0x4869e12d) calibrates the counter
+     when RPC is available; without it the counter still runs. */
+  var LOCKUP_ADDRESS = "0xc19a09A66887017F603E5dF420ed3Cb9a5c07C0A";
+  var STREAM_ID = 902;
+  var VEST_START = 1785697200; /* getStartTime(902) */
+  var VEST_END = 1819055100;   /* getEndTime(902) */
+  var VEST_TOTAL = 140000;     /* getDepositedAmount(902), LUKO */
+
+  var vestOffset = 0;
+
+  function vestedAt(nowSec) {
+    if (nowSec <= VEST_START) return 0;
+    if (nowSec >= VEST_END) return VEST_TOTAL;
+    return VEST_TOTAL * (nowSec - VEST_START) / (VEST_END - VEST_START);
+  }
+
+  function renderVested() {
+    var nowSec = Date.now() / 1000;
+    var status = document.getElementById("stream-status");
+    if (nowSec < VEST_START) {
+      setValue("vested-amount", "—");
+      return;
+    }
+    if (status && status.textContent !== "Active") {
+      status.textContent = "Active";
+      status.className = "accent";
+    }
+    var vested = vestedAt(nowSec) + vestOffset;
+    vested = Math.min(Math.max(vested, 0), VEST_TOTAL);
+    setValue("vested-amount", formatFixed(vested, 2) + " LUKO");
+  }
+
+  function calibrate() {
+    var calldata =
+      "0x4869e12d" + STREAM_ID.toString(16).padStart(64, "0");
+    return ethCall(LOCKUP_ADDRESS, calldata).then(function (result) {
+      var onchain = Number(BigInt(result)) / 1e18;
+      vestOffset = onchain - vestedAt(Date.now() / 1000);
+    });
+  }
+
+  renderVested();
+  setInterval(renderVested, 1000);
+  calibrate().catch(function () {
+    setTimeout(function () {
+      calibrate().catch(function () { /* time math only */ });
+    }, 3000);
+  });
 })();
