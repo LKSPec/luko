@@ -88,21 +88,33 @@ main {
   padding: 0 24px;
 }
 
-/* Hero */
+/* Hero — coin left, copy right, as on the social banner */
 .hero {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 24px;
-  padding: 56px 0 48px;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+  padding: 48px 0 40px;
 }
-.hero-mark { width: 96px; height: 96px; }
+.hero-mark { width: 76px; height: 76px; }
+.hero-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 .hero h1 {
   margin: 0;
-  font-size: 44px;
+  font-size: 38px;
   font-weight: 200;
   letter-spacing: 0.06em;
   line-height: 1;
+}
+.hero-kicker {
+  margin: 0;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--luko-gold);
 }
 .tagline {
   margin: 0;
@@ -205,8 +217,11 @@ main {
 @media (min-width: 720px) {
   .site-header { padding: 26px 80px; }
   main { padding: 0 80px; }
-  .hero { padding: 80px 0 64px; }
+  .hero { padding: 80px 0 64px; gap: 32px; }
+  .hero-mark { width: 112px; height: 112px; }
+  .hero-copy { gap: 14px; }
   .hero h1 { font-size: 60px; }
+  .hero-kicker { font-size: 12px; }
   .tagline { font-size: 16px; }
   .panel { padding: 24px; }
   .link-row { flex-direction: row; align-items: baseline; }
