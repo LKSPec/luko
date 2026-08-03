@@ -94,7 +94,7 @@ main {
   flex-direction: row;
   align-items: center;
   gap: 20px;
-  padding: 48px 0 40px;
+  padding: 44px 0 32px;
 }
 .hero-mark { width: 76px; height: 76px; }
 .hero-copy {
@@ -123,12 +123,66 @@ main {
   text-wrap: pretty;
 }
 
+/* Statement — narrative display line */
+.statement { padding: 8px 0 40px; }
+.statement-line {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 200;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  color: var(--luko-offwhite);
+  text-wrap: pretty;
+}
+
+/* Full-width band */
+.band {
+  border-top: 1px solid rgba(201, 168, 106, 0.35);
+  border-bottom: 1px solid rgba(201, 168, 106, 0.35);
+  padding: 28px 0;
+  margin: 32px 0;
+  text-align: center;
+}
+.band p {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 300;
+  letter-spacing: 0.06em;
+  color: var(--luko-offwhite);
+}
+
+/* Footnotes */
+.footnote {
+  margin: 16px 0 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--luko-faint);
+  text-wrap: pretty;
+}
+.footnote + .footnote { margin-top: 6px; }
+.coin-line {
+  margin: 16px 0 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--luko-offwhite);
+}
+.disclosure {
+  margin: 0;
+  font-size: 11px;
+  color: var(--luko-faint);
+  text-wrap: pretty;
+}
+.closing-line {
+  margin-top: 10px;
+}
+
 /* Panels */
 .panel {
   border: 1px solid var(--luko-hairline);
   background: var(--luko-panel);
   padding: 20px;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 .label {
   margin: 0 0 12px;
@@ -157,7 +211,6 @@ main {
 
 .prose {
   margin: 0;
-  max-width: 560px;
   color: var(--luko-muted);
   text-wrap: pretty;
 }
@@ -190,20 +243,32 @@ main {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--luko-offwhite);
-  background: transparent;
+  background: #12100D;
   border: 1px solid var(--luko-hairline-raised);
   border-radius: 0;
   height: 44px;
   padding: 0 20px;
   cursor: pointer;
-  transition: border-color var(--motion), color var(--motion);
+  transition: border-color var(--motion), color var(--motion), background var(--motion);
 }
 .copy-button:hover { border-color: var(--luko-gold); color: var(--luko-gold); }
+
+/* The one gold action — quiet: gold ink and border, no fill */
+#add-luko {
+  background: transparent;
+  border-color: rgba(201, 168, 106, 0.35);
+  color: var(--luko-gold);
+}
+#add-luko:hover {
+  background: transparent;
+  border-color: var(--luko-gold-hover);
+  color: var(--luko-gold-hover);
+}
 
 /* Footer */
 .site-footer {
   border-top: 1px solid var(--luko-hairline);
-  margin-top: 56px;
+  margin-top: 40px;
   padding: 24px 24px 56px;
 }
 .site-footer p {
@@ -217,7 +282,11 @@ main {
 @media (min-width: 720px) {
   .site-header { padding: 26px 80px; }
   main { padding: 0 80px; }
-  .hero { padding: 80px 0 64px; gap: 32px; }
+  .hero { padding: 64px 0 40px; gap: 32px; }
+  .statement { padding: 8px 0 56px; }
+  .statement-line { font-size: 32px; }
+  .band { padding: 36px 0; margin: 40px 0; }
+  .band p { font-size: 17px; }
   .hero-mark { width: 112px; height: 112px; }
   .hero-copy { gap: 14px; }
   .hero h1 { font-size: 60px; }
