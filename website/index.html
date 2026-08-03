@@ -65,6 +65,7 @@
             <code class="address" id="contract-address">0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1</code>
             <div class="contract-actions">
               <button type="button" class="copy-button" id="copy-address" hidden>Copy</button>
+              <button type="button" class="copy-button" id="add-luko" hidden>Add LUKO</button>
               <a href="https://basescan.org/token/0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1" rel="noopener">View on BaseScan →</a>
             </div>
           </div>
@@ -97,6 +98,15 @@
     <p>Built by LKSPec · <span lang="lt">Su niekuo nesuderinta</span></p>
   </footer>
 
+  <dialog id="wallet-dialog" aria-labelledby="wallet-dialog-label">
+    <h2 id="wallet-dialog-label" class="label">Wallet</h2>
+    <div id="wallet-dialog-body"></div>
+    <div class="dialog-actions">
+      <button type="button" class="copy-button" id="wallet-dialog-close">Close</button>
+    </div>
+  </dialog>
+
   <script src="app.js" defer></script>
+  <script src="wallet.js" defer></script>
 </body>
 </html>

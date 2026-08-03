@@ -231,6 +231,52 @@ main {
   .site-footer { padding: 28px 80px 60px; }
 }
 
+/* Wallet dialog */
+dialog {
+  background: var(--luko-panel);
+  color: var(--luko-offwhite);
+  border: 1px solid var(--luko-hairline-raised);
+  border-radius: 0;
+  padding: 24px;
+  width: calc(100% - 48px);
+  max-width: 360px;
+  font-size: 13px;
+  line-height: 1.7;
+}
+dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
+.dialog-message { margin: 0; }
+.dialog-link { display: block; width: fit-content; margin-top: 16px; }
+#wallet-dialog .address { display: block; margin: 12px 0; }
+.dialog-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-top: 20px;
+}
+.wallet-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 8px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--luko-offwhite);
+  background: transparent;
+  border: 1px solid var(--luko-hairline-raised);
+  border-radius: 0;
+  height: 44px;
+  padding: 0 16px;
+  cursor: pointer;
+  transition: border-color var(--motion), color var(--motion);
+}
+.wallet-option:last-child { margin-bottom: 0; }
+.wallet-option:hover { border-color: var(--luko-gold); color: var(--luko-gold); }
+.wallet-option img { width: 20px; height: 20px; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; }
 }
