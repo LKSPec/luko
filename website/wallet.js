@@ -104,17 +104,12 @@
     addMessage("No compatible wallet detected.");
     addContractFallback();
     if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {
-      [
-        ["Open in MetaMask →", "https://metamask.app.link/dapp/meetluko.eu"],
-        ["Open in Base →", "https://go.cb-w.com/dapp?cb_url=https%3A%2F%2Fmeetluko.eu"]
-      ].forEach(function (entry) {
-        var link = document.createElement("a");
-        link.className = "dialog-link";
-        link.href = entry[1];
-        link.rel = "noopener";
-        link.textContent = entry[0];
-        dialogBody.appendChild(link);
-      });
+      var link = document.createElement("a");
+      link.className = "dialog-link";
+      link.href = "https://metamask.app.link/dapp/meetluko.eu";
+      link.rel = "noopener";
+      link.textContent = "Open in MetaMask →";
+      dialogBody.appendChild(link);
     }
     openDialog();
   }
