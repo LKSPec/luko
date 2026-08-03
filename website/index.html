@@ -13,7 +13,7 @@
   <meta property="og:url" content="https://meetluko.eu/">
   <meta property="og:image" content="https://meetluko.eu/assets/social-1200x630.png">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="stylesheet" href="styles.css?v=3">
+  <link rel="stylesheet" href="styles.css?v=4">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -28,6 +28,11 @@
       <a href="#control">Control</a>
       <a href="#links">Links</a>
       <a href="/genesis">Genesis</a>
+      <span class="language-toggle" role="group" aria-label="Language">
+        <button type="button" class="language-option is-active" data-language="en" aria-pressed="true">EN</button>
+        <span aria-hidden="true">/</span>
+        <button type="button" class="language-option" data-language="lt" aria-pressed="false">LT</button>
+      </span>
     </nav>
   </header>
 
@@ -41,7 +46,7 @@
     </section>
 
     <section class="statement" aria-label="Statement">
-      <p class="statement-line">Nothing is being offered. That is the offering.</p>
+      <p class="statement-line" data-en="Nothing is being offered. That is the offering." data-lt="Čia nieko nesiūloma. Tai ir yra pasiūlymas.">Nothing is being offered. That is the offering.</p>
     </section>
 
     <section id="token" class="panel" aria-labelledby="token-label">
@@ -54,30 +59,30 @@
         <div class="fact"><dt>Owner privileges</dt><dd>None</dd></div>
         <div class="fact"><dt>Genesis allocation</dt><dd class="pending">Pending final publication</dd></div>
       </dl>
-      <p class="coin-line">1 LUKO = 1 LUKO. The rest is not denominated.</p>
+      <p class="coin-line" data-en="1 LUKO = 1 LUKO. The rest is not denominated." data-lt="1 LUKO = 1 LUKO. Visa kita nominalo neturi.">1 LUKO = 1 LUKO. The rest is not denominated.</p>
     </section>
 
     <section id="genesis" class="panel" aria-labelledby="issuance-label">
       <h2 id="issuance-label" class="label">Issuance</h2>
-      <p class="prose">One million LUKO, created in a single transaction at block 49364826 on Base, complete in the same moment. There was never going to be more.</p>
+      <p class="prose" data-en="One million LUKO, created in a single transaction at block 49364826 on Base, complete in the same moment. There was never going to be more." data-lt="Vienas milijonas LUKO — sukurtas viena transakcija, block 49364826, užbaigtas tą pačią akimirką. Daugiau neturėjo būti ir niekada nebus.">One million LUKO, created in a single transaction at block 49364826 on Base, complete in the same moment. There was never going to be more.</p>
     </section>
 
     <section id="mandate" class="panel" aria-labelledby="mandate-label">
       <h2 id="mandate-label" class="label">Mandate</h2>
-      <p class="prose">LUKO has no mandate, no roadmap, and no stated purpose.</p>
-      <p class="prose">This is not an oversight. Nothing here is.</p>
+      <p class="prose" data-en="LUKO has no mandate, no roadmap, and no stated purpose." data-lt="LUKO neturi jokio mandato, jokio roadmap'o, jokio deklaruoto tikslo.">LUKO has no mandate, no roadmap, and no stated purpose.</p>
+      <p class="prose" data-en="This is not an oversight. Nothing here is." data-lt="Tai ne atsitiktinumas. Atsitiktinumų čia nėra.">This is not an oversight. Nothing here is.</p>
     </section>
 
     <section class="band" aria-label="Fixed">
-      <p>Everything here is fixed. Nothing here is settled.</p>
+      <p data-en="Everything here is fixed. Nothing here is settled." data-lt="Viskas čia fiksuota. Niekas čia nenulemta.">Everything here is fixed. Nothing here is settled.</p>
     </section>
 
     <section id="control" class="panel" aria-labelledby="control-label">
       <h2 id="control-label" class="label">Control</h2>
-      <p class="prose">No owner. No admin keys. Nothing can be changed — including by whoever deployed it. Verified on Base.</p>
-      <p class="prose">Immutability is a property of the contract. It is not advice.</p>
-      <p class="footnote">The contract specifies eighteen decimal places. Standard. Unremarkable.</p>
-      <p class="footnote nineteen">Precision ends at eighteen. Some things make more sense at nineteen. What begins there is in your hands.</p>
+      <p class="prose" data-en="No owner. No admin keys. Nothing can be changed — including by whoever deployed it. Verified on Base." data-lt="Be owner'io. Be admin keys. Nieko pakeisti negalima — net tam, kuris sukurė. Verified on Base.">No owner. No admin keys. Nothing can be changed — including by whoever deployed it. Verified on Base.</p>
+      <p class="prose" data-en="Immutability is a property of the contract. It is not advice." data-lt="Nekeičiamumas yra kontrakto esmė. Tai ne patarimas.">Immutability is a property of the contract. It is not advice.</p>
+      <p class="footnote" data-en="The contract specifies eighteen decimal places. Standard. Unremarkable." data-lt="Kontrakte nurodyta aštuoniolika skaičių po kablelio. Tai standartas. Nieko ypatingo.">The contract specifies eighteen decimal places. Standard. Unremarkable.</p>
+      <p class="footnote nineteen" data-en="Precision ends at eighteen. Some things make more sense at nineteen. What begins there is in your hands." data-lt="Bet tikslumas baigiasi ties aštuoniolika. Kai kurie dalykai prasmingesni tampa tik ties devyniolika. Kas prasideda ten — yra tavo rankose.">Precision ends at eighteen. Some things make more sense at nineteen. What begins there is in your hands.</p>
     </section>
 
     <section id="links" class="panel" aria-labelledby="links-label">
@@ -119,8 +124,8 @@
 
     <section id="disclosures" class="panel" aria-labelledby="disclosures-label">
       <h2 id="disclosures-label" class="label">Disclosures</h2>
-      <p class="disclosure">LUKO confers no rights, no yield, and no utility. It was issued without consideration.</p>
-      <p class="disclosure closing-line">This is everything. Nothing else is included. Nothing else was required.</p>
+      <p class="disclosure" data-en="LUKO confers no rights, no yield, and no utility. It was issued without consideration." data-lt="LUKO nesuteikia jokių teisių, jokios grąžos ir jokio pritaikomumo. Išleista be atlygio ir jokių įsipareigojimų.">LUKO confers no rights, no yield, and no utility. It was issued without consideration.</p>
+      <p class="disclosure closing-line" data-en="This is everything. Nothing else is included. Nothing else was required." data-lt="Tai yra viskas. Daugiau nieko nėra įtraukta. Daugiau nieko ir nereikėjo.">This is everything. Nothing else is included. Nothing else was required.</p>
     </section>
   </main>
 
@@ -136,7 +141,7 @@
     </div>
   </dialog>
 
-  <script src="app.js?v=2" defer></script>
+  <script src="app.js?v=3" defer></script>
   <script src="wallet.js?v=5" defer></script>
 </body>
 </html>

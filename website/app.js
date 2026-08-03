@@ -18,3 +18,34 @@
     });
   });
 })();
+
+/* In-memory language switch. English remains the default on every page load. */
+(function () {
+  var language = "en";
+  var options = document.querySelectorAll("[data-language]");
+  var copy = document.querySelectorAll("[data-en][data-lt]");
+  if (!options.length || !copy.length) return;
+
+  function setLanguage(nextLanguage) {
+    language = nextLanguage === "lt" ? "lt" : "en";
+    document.documentElement.lang = language;
+
+    copy.forEach(function (element) {
+      element.textContent = element.dataset[language];
+    });
+
+    options.forEach(function (option) {
+      var isActive = option.dataset.language === language;
+      option.classList.toggle("is-active", isActive);
+      option.setAttribute("aria-pressed", String(isActive));
+    });
+  }
+
+  options.forEach(function (option) {
+    option.addEventListener("click", function () {
+      setLanguage(option.dataset.language);
+    });
+  });
+
+  setLanguage(language);
+})();

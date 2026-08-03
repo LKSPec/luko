@@ -9,7 +9,7 @@
   --luko-hairline: #1E1B16;
   --luko-hairline-raised: #2A261E;
   --luko-divider: #151310;
-  --luko-offwhite: #EDE7DA;
+  --luko-offwhite: #E8E4DC;
   --luko-muted: #8C8577;
   --luko-faint: #6E6759;
   --font-sans: "Helvetica Neue", Archivo, Helvetica, Arial, sans-serif;
@@ -81,6 +81,28 @@ a:hover { color: var(--luko-gold-hover); border-bottom-color: var(--luko-gold-ho
 }
 .site-nav a { color: var(--luko-muted); border-bottom: 1px solid transparent; padding-bottom: 3px; }
 .site-nav a:hover { color: var(--luko-gold); border-bottom-color: var(--luko-gold); }
+.language-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--luko-muted);
+  white-space: nowrap;
+}
+.language-option {
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: var(--luko-muted);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  transition: color var(--motion);
+}
+.language-option:hover,
+.language-option.is-active { color: var(--luko-gold); }
 
 main {
   max-width: 1120px;
