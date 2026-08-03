@@ -87,9 +87,14 @@
     openDialog();
   }
 
-  function showFallback() {
+  var DEBUG = /[?&]debug=1/.test(location.search);
+
+  function showFallback(error) {
     clearBody();
     addMessage("Not added.");
+    if (DEBUG && error) {
+      addMessage("[" + String(error.code) + "] " + String(error.message || error));
+    }
     addContractFallback();
     openDialog();
   }
@@ -177,7 +182,7 @@
       if (error && error.code === 4001) {
         showResult("Not added.");
       } else {
-        showFallback();
+        showFallback(error);
       }
     }).finally(function () {
       busy = false;
