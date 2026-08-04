@@ -237,16 +237,36 @@ async function getCard(env, txHash) {
   return raw ? JSON.parse(raw) : null;
 }
 
-/* The bearer line ({{BEARER}}, the donor's email) is filled ONLY on the private
-   copy — the SVG returned to the donor for download and email attachment.
-   Public views (GET permalink, /card/{serial}) pass isPrivate=false so the
-   bearer stays blank and the email is never exposed on a shareable URL. */
+/* Bearer masking. The full email is stored in KV and shown on the PRIVATE copy
+   (download + email attachment); public views (GET permalink, /card/{serial})
+   render it MASKED so a shareable URL never exposes the full address.
+   Rule: local part — drop dots, keep first 2 + last 1, rest → '*';
+         domain up to the first dot — keep first 1 + last 1, rest → '*';
+         the first dot and the TLD are left intact. */
+function maskLocal(s) {
+  s = String(s).replace(/\./g, "");
+  if (s.length <= 3) return s;
+  return s.slice(0, 2) + "*".repeat(s.length - 3) + s.slice(-1);
+}
+function maskDomain(d) {
+  const i = d.indexOf(".");
+  const label = i === -1 ? d : d.slice(0, i);
+  const rest = i === -1 ? "" : d.slice(i);
+  if (label.length <= 2) return label + rest;
+  return label[0] + "*".repeat(label.length - 2) + label.slice(-1) + rest;
+}
+function maskEmail(value) {
+  const at = String(value).indexOf("@");
+  if (at === -1) return maskLocal(value);
+  return maskLocal(value.slice(0, at)) + "@" + maskDomain(value.slice(at + 1));
+}
+
 async function fillTemplate(request, card, isPrivate) {
   const origin = new URL(request.url).origin;
   const response = await fetch(origin + "/assets/donation-card.svg");
   if (!response.ok) throw new Error("template_unavailable");
   let svg = await response.text();
-  const bearer = (isPrivate && card.bearer) ? card.bearer : "";
+  const bearer = card.bearer ? (isPrivate ? card.bearer : maskEmail(card.bearer)) : "";
   svg = svg
     .replace(/\{\{SERIAL\}\}/g, card.serial)
     .replace(/\{\{NOMINAL\}\}/g, card.nominal)

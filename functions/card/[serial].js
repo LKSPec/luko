@@ -23,18 +23,38 @@ function slugFor(serial) {
   return String(serial).replace(/\s+/g, "").toUpperCase();
 }
 
+/* bearer masking — keep in sync with functions/api/card.js */
+function maskLocal(s) {
+  s = String(s).replace(/\./g, "");
+  if (s.length <= 3) return s;
+  return s.slice(0, 2) + "*".repeat(s.length - 3) + s.slice(-1);
+}
+function maskDomain(d) {
+  const i = d.indexOf(".");
+  const label = i === -1 ? d : d.slice(0, i);
+  const rest = i === -1 ? "" : d.slice(i);
+  if (label.length <= 2) return label + rest;
+  return label[0] + "*".repeat(label.length - 2) + label.slice(-1) + rest;
+}
+function maskEmail(value) {
+  const at = String(value).indexOf("@");
+  if (at === -1) return maskLocal(value);
+  return maskLocal(value.slice(0, at)) + "@" + maskDomain(value.slice(at + 1));
+}
+
 async function fillTemplate(request, card) {
   const origin = new URL(request.url).origin;
   const response = await fetch(origin + "/assets/donation-card.svg");
   if (!response.ok) throw new Error("template_unavailable");
   let svg = await response.text();
-  /* public page — the bearer line is always blank (never expose the email) */
+  /* public page — bearer is masked, never the full address */
+  const bearer = card.bearer ? maskEmail(card.bearer) : "";
   return svg
     .replace(/\{\{SERIAL\}\}/g, card.serial)
     .replace(/\{\{NOMINAL\}\}/g, card.nominal)
     .replace(/\{\{DATE\}\}/g, card.date)
     .replace(/\{\{TXHASH\}\}/g, card.txHash)
-    .replace(/\{\{BEARER\}\}/g, "");
+    .replace(/\{\{BEARER\}\}/g, bearer);
 }
 
 export function onRequestOptions() {
