@@ -13,25 +13,85 @@
   <meta property="og:url" content="https://meetluko.eu/">
   <meta property="og:image" content="https://meetluko.eu/assets/social-1200x630.png">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="stylesheet" href="styles.css?v=4">
+  <!-- SENTRY_DSN -->
+  <script
+    src="https://js-de.sentry-cdn.com/7738fc80396b4b68af0041def3125cb0.min.js"
+    crossorigin="anonymous"
+    defer
+  ></script>
+  <script>
+    (function () {
+      function initSentry() {
+        try {
+          window.Sentry.init({
+            environment: "production",
+            tracesSampleRate: 0
+          });
+        } catch (error) { /* Sentry must never block the site. */ }
+      }
+
+      function configureSentry() {
+        try {
+          if (!window.Sentry) return;
+          if (typeof window.Sentry.onLoad === "function") {
+            window.Sentry.onLoad(initSentry);
+          } else {
+            initSentry();
+          }
+        } catch (error) { /* CDN unavailable or blocked. */ }
+      }
+
+      if (document.readyState === "complete") {
+        configureSentry();
+      } else {
+        window.addEventListener("load", configureSentry, { once: true });
+      }
+    })();
+
+    function track(action) {
+      try {
+        if (window.Sentry && typeof window.Sentry.addBreadcrumb === "function") {
+          window.Sentry.addBreadcrumb({ category: "ui", message: action, level: "info" });
+        }
+      } catch (error) { /* Tracking is non-blocking. */ }
+    }
+
+    document.addEventListener("click", function (event) {
+      if (!(event.target instanceof Element)) return;
+      var target = event.target.closest("a, button, [role='button']");
+      if (!target) return;
+
+      var action = target.getAttribute("data-sentry-action");
+      if (!action && /\/genesis(?:\.html)?\/?$/.test(location.pathname)) {
+        var marker = [
+          target.id,
+          target.getAttribute("name"),
+          target.getAttribute("aria-label"),
+          target.textContent
+        ].join(" ").toLowerCase();
+        if (marker.indexOf("claim") !== -1) action = "claim_clicked";
+        if (!action && marker.indexOf("connect") !== -1) action = "connect_clicked";
+      }
+
+      if (action) track(action);
+    }, true);
+  </script>
+  <link rel="stylesheet" href="styles.css?v=5">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-header">
-    <div class="lockup">
+    <a class="lockup" href="https://meetluko.eu/" aria-label="LUKO home">
       <img src="assets/logo-mark-dark.svg" alt="" width="26" height="26">
       <span class="wordmark">LUKO</span>
-    </div>
+    </a>
     <nav class="site-nav" aria-label="Sections">
-      <a href="#token">Token</a>
-      <a href="#control">Control</a>
-      <a href="#links">Links</a>
       <a href="/genesis">Genesis</a>
       <span class="language-toggle" role="group" aria-label="Language">
-        <button type="button" class="language-option is-active" data-language="en" aria-pressed="true">EN</button>
+        <button type="button" class="language-option is-active" data-language="en" data-sentry-action="lang_switch" aria-pressed="true">EN</button>
         <span aria-hidden="true">/</span>
-        <button type="button" class="language-option" data-language="lt" aria-pressed="false">LT</button>
+        <button type="button" class="language-option" data-language="lt" data-sentry-action="lang_switch" aria-pressed="false">LT</button>
       </span>
     </nav>
   </header>
@@ -93,23 +153,23 @@
           <div class="contract">
             <code class="address" id="contract-address">0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1</code>
             <div class="contract-actions">
-              <button type="button" class="copy-button" id="copy-address" hidden>Copy</button>
-              <button type="button" class="copy-button" id="add-luko" hidden>Add LUKO</button>
-              <a href="https://basescan.org/token/0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1" rel="noopener">View on BaseScan →</a>
+              <button type="button" class="copy-button" id="copy-address" data-sentry-action="copy_contract" hidden>Copy</button>
+              <button type="button" class="copy-button" id="add-luko" data-sentry-action="add_luko_clicked" hidden>Add LUKO</button>
+              <a href="https://basescan.org/token/0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1" rel="noopener" data-sentry-action="outbound_basescan">View on BaseScan →</a>
             </div>
           </div>
         </div>
         <div class="link-row">
           <span class="link-name">Market</span>
-          <a href="https://aerodrome.finance/swap?from=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913&amp;to=0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1" rel="noopener">Trade on Aerodrome →</a>
+          <a href="https://aerodrome.finance/swap?from=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913&amp;to=0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1" rel="noopener" data-sentry-action="outbound_aerodrome">Trade on Aerodrome →</a>
         </div>
         <div class="link-row">
           <span class="link-name">Chart</span>
-          <a href="https://dexscreener.com/base/0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1" rel="noopener">DexScreener →</a>
+          <a href="https://dexscreener.com/base/0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1" rel="noopener" data-sentry-action="outbound_dexscreener">DexScreener →</a>
         </div>
         <div class="link-row">
           <span class="link-name">Chart</span>
-          <a href="https://www.geckoterminal.com/base/pools/0x2222A01b83Db8c533B062AEb6DE4F61D6Ae792F2">GeckoTerminal →</a>
+          <a href="https://www.geckoterminal.com/base/pools/0x2222A01b83Db8c533B062AEb6DE4F61D6Ae792F2" data-sentry-action="outbound_geckoterminal">GeckoTerminal →</a>
         </div>
         <div class="link-row">
           <span class="link-name">GitHub</span>
@@ -141,7 +201,7 @@
     </div>
   </dialog>
 
-  <script src="app.js?v=3" defer></script>
+  <script src="app.js?v=4" defer></script>
   <script src="wallet.js?v=5" defer></script>
 </body>
 </html>

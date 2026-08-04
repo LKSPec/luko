@@ -69,7 +69,17 @@ a:hover { color: var(--luko-gold-hover); border-bottom-color: var(--luko-gold-ho
   border-bottom: 1px solid var(--luko-hairline);
   z-index: 5;
 }
-.lockup { display: flex; align-items: center; gap: 12px; }
+.lockup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--luko-offwhite);
+  border-bottom: 0;
+}
+.lockup:hover {
+  color: var(--luko-offwhite);
+  border-bottom-color: transparent;
+}
 .wordmark { font-size: 17px; font-weight: 200; letter-spacing: 0.2em; }
 .site-nav {
   display: flex;
