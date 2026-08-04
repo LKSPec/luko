@@ -50,7 +50,14 @@
 const DONATION_ADDRESS = "0x7D9766F447a6B86Cf589A31db5b5535e379863E7";
 
 const LUKO_ADDRESS = "0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1";
-const RPC_URL = "https://mainnet.base.org";
+/* Several public Base RPCs, tried in order. mainnet.base.org rate-limits
+   Cloudflare egress IPs hard (HTTP 429), which was surfacing as failed
+   donations, so a single endpoint is not enough. All are keyless. */
+const RPC_URLS = [
+  "https://mainnet.base.org",
+  "https://base.drpc.org",
+  "https://1rpc.io/base"
+];
 /* keccak256("Transfer(address,address,uint256)") */
 const TRANSFER_TOPIC = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
 
@@ -115,8 +122,8 @@ export async function onRequestGet(context) {
   }
 }
 
-async function rpcOnce(method, params) {
-  const response = await fetch(RPC_URL, {
+async function rpcOnce(url, method, params) {
+  const response = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: method, params: params })
@@ -131,17 +138,24 @@ async function rpcOnce(method, params) {
   return data.result;
 }
 
-/* Public Base RPC is rate-limited; retry once on 429 after a short pause. */
+/* Try each endpoint in turn; a rate-limited or unhealthy provider must not
+   fail a donation while another one can answer. Two passes, with a short
+   pause between them, so a brief limit on all of them still recovers. */
 async function rpc(method, params) {
-  try {
-    return await rpcOnce(method, params);
-  } catch (error) {
-    if (error && error.status === 429) {
-      await new Promise(function (r) { setTimeout(r, 600); });
-      return await rpcOnce(method, params);
+  let lastError = null;
+  for (let pass = 0; pass < 2; pass++) {
+    for (let i = 0; i < RPC_URLS.length; i++) {
+      try {
+        return await rpcOnce(RPC_URLS[i], method, params);
+      } catch (error) {
+        lastError = error;
+        /* a null result (unknown tx) is not an error — only transport and
+           provider failures land here, so just move to the next endpoint */
+      }
     }
-    throw error;
+    if (pass === 0) await new Promise(function (r) { setTimeout(r, 700); });
   }
+  throw lastError || new Error("rpc_unavailable");
 }
 
 function topicToAddress(topic) {

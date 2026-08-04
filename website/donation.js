@@ -350,7 +350,12 @@
         body: JSON.stringify({ txHash: txHash, bearer: email || "" })
       }).then(function (response) { return response.json(); }).then(function (data) {
         if (data && data.ok) return data;
-        var pending = data && (data.error === "tx_not_found" || data.error === "tx_pending");
+        /* Not yet mined, or the chain provider is briefly unavailable /
+           rate-limited — both are transient, so keep waiting instead of
+           telling the donor their (already sent) donation failed. */
+        var code = data && data.error ? String(data.error) : "";
+        var pending = code === "tx_not_found" || code === "tx_pending" ||
+          code.indexOf("rpc_") === 0;
         if (pending && attempts < MAX) {
           track("donation_awaiting_confirmation", { attempt: attempts });
           return new Promise(function (resolve) { setTimeout(resolve, 3000); }).then(attempt);
