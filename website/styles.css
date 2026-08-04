@@ -439,6 +439,82 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
   text-align: center;
 }
 
+/* Allocation — chart + table */
+.allocation-layout { display: flex; flex-direction: column; gap: 28px; }
+.allocation-chart-col { display: flex; flex-direction: column; gap: 20px; align-items: center; }
+.allocation-chart { width: 208px; height: 208px; }
+.allocation-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 240px;
+}
+.allocation-legend li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--luko-muted);
+}
+.legend-swatch { width: 10px; height: 10px; flex-shrink: 0; }
+.legend-name { flex: 1; }
+.legend-pct { color: var(--luko-offwhite); }
+.table-scroll { overflow-x: auto; }
+.allocation-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.allocation-table th {
+  padding: 0 12px 10px;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--luko-faint);
+  text-align: right;
+  border-bottom: 1px solid var(--luko-hairline);
+}
+.allocation-table td {
+  padding: 11px 12px;
+  text-align: right;
+  border-bottom: 1px solid var(--luko-divider);
+  color: var(--luko-offwhite);
+}
+.allocation-table th:first-child,
+.allocation-table td:first-child { text-align: left; padding-left: 0; }
+.allocation-table th:last-child,
+.allocation-table td:last-child { padding-right: 0; }
+.allocation-table td:first-child { color: var(--luko-muted); }
+.allocation-table .muted { color: var(--luko-faint); }
+.allocation-table .accent { color: var(--luko-gold); }
+.allocation-table .total-row td {
+  border-bottom: none;
+  border-top: 1px solid var(--luko-hairline-raised);
+  color: var(--luko-offwhite);
+}
+@media (max-width: 719px) {
+  .allocation-table { font-size: 10px; white-space: normal; }
+  .allocation-table th {
+    padding: 0 4px 8px;
+    font-size: 8px;
+    letter-spacing: 0.08em;
+  }
+  .allocation-table td { padding: 9px 4px; }
+  .allocation-table th:nth-child(3),
+  .allocation-table td:nth-child(3) { display: none; }
+}
+@media (min-width: 960px) {
+  .allocation-layout { flex-direction: row; align-items: flex-start; gap: 40px; }
+  .allocation-chart-col { flex-shrink: 0; }
+  .table-scroll { flex: 1; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; }
 }
