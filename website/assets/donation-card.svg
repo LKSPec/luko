@@ -32,17 +32,17 @@
 
   
   <text x="790" y="58" text-anchor="end" font-family="&#39;Helvetica Neue&#39;,Archivo,Arial,sans-serif" font-size="10" letter-spacing="2.4" fill="#6E6759">SERIAL</text>
-  <text x="790" y="78" text-anchor="end" font-family="&#39;SF Mono&#39;,ui-monospace,Menlo,monospace" font-size="12" letter-spacing="1" fill="#C9A86A">LK 0000001</text>
+  <text x="790" y="78" text-anchor="end" font-family="&#39;SF Mono&#39;,ui-monospace,Menlo,monospace" font-size="12" letter-spacing="1" fill="#C9A86A">{{SERIAL}}</text>
 
   
   <text x="46" y="205" font-family="&#39;Helvetica Neue&#39;,Archivo,Arial,sans-serif" font-size="10" letter-spacing="2.4" fill="#6E6759">NOMINAL</text>
-  <text x="44" y="288" font-family="&#39;Helvetica Neue&#39;,Archivo,Arial,sans-serif" font-size="84" font-weight="200" letter-spacing="1" fill="#EDE7DA">25,000</text>
+  <text x="44" y="288" font-family="&#39;Helvetica Neue&#39;,Archivo,Arial,sans-serif" font-size="84" font-weight="200" letter-spacing="1" fill="#EDE7DA">{{NOMINAL}}</text>
   <text x="322" y="288" font-family="&#39;Helvetica Neue&#39;,Archivo,Arial,sans-serif" font-size="24" font-weight="300" letter-spacing="3" fill="#C9A86A">LUKO</text>
 
   
   <line x1="46" y1="326" x2="206" y2="326" stroke="#C9A86A" stroke-opacity="0.5" stroke-width="1"></line>
   <text x="46" y="344" font-family="&#39;Helvetica Neue&#39;,Archivo,Arial,sans-serif" font-size="10" letter-spacing="2.4" fill="#6E6759">FOR THE BEARER</text>
-  <text x="46" y="368" font-family="&#39;SF Mono&#39;,ui-monospace,Menlo,monospace" font-size="10" fill="#8C8577">2026-08-04 17:46:23 UTC</text>
-  <text x="46" y="384" font-family="&#39;SF Mono&#39;,ui-monospace,Menlo,monospace" font-size="10" fill="#8C8577">0x9f2c4b8e7a1d3f60c2b5498ad7e0f1936c84be5209d7143a6f0b2c8e1a7d5f42</text>
+  <text x="46" y="368" font-family="&#39;SF Mono&#39;,ui-monospace,Menlo,monospace" font-size="10" fill="#8C8577">{{DATE}}</text>
+  <text x="46" y="384" font-family="&#39;SF Mono&#39;,ui-monospace,Menlo,monospace" font-size="10" fill="#8C8577">{{TXHASH}}</text>
   <text x="790" y="384" text-anchor="end" font-family="&#39;Helvetica Neue&#39;,Archivo,Arial,sans-serif" font-size="10" letter-spacing="2.4" fill="#C9A86A">VALID FOREVER</text>
 </svg>

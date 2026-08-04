@@ -296,13 +296,15 @@ main {
 
 /* The quiet gold action — gold ink and border, no fill */
 #add-luko,
-#get-card {
+#get-card,
+.gold-action {
   background: transparent;
   border-color: rgba(201, 168, 106, 0.35);
   color: var(--luko-gold);
 }
 #add-luko:hover,
-#get-card:hover {
+#get-card:hover,
+.gold-action:hover {
   background: transparent;
   border-color: var(--luko-gold-hover);
   color: var(--luko-gold-hover);
@@ -389,6 +391,47 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
 .wallet-option:last-child { margin-bottom: 0; }
 .wallet-option:hover { border-color: var(--luko-gold); color: var(--luko-gold); }
 .wallet-option img { width: 20px; height: 20px; }
+
+/* Donation note flow */
+#card-dialog.is-wide { max-width: 560px; }
+.amount-input {
+  width: 100%;
+  margin-top: 16px;
+  height: 44px;
+  padding: 0 16px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--luko-offwhite);
+  background: #12100D;
+  border: 1px solid var(--luko-hairline-raised);
+  border-radius: 0;
+}
+.amount-input:focus { outline: none; border-color: var(--luko-gold); }
+.preset-row { display: flex; gap: 8px; margin-top: 16px; }
+.preset-button {
+  flex: 1;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--luko-muted);
+  background: transparent;
+  border: 1px solid var(--luko-hairline-raised);
+  border-radius: 0;
+  height: 40px;
+  cursor: pointer;
+  transition: border-color var(--motion), color var(--motion);
+}
+.preset-button:hover { border-color: var(--luko-gold); color: var(--luko-gold); }
+.preset-button.is-active { border-color: var(--luko-gold); color: var(--luko-gold); }
+.donate-submit { margin-top: 16px; width: 100%; }
+.note-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--luko-hairline-raised);
+}
+.note-actions { display: flex; gap: 12px; margin-top: 16px; }
+.note-actions .copy-button { flex: 1; margin-top: 0; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; }
