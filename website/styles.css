@@ -294,17 +294,20 @@ main {
 }
 .copy-button:hover { border-color: var(--luko-gold); color: var(--luko-gold); }
 
-/* The one gold action — quiet: gold ink and border, no fill */
-#add-luko {
+/* The quiet gold action — gold ink and border, no fill */
+#add-luko,
+#get-card {
   background: transparent;
   border-color: rgba(201, 168, 106, 0.35);
   color: var(--luko-gold);
 }
-#add-luko:hover {
+#add-luko:hover,
+#get-card:hover {
   background: transparent;
   border-color: var(--luko-gold-hover);
   color: var(--luko-gold-hover);
 }
+#donation-note .copy-button { margin-top: 16px; }
 
 /* Footer */
 .site-footer {

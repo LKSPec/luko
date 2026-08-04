@@ -76,7 +76,7 @@
       if (action) track(action);
     }, true);
   </script>
-  <link rel="stylesheet" href="styles.css?v=6">
+  <link rel="stylesheet" href="styles.css?v=7">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -182,6 +182,12 @@
       </div>
     </section>
 
+    <section id="donation-note" class="panel" aria-labelledby="donation-note-label">
+      <h2 id="donation-note-label" class="label">Donation Note</h2>
+      <p class="prose">A genesis donation note, issued to the bearer. Nothing is required.</p>
+      <button type="button" class="copy-button" id="get-card" data-sentry-action="donation_note_clicked">Get Donation Note</button>
+    </section>
+
     <section id="disclosures" class="panel" aria-labelledby="disclosures-label">
       <h2 id="disclosures-label" class="label">Disclosures</h2>
       <p class="disclosure" data-en="LUKO confers no rights, no yield, and no utility. It was issued without consideration." data-lt="LUKO nesuteikia jokių teisių, jokios grąžos ir jokio pritaikomumo. Išleista be atlygio ir jokių įsipareigojimų.">LUKO confers no rights, no yield, and no utility. It was issued without consideration.</p>
@@ -201,7 +207,15 @@
     </div>
   </dialog>
 
-  <script src="app.js?v=4" defer></script>
+  <dialog id="card-dialog" aria-labelledby="card-dialog-label">
+    <h2 id="card-dialog-label" class="label">Donation Note</h2>
+    <div id="card-dialog-body"></div>
+    <div class="dialog-actions">
+      <button type="button" class="copy-button" id="card-dialog-close">Close</button>
+    </div>
+  </dialog>
+
+  <script src="app.js?v=5" defer></script>
   <script src="wallet.js?v=5" defer></script>
 </body>
 </html>
