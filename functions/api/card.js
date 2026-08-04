@@ -24,7 +24,9 @@
  * ---- CONFIG PLACEHOLDERS (fill these) --------------------------------------
  *   DONATION_ADDRESS  — recipient the donor sends LUKO to (see below).
  *   KV binding CARDS  — create a KV namespace and bind it as CARDS in the CF
- *                       Pages dashboard (Settings → Functions → KV bindings).
+ *                       Pages dashboard (Settings → Bindings). Bindings apply
+ *                       only to deployments created AFTER the binding is added,
+ *                       so a redeploy is required for a new CARDS binding.
  * RPC note: public https://mainnet.base.org is rate-limited (~a few req/s).
  * This endpoint makes at most 2 RPC calls per request (receipt + block) and is
  * only hit on a real donation, so free-tier limits are not a concern.
