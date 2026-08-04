@@ -102,7 +102,7 @@ export async function onRequestGet(context) {
     if (!/^0x[0-9a-fA-F]{64}$/.test(txHash)) return fail("invalid_tx_hash");
 
     const card = await getOrCreateCard(context.env, txHash);
-    const svg = await fillTemplate(context.request, card);
+    const svg = await fillTemplate(context.request, card, false); /* public: no bearer */
 
     if (url.searchParams.get("format") === "json") {
       return json({ ok: true, serial: card.serial, nominal: card.nominal, date: card.date, txHash: card.txHash, svg: svg });
@@ -212,7 +212,7 @@ function cardKeyFor(txHash) {
    instant could in theory read the same counter and collide. At this volume
    (occasional personal donations) that race is acceptable; the txHash key still
    guarantees a refresh never issues a second serial for the same donation. */
-async function issueSerial(env, txHash, donation) {
+async function issueSerial(env, txHash, donation, bearer) {
   const current = parseInt((await env.CARDS.get("serial:counter")) || "0", 10);
   const next = current + 1;
   await env.CARDS.put("serial:counter", String(next));
@@ -221,7 +221,8 @@ async function issueSerial(env, txHash, donation) {
     serial: serialString(next),
     nominal: donation.nominal,
     date: donation.date,
-    txHash: txHash.toLowerCase()
+    txHash: txHash.toLowerCase(),
+    bearer: cleanBearer(bearer)
   };
   await env.CARDS.put(cardKeyFor(txHash), JSON.stringify(card));
   /* reverse index so the /card/{serial} page can resolve serial → txHash */
@@ -236,17 +237,28 @@ async function getCard(env, txHash) {
   return raw ? JSON.parse(raw) : null;
 }
 
-async function fillTemplate(request, card) {
+/* The bearer line ({{BEARER}}, the donor's email) is filled ONLY on the private
+   copy — the SVG returned to the donor for download and email attachment.
+   Public views (GET permalink, /card/{serial}) pass isPrivate=false so the
+   bearer stays blank and the email is never exposed on a shareable URL. */
+async function fillTemplate(request, card, isPrivate) {
   const origin = new URL(request.url).origin;
   const response = await fetch(origin + "/assets/donation-card.svg");
   if (!response.ok) throw new Error("template_unavailable");
   let svg = await response.text();
+  const bearer = (isPrivate && card.bearer) ? card.bearer : "";
   svg = svg
     .replace(/\{\{SERIAL\}\}/g, card.serial)
     .replace(/\{\{NOMINAL\}\}/g, card.nominal)
     .replace(/\{\{DATE\}\}/g, card.date)
-    .replace(/\{\{TXHASH\}\}/g, card.txHash);
+    .replace(/\{\{TXHASH\}\}/g, card.txHash)
+    .replace(/\{\{BEARER\}\}/g, bearer);
   return svg;
+}
+
+/* Sanitize a donor-supplied bearer string for safe inclusion in the SVG. */
+function cleanBearer(value) {
+  return String(value || "").replace(/[<>&"']/g, "").trim().slice(0, 60);
 }
 
 /* Config guard: returns a fail Response if the endpoint is not ready, else null. */
@@ -264,7 +276,7 @@ function configError(context) {
 /* KV-first: a note already issued for this tx is returned WITHOUT touching the
    chain — refreshes and shared-URL views are RPC-free and cannot hit rate
    limits. Only a genuinely new tx is verified on-chain and given a serial. */
-async function getOrCreateCard(env, txHash) {
+async function getOrCreateCard(env, txHash, bearer) {
   const existing = await env.CARDS.get(cardKeyFor(txHash));
   if (existing) {
     const card = JSON.parse(existing);
@@ -274,7 +286,7 @@ async function getOrCreateCard(env, txHash) {
     return card;
   }
   const donation = await verifyDonation(txHash);
-  return await issueSerial(env, txHash, donation);
+  return await issueSerial(env, txHash, donation, bearer);
 }
 
 /* Send the note by email via the Mailjet REST API. Returns {ok} / {ok:false,error};
@@ -379,9 +391,10 @@ export async function onRequestPost(context) {
       return json({ ok: true, emailed: sent.ok, error: sent.ok ? undefined : sent.error });
     }
 
-    /* Generation path */
-    const card = await getOrCreateCard(context.env, txHash);
-    const svg = await fillTemplate(context.request, card);
+    /* Generation path — bearer (optional) personalizes the PRIVATE copy only. */
+    const bearer = typeof body.bearer === "string" ? body.bearer : "";
+    const card = await getOrCreateCard(context.env, txHash, bearer);
+    const svg = await fillTemplate(context.request, card, true);
 
     return json({
       ok: true,

@@ -42,7 +42,8 @@
   
   <line x1="46" y1="326" x2="206" y2="326" stroke="#C9A86A" stroke-opacity="0.5" stroke-width="1"></line>
   <text x="46" y="344" font-family="&#39;Helvetica Neue&#39;,Archivo,Arial,sans-serif" font-size="10" letter-spacing="2.4" fill="#6E6759">FOR THE BEARER</text>
-  <text x="46" y="368" font-family="&#39;SF Mono&#39;,ui-monospace,Menlo,monospace" font-size="10" fill="#8C8577">{{DATE}}</text>
-  <text x="46" y="384" font-family="&#39;SF Mono&#39;,ui-monospace,Menlo,monospace" font-size="10" fill="#8C8577">{{TXHASH}}</text>
-  <text x="790" y="384" text-anchor="end" font-family="&#39;Helvetica Neue&#39;,Archivo,Arial,sans-serif" font-size="10" letter-spacing="2.4" fill="#C9A86A">VALID FOREVER</text>
+  <text x="46" y="361" font-family="&#39;SF Mono&#39;,ui-monospace,Menlo,monospace" font-size="10" fill="#EDE7DA">{{BEARER}}</text>
+  <text x="46" y="381" font-family="&#39;SF Mono&#39;,ui-monospace,Menlo,monospace" font-size="10" fill="#8C8577">{{DATE}}</text>
+  <text x="46" y="397" font-family="&#39;SF Mono&#39;,ui-monospace,Menlo,monospace" font-size="10" fill="#8C8577">{{TXHASH}}</text>
+  <text x="790" y="397" text-anchor="end" font-family="&#39;Helvetica Neue&#39;,Archivo,Arial,sans-serif" font-size="10" letter-spacing="2.4" fill="#C9A86A">VALID FOREVER</text>
 </svg>

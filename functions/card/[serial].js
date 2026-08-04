@@ -28,11 +28,13 @@ async function fillTemplate(request, card) {
   const response = await fetch(origin + "/assets/donation-card.svg");
   if (!response.ok) throw new Error("template_unavailable");
   let svg = await response.text();
+  /* public page — the bearer line is always blank (never expose the email) */
   return svg
     .replace(/\{\{SERIAL\}\}/g, card.serial)
     .replace(/\{\{NOMINAL\}\}/g, card.nominal)
     .replace(/\{\{DATE\}\}/g, card.date)
-    .replace(/\{\{TXHASH\}\}/g, card.txHash);
+    .replace(/\{\{TXHASH\}\}/g, card.txHash)
+    .replace(/\{\{BEARER\}\}/g, "");
 }
 
 export function onRequestOptions() {
