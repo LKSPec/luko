@@ -9,14 +9,19 @@
  *
  * What it does:
  *   POST { txHash } →
- *     1. verify the tx on Base (eth_getTransactionReceipt): exists + status ok
- *     2. confirm it carries a LUKO ERC-20 Transfer TO the donation address
- *     3. read the donated amount from the Transfer log
- *     4. issue a serial from KV (idempotent per txHash), never signs anything
- *     5. fill the SVG note template and return it inline
+ *     1. if a note already exists for this tx in KV, return it (no chain call)
+ *     2. else verify the tx on Base (eth_getTransactionReceipt): exists + ok
+ *     3. confirm it carries a LUKO ERC-20 Transfer TO the donation address
+ *     4. read the donated amount from the Transfer log
+ *     5. issue a serial from KV (idempotent per txHash), never signs anything
+ *     6. fill the SVG note template and return it inline
  *   Response JSON: { ok, serial, nominal, date, txHash, svg }
  *   Errors:        { ok:false, error }  (tx_not_found | tx_failed |
  *                   no_luko_transfer | wrong_recipient | ...)
+ *
+ * Shareable URL (same logic, GET):
+ *   GET /api/card?tx=0x...             → the note as image/svg+xml
+ *   GET /api/card?tx=0x...&format=json → JSON metadata + inline svg
  *
  * The Worker only READS chain state. All signing happens client-side in the
  * user's wallet. No private keys here.
@@ -70,20 +75,61 @@ export function onRequestOptions() {
   return new Response(null, { status: 204, headers: CORS_HEADERS });
 }
 
-export function onRequestGet() {
-  return json({ ok: true, message: "POST a txHash to receive a donation note." });
+/* GET /api/card               → service info
+   GET /api/card?tx=0x...       → the note SVG (image/svg+xml), a shareable URL
+   GET /api/card?tx=0x...&format=json → JSON metadata + inline svg */
+export async function onRequestGet(context) {
+  const url = new URL(context.request.url);
+  const txHash = url.searchParams.get("tx");
+  if (!txHash) {
+    return json({ ok: true, message: "POST a txHash, or GET ?tx=0x...&format=svg, to receive a donation note." });
+  }
+  try {
+    const cfg = configError(context);
+    if (cfg) return cfg;
+    if (!/^0x[0-9a-fA-F]{64}$/.test(txHash)) return fail("invalid_tx_hash");
+
+    const card = await getOrCreateCard(context.env, txHash);
+    const svg = await fillTemplate(context.request, card);
+
+    if (url.searchParams.get("format") === "json") {
+      return json({ ok: true, serial: card.serial, nominal: card.nominal, date: card.date, txHash: card.txHash, svg: svg });
+    }
+    return new Response(svg, {
+      headers: Object.assign({ "Content-Type": "image/svg+xml", "Cache-Control": "public, max-age=3600" }, CORS_HEADERS)
+    });
+  } catch (error) {
+    return errorResponse(error);
+  }
 }
 
-async function rpc(method, params) {
+async function rpcOnce(method, params) {
   const response = await fetch(RPC_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: method, params: params })
   });
-  if (!response.ok) throw new Error("rpc_http_" + response.status);
+  if (!response.ok) {
+    const err = new Error("rpc_http_" + response.status);
+    err.status = response.status;
+    throw err;
+  }
   const data = await response.json();
   if (data.error) throw new Error("rpc_" + (data.error.message || "error"));
   return data.result;
+}
+
+/* Public Base RPC is rate-limited; retry once on 429 after a short pause. */
+async function rpc(method, params) {
+  try {
+    return await rpcOnce(method, params);
+  } catch (error) {
+    if (error && error.status === 429) {
+      await new Promise(function (r) { setTimeout(r, 600); });
+      return await rpcOnce(method, params);
+    }
+    throw error;
+  }
 }
 
 function topicToAddress(topic) {
@@ -138,16 +184,17 @@ async function verifyDonation(txHash) {
   return { nominal: nominal, date: date };
 }
 
-/* Issue (or re-return) a serial for this tx. Idempotent by txHash.
+function cardKeyFor(txHash) {
+  return "card:" + txHash.toLowerCase();
+}
+
+/* Mint a new serial for a first-seen tx. Idempotency is handled by the caller
+   (which checks KV before any RPC), so this only runs for genuinely new cards.
    NOTE: KV is not strongly atomic — two brand-new donations landing in the same
    instant could in theory read the same counter and collide. At this volume
    (occasional personal donations) that race is acceptable; the txHash key still
    guarantees a refresh never issues a second serial for the same donation. */
 async function issueSerial(env, txHash, donation) {
-  const cardKey = "card:" + txHash.toLowerCase();
-  const existing = await env.CARDS.get(cardKey);
-  if (existing) return JSON.parse(existing);
-
   const current = parseInt((await env.CARDS.get("serial:counter")) || "0", 10);
   const next = current + 1;
   await env.CARDS.put("serial:counter", String(next));
@@ -158,7 +205,7 @@ async function issueSerial(env, txHash, donation) {
     date: donation.date,
     txHash: txHash.toLowerCase()
   };
-  await env.CARDS.put(cardKey, JSON.stringify(card));
+  await env.CARDS.put(cardKeyFor(txHash), JSON.stringify(card));
   return card;
 }
 
@@ -175,15 +222,39 @@ async function fillTemplate(request, card) {
   return svg;
 }
 
+/* Config guard: returns a fail Response if the endpoint is not ready, else null. */
+function configError(context) {
+  if (!/^0x[0-9a-fA-F]{40}$/.test(DONATION_ADDRESS) ||
+      DONATION_ADDRESS === "0x0000000000000000000000000000000000000000") {
+    return fail("donation_address_not_configured", 503);
+  }
+  if (!context.env || !context.env.CARDS) {
+    return fail("kv_not_bound", 503);
+  }
+  return null;
+}
+
+/* KV-first: a note already issued for this tx is returned WITHOUT touching the
+   chain — refreshes and shared-URL views are RPC-free and cannot hit rate
+   limits. Only a genuinely new tx is verified on-chain and given a serial. */
+async function getOrCreateCard(env, txHash) {
+  const existing = await env.CARDS.get(cardKeyFor(txHash));
+  if (existing) return JSON.parse(existing);
+  const donation = await verifyDonation(txHash);
+  return await issueSerial(env, txHash, donation);
+}
+
+function errorResponse(error) {
+  const message = String((error && error.message) || error);
+  /* known verification errors are 400; anything else is a 500 */
+  const known = ["tx_not_found", "tx_failed", "no_luko_transfer", "wrong_recipient", "template_unavailable"];
+  return fail(message, known.indexOf(message) !== -1 ? 400 : 500);
+}
+
 export async function onRequestPost(context) {
   try {
-    if (!/^0x[0-9a-fA-F]{40}$/.test(DONATION_ADDRESS) ||
-        DONATION_ADDRESS === "0x0000000000000000000000000000000000000000") {
-      return fail("donation_address_not_configured", 503);
-    }
-    if (!context.env || !context.env.CARDS) {
-      return fail("kv_not_bound", 503);
-    }
+    const cfg = configError(context);
+    if (cfg) return cfg;
 
     let body;
     try { body = await context.request.json(); } catch (e) { body = {}; }
@@ -192,8 +263,7 @@ export async function onRequestPost(context) {
       return fail("invalid_tx_hash");
     }
 
-    const donation = await verifyDonation(txHash);
-    const card = await issueSerial(context.env, txHash, donation);
+    const card = await getOrCreateCard(context.env, txHash);
     const svg = await fillTemplate(context.request, card);
 
     return json({
@@ -205,9 +275,6 @@ export async function onRequestPost(context) {
       svg: svg
     });
   } catch (error) {
-    const message = String((error && error.message) || error);
-    /* known verification errors are 400; anything else is a 500 */
-    const known = ["tx_not_found", "tx_failed", "no_luko_transfer", "wrong_recipient", "template_unavailable"];
-    return fail(message, known.indexOf(message) !== -1 ? 400 : 500);
+    return errorResponse(error);
   }
 }
