@@ -1,7 +1,12 @@
 /* Cloudflare Pages Function — LUKO Genesis Donation Note (scaffold).
  *
- * Route: /api/card  (this file lives at functions/api/card.js)
+ * Route: /api/card  (this file lives at functions/api/card.js, at the REPO ROOT)
  * Status: STEP 1 — hello-world plumbing only. No payment, no chain, no KV yet.
+ *
+ * Layout note: Cloudflare Pages builds this project with the static site in
+ * website/ (build output directory) and looks for Pages Functions in the
+ * `functions/` directory at the project ROOT — NOT inside website/. Keep this
+ * file at repo-root functions/, or the /api/card route silently 404s to HTML.
  *
  * What this endpoint WILL do once built out:
  *   TODO: read a donation tx hash from the request (query param or POST body).
@@ -15,7 +20,8 @@
  * For now it returns a fixed hello-world payload so the site's button,
  * fetch call, and dialog can be wired end to end.
  *
- * Local testing (serves the static site AND these functions together):
+ * Local testing (run from the REPO ROOT — serves website/ as static assets and
+ * picks up this repo-root functions/ directory, exactly like Cloudflare does):
  *   npx wrangler pages dev website
  *   then open the printed localhost URL and hit /api/card
  */

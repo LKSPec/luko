@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="430" viewBox="0 0 900 430">
+  <defs><clipPath id="strip"><rect x="826" y="0" width="74" height="430"></rect></clipPath></defs>
+  <rect x="0" y="0" width="900" height="430" fill="#0D0C0A"></rect>
+
+  
+  <g>
+    <circle cx="637" cy="215" r="104" fill="#0A0A0A"></circle>
+    <circle cx="637" cy="215" r="99" fill="none" stroke="#C9A86A" stroke-opacity="0.5" stroke-width="3"></circle>
+    <g transform="translate(637,215) scale(0.62) translate(-258,-239)">
+      <g opacity="0.3">
+        <path d="M144 164L182 122V167Z" fill="#C9A86A"></path>
+        <g fill="none" stroke="#C9A86A" stroke-width="15"><circle cx="306" cy="186" r="58"></circle><path d="M364 186V312"></path></g>
+      </g>
+      <path d="M182 122h52V312H346l16 16V358H182Z" fill="#C9A86A"></path>
+    </g>
+  </g>
+
+  
+  <rect x="826" y="0" width="74" height="430" fill="#0B0908"></rect>
+  <line x1="826" y1="0" x2="826" y2="430" stroke="#C9A86A" stroke-opacity="0.4" stroke-width="1"></line>
+  <g clip-path="url(#strip)" fill="#C9A86A" fill-opacity="0.6" font-family="&#39;SF Mono&#39;,ui-monospace,Menlo,monospace" font-size="8" letter-spacing="2">
+    <text x="852" y="8" transform="rotate(90 852 8)">LUKO · GENESIS DONATION NOTE · VALID FOREVER · LUKO · GENESIS DONATION NOTE · VALID FOREVER · LUKO · GENESIS DONATION NOTE · VALID FOREVER · LUKO · GENESIS DONATION NOTE · VALID FOREVER · LUKO · GENESIS DONATION NOTE · VALID FOREVER · LUKO · GENESIS DONATION NOTE · VALID FOREVER · </text>
+    <text x="868" y="8" transform="rotate(90 868 8)">GENESIS DONATION NOTE · VALID FOREVER · LUKO · GENESIS DONATION NOTE · VALID FOREVER · LUKO · GENESIS DONATION NOTE · VALID FOREVER · LUKO · GENESIS DONATION NOTE · VALID FOREVER · LUKO · GENESIS DONATION NOTE · VALID FOREVER · LUKO · GENESIS DONATION NOTE · VALID FOREVER · LUKO · </text>
+  </g>
+
+  
+  <rect x="0.5" y="0.5" width="899" height="429" fill="none" stroke="#C9A86A" stroke-opacity="0.35" stroke-width="1"></rect>
+
+  
+  <text x="46" y="62" font-family="&#39;Helvetica Neue&#39;,Archivo,Arial,sans-serif" font-size="26" font-weight="200" letter-spacing="4" fill="#EDE7DA">LKSPEC</text>
+  <text x="46" y="82" font-family="&#39;Helvetica Neue&#39;,Archivo,Arial,sans-serif" font-size="10" letter-spacing="2.4" fill="#6E6759">GENESIS DONATION NOTE</text>
+
+  
+  <text x="790" y="58" text-anchor="end" font-family="&#39;Helvetica Neue&#39;,Archivo,Arial,sans-serif" font-size="10" letter-spacing="2.4" fill="#6E6759">SERIAL</text>
+  <text x="790" y="78" text-anchor="end" font-family="&#39;SF Mono&#39;,ui-monospace,Menlo,monospace" font-size="12" letter-spacing="1" fill="#C9A86A">LK 0000001</text>
+
+  
+  <text x="46" y="205" font-family="&#39;Helvetica Neue&#39;,Archivo,Arial,sans-serif" font-size="10" letter-spacing="2.4" fill="#6E6759">NOMINAL</text>
+  <text x="44" y="288" font-family="&#39;Helvetica Neue&#39;,Archivo,Arial,sans-serif" font-size="84" font-weight="200" letter-spacing="1" fill="#EDE7DA">25,000</text>
+  <text x="322" y="288" font-family="&#39;Helvetica Neue&#39;,Archivo,Arial,sans-serif" font-size="24" font-weight="300" letter-spacing="3" fill="#C9A86A">LUKO</text>
+
+  
+  <line x1="46" y1="326" x2="206" y2="326" stroke="#C9A86A" stroke-opacity="0.5" stroke-width="1"></line>
+  <text x="46" y="344" font-family="&#39;Helvetica Neue&#39;,Archivo,Arial,sans-serif" font-size="10" letter-spacing="2.4" fill="#6E6759">FOR THE BEARER</text>
+  <text x="46" y="368" font-family="&#39;SF Mono&#39;,ui-monospace,Menlo,monospace" font-size="10" fill="#8C8577">2026-08-04 17:46:23 UTC</text>
+  <text x="46" y="384" font-family="&#39;SF Mono&#39;,ui-monospace,Menlo,monospace" font-size="10" fill="#8C8577">0x9f2c4b8e7a1d3f60c2b5498ad7e0f1936c84be5209d7143a6f0b2c8e1a7d5f42</text>
+  <text x="790" y="384" text-anchor="end" font-family="&#39;Helvetica Neue&#39;,Archivo,Arial,sans-serif" font-size="10" letter-spacing="2.4" fill="#C9A86A">VALID FOREVER</text>
+</svg>
