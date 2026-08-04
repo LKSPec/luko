@@ -50,12 +50,16 @@
 const DONATION_ADDRESS = "0x7D9766F447a6B86Cf589A31db5b5535e379863E7";
 
 const LUKO_ADDRESS = "0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1";
-/* Several public Base RPCs, tried in order. mainnet.base.org rate-limits
-   Cloudflare egress IPs hard (HTTP 429), which was surfacing as failed
-   donations, so a single endpoint is not enough. All are keyless. */
+/* Public Base RPCs, all keyless. Every one of them rate-limits Cloudflare's
+   shared egress IPs (429 / "usage limit"), and that was surfacing as failed
+   donations — so we spread across several and start at a random one rather
+   than hammering the same endpoint first on every request. */
 const RPC_URLS = [
   "https://mainnet.base.org",
   "https://base.drpc.org",
+  "https://base.meowrpc.com",
+  "https://base.gateway.tenderly.co",
+  "https://base-mainnet.public.blastapi.io",
   "https://1rpc.io/base"
 ];
 /* keccak256("Transfer(address,address,uint256)") */
@@ -138,15 +142,18 @@ async function rpcOnce(url, method, params) {
   return data.result;
 }
 
-/* Try each endpoint in turn; a rate-limited or unhealthy provider must not
-   fail a donation while another one can answer. Two passes, with a short
-   pause between them, so a brief limit on all of them still recovers. */
+/* Try the endpoints in turn, starting from a random one so concurrent requests
+   do not all queue behind the same provider. A rate-limited or unhealthy
+   provider must not fail a donation while another can still answer. Two
+   passes, with a pause between them, so a brief limit everywhere recovers. */
 async function rpc(method, params) {
+  const start = Math.floor(Math.random() * RPC_URLS.length);
   let lastError = null;
   for (let pass = 0; pass < 2; pass++) {
     for (let i = 0; i < RPC_URLS.length; i++) {
+      const url = RPC_URLS[(start + i) % RPC_URLS.length];
       try {
-        return await rpcOnce(RPC_URLS[i], method, params);
+        return await rpcOnce(url, method, params);
       } catch (error) {
         lastError = error;
         /* a null result (unknown tx) is not an error — only transport and
