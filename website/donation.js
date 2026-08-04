@@ -113,16 +113,24 @@
       presetRow.appendChild(preset);
     });
 
+    var emailInput = el("input", "amount-input");
+    emailInput.type = "email";
+    emailInput.autocomplete = "email";
+    emailInput.placeholder = "Email for a copy (optional)";
+
     var donate = el("button", "copy-button gold-action donate-submit", "Donate");
     donate.type = "button";
     donate.addEventListener("click", function () {
       var amount = parseInt(input.value, 10);
       if (!(amount > 0)) { input.focus(); return; }
-      startDonation(amount);
+      var email = emailInput.value.trim();
+      if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { emailInput.focus(); return; }
+      startDonation(amount, email);
     });
 
     body.appendChild(presetRow);
     body.appendChild(input);
+    body.appendChild(emailInput);
     body.appendChild(donate);
     openDialog();
   }
@@ -149,20 +157,20 @@
     return null; /* 0 providers, or multiple → resolved by caller */
   }
 
-  function startDonation(amount) {
+  function startDonation(amount, email) {
     if (busy) return;
     track("donation_started");
 
     if (providers.length > 1) {
-      showWalletChoice(amount);
+      showWalletChoice(amount, email);
       return;
     }
     var provider = chosenProvider();
     if (!provider) { showNoWallet(); return; }
-    donate(provider, amount);
+    donate(provider, amount, email);
   }
 
-  function showWalletChoice(amount) {
+  function showWalletChoice(amount, email) {
     setWide(false);
     clearBody();
     actions.hidden = false;
@@ -177,7 +185,7 @@
         option.appendChild(icon);
       }
       option.appendChild(el("span", null, String(entry.info.name || "Wallet")));
-      option.addEventListener("click", function () { donate(entry.provider, amount); });
+      option.addEventListener("click", function () { donate(entry.provider, amount, email); });
       body.appendChild(option);
     });
     openDialog();
@@ -212,7 +220,7 @@
     });
   }
 
-  function donate(provider, amount) {
+  function donate(provider, amount, email) {
     if (busy) return;
     busy = true;
     button.disabled = true;
@@ -237,8 +245,14 @@
       }).then(function (response) { return response.json(); });
     }).then(function (data) {
       if (!data || !data.ok) throw { handled: true, code: data && data.error };
-      track("donation_confirmed");
-      showNote(data);
+      track("card_generated");
+      if (!email) { showNote(data, null); return; }
+      /* rasterize once, email the copy, then show the note either way */
+      showStatus("Sending your copy…");
+      var png = rasterize(data.svg);
+      return emailNote(data, email, png).then(function (emailed) {
+        showNote(data, { email: email, emailed: emailed });
+      });
     }).catch(function (error) {
       track("donation_failed");
       if (error && error.code === 4001) { showAmountStep(); return; } /* user cancelled */
@@ -246,6 +260,40 @@
     }).finally(function () {
       busy = false;
       button.disabled = false;
+    });
+  }
+
+  /* Rasterize the note SVG to a PNG data URL at 2× (1800×860) — crisp on
+     retina and for print, small enough (~200 KB) to email and download. */
+  function rasterize(svg) {
+    return new Promise(function (resolve) {
+      var img = new Image();
+      img.onload = function () {
+        var canvas = el("canvas");
+        canvas.width = 1800;
+        canvas.height = 860;
+        canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+        try { resolve(canvas.toDataURL("image/png")); } catch (e) { resolve(null); }
+      };
+      img.onerror = function () { resolve(null); };
+      img.src = dataUri(svg);
+    });
+  }
+
+  function emailNote(data, email, pngPromise) {
+    return Promise.resolve(pngPromise).then(function (pngDataUrl) {
+      var pngBase64 = pngDataUrl ? pngDataUrl.split(",")[1] : "";
+      return fetch("/api/card", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          txHash: data.txHash, email: email, pngBase64: pngBase64,
+          serial: data.serial, nominal: data.nominal, date: data.date
+        })
+      }).then(function (r) { return r.json(); }).then(function (res) {
+        if (res && res.emailed) track("card_emailed");
+        return !!(res && res.emailed);
+      }).catch(function () { return false; });
     });
   }
 
@@ -262,33 +310,20 @@
     document.body.removeChild(a);
   }
 
-  function downloadSvg(svg, serial) {
-    var url = URL.createObjectURL(new Blob([svg], { type: "image/svg+xml" }));
-    download(url, "luko-donation-" + serial.replace(/\s+/g, "") + ".svg");
-    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
-  }
-
   function downloadPng(svg, serial, trigger) {
-    var img = new Image();
-    img.onload = function () {
-      var scale = 2;
-      var canvas = el("canvas");
-      canvas.width = 900 * scale;
-      canvas.height = 430 * scale;
-      canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
-      canvas.toBlob(function (blob) {
-        if (!blob) { trigger.textContent = "PNG failed"; return; }
-        var url = URL.createObjectURL(blob);
-        download(url, "luko-donation-" + serial.replace(/\s+/g, "") + ".png");
-        setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
-      }, "image/png");
-    };
-    img.onerror = function () { trigger.textContent = "PNG failed"; };
-    img.src = dataUri(svg);
+    rasterize(svg).then(function (pngDataUrl) {
+      if (!pngDataUrl) { trigger.textContent = "PNG failed"; return; }
+      track("card_downloaded_png");
+      download(pngDataUrl, "luko-donation-" + serial.replace(/\s+/g, "") + ".png");
+    });
   }
 
-  /* Final — show the note with download actions. */
-  function showNote(data) {
+  function isMobile() {
+    return (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) || window.innerWidth < 640;
+  }
+
+  /* Final — show the note, download, and (if used) email confirmation. */
+  function showNote(data, mail) {
     setWide(true);
     clearBody();
     actions.hidden = false;
@@ -299,16 +334,21 @@
     body.appendChild(img);
     body.appendChild(el("p", "dialog-message address", data.serial));
 
-    var row = el("div", "note-actions");
-    var png = el("button", "copy-button gold-action", "Download PNG");
+    if (isMobile()) {
+      body.appendChild(el("p", "note-hint", "Press and hold the image to save."));
+    }
+
+    var png = el("button", "copy-button gold-action note-download", "Download PNG");
     png.type = "button";
     png.addEventListener("click", function () { downloadPng(data.svg, data.serial, png); });
-    var svgBtn = el("button", "copy-button", "Download SVG");
-    svgBtn.type = "button";
-    svgBtn.addEventListener("click", function () { downloadSvg(data.svg, data.serial); });
-    row.appendChild(png);
-    row.appendChild(svgBtn);
-    body.appendChild(row);
+    body.appendChild(png);
+
+    if (mail && mail.email) {
+      body.appendChild(el("p", "note-hint",
+        mail.emailed
+          ? "A copy has been sent to " + mail.email + "."
+          : "The note could not be emailed. Use Download PNG above."));
+    }
     openDialog();
   }
 

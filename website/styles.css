@@ -430,8 +430,14 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
   height: auto;
   border: 1px solid var(--luko-hairline-raised);
 }
-.note-actions { display: flex; gap: 12px; margin-top: 16px; }
-.note-actions .copy-button { flex: 1; margin-top: 0; }
+.note-download { margin-top: 16px; width: 100%; }
+.note-hint {
+  margin: 12px 0 0;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--luko-muted);
+  text-align: center;
+}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; }

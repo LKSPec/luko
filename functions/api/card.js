@@ -54,6 +54,18 @@ const RPC_URL = "https://mainnet.base.org";
 /* keccak256("Transfer(address,address,uint256)") */
 const TRANSFER_TOPIC = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
 
+/* Email (optional). Mailjet REST API — Basic Auth from CF secrets
+   MAILJET_API_KEY / MAILJET_SECRET_KEY, set via:
+     wrangler pages secret put MAILJET_API_KEY
+     wrangler pages secret put MAILJET_SECRET_KEY
+   Never hardcode them. SMTP is not usable from Workers — REST only. */
+const MAIL_FROM = "thankyou@meetluko.eu";
+const MAIL_FROM_NAME = "LUKO";
+const MAIL_REPLYTO = "hello@meetluko.eu";
+const SITE_URL = "https://meetluko.eu";
+/* cap the client PNG we forward to Mailjet (~a few hundred KB expected) */
+const MAX_PNG_BASE64 = 4000000;
+
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
@@ -149,6 +161,12 @@ function serialString(counter) {
   return "LK " + String(counter).padStart(7, "0");
 }
 
+/* URL-safe form of a serial: "LK 0000001" → "LK0000001". Used for the
+   /card/{slug} permalink and the serial→txHash reverse index key. */
+function slugFor(serial) {
+  return String(serial).replace(/\s+/g, "").toUpperCase();
+}
+
 /* Verify the tx and extract the LUKO donation. Returns { nominal, date } or throws. */
 async function verifyDonation(txHash) {
   const receipt = await rpc("eth_getTransactionReceipt", [txHash]);
@@ -206,7 +224,16 @@ async function issueSerial(env, txHash, donation) {
     txHash: txHash.toLowerCase()
   };
   await env.CARDS.put(cardKeyFor(txHash), JSON.stringify(card));
+  /* reverse index so the /card/{serial} page can resolve serial → txHash */
+  await env.CARDS.put("serial:" + slugFor(card.serial), card.txHash);
   return card;
+}
+
+/* Lookup only — never creates. Used by the email path so a KV read-after-write
+   lag can't cause a second serial to be minted for an already-issued tx. */
+async function getCard(env, txHash) {
+  const raw = await env.CARDS.get(cardKeyFor(txHash));
+  return raw ? JSON.parse(raw) : null;
 }
 
 async function fillTemplate(request, card) {
@@ -239,9 +266,76 @@ function configError(context) {
    limits. Only a genuinely new tx is verified on-chain and given a serial. */
 async function getOrCreateCard(env, txHash) {
   const existing = await env.CARDS.get(cardKeyFor(txHash));
-  if (existing) return JSON.parse(existing);
+  if (existing) {
+    const card = JSON.parse(existing);
+    /* backfill the reverse index for cards issued before it existed */
+    const indexKey = "serial:" + slugFor(card.serial);
+    if (!(await env.CARDS.get(indexKey))) await env.CARDS.put(indexKey, card.txHash);
+    return card;
+  }
   const donation = await verifyDonation(txHash);
   return await issueSerial(env, txHash, donation);
+}
+
+/* Send the note by email via the Mailjet REST API. Returns {ok} / {ok:false,error};
+   never throws — a mail failure must not fail the (already-issued) note. */
+async function sendEmail(env, card, email, pngBase64) {
+  const apiKey = env.MAILJET_API_KEY;
+  const secret = env.MAILJET_SECRET_KEY;
+  if (!apiKey || !secret) return { ok: false, error: "email_not_configured" };
+
+  const slug = slugFor(card.serial);
+  const link = SITE_URL + "/card/" + slug;
+  const lines = [
+    "A genesis donation note has been issued to the bearer.",
+    "",
+    "Serial   " + card.serial,
+    "Nominal  " + card.nominal + " LUKO",
+    "Date     " + card.date,
+    "",
+    "View your note: " + link,
+    "",
+    "LUKO — " + SITE_URL
+  ];
+  const html =
+    '<div style="font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#0A0A0A;line-height:1.7">' +
+    "<p>A genesis donation note has been issued to the bearer.</p>" +
+    '<p style="font-family:monospace">Serial&nbsp;&nbsp;' + card.serial +
+    "<br>Nominal&nbsp;" + card.nominal + " LUKO" +
+    "<br>Date&nbsp;&nbsp;&nbsp;&nbsp;" + card.date + "</p>" +
+    '<p><a href="' + link + '" style="color:#9a7b3f">View your note &rarr;</a></p>' +
+    '<p style="color:#8C8577">LUKO — ' + SITE_URL + "</p></div>";
+
+  const message = {
+    From: { Email: MAIL_FROM, Name: MAIL_FROM_NAME },
+    To: [{ Email: email }],
+    ReplyTo: { Email: MAIL_REPLYTO },
+    Subject: "Your LUKO Genesis Donation Note — " + card.serial,
+    TextPart: lines.join("\n"),
+    HTMLPart: html
+  };
+  if (pngBase64 && pngBase64.length <= MAX_PNG_BASE64) {
+    message.Attachments = [{
+      ContentType: "image/png",
+      Filename: "luko-donation-" + slug + ".png",
+      Base64Content: pngBase64
+    }];
+  }
+
+  try {
+    const response = await fetch("https://api.mailjet.com/v3.1/send", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Basic " + btoa(apiKey + ":" + secret)
+      },
+      body: JSON.stringify({ Messages: [message] })
+    });
+    if (!response.ok) return { ok: false, error: "mailjet_http_" + response.status };
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: "mailjet_unreachable" };
+  }
 }
 
 function errorResponse(error) {
@@ -263,6 +357,29 @@ export async function onRequestPost(context) {
       return fail("invalid_tx_hash");
     }
 
+    const email = typeof body.email === "string" ? body.email.trim() : "";
+
+    /* Email path — the note was already generated by a prior POST; look it up
+       (no create → no double-issue under KV lag) and mail it. Best-effort:
+       falls back to client-echoed fields only if KV has not yet propagated. */
+    if (email) {
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return fail("invalid_email");
+      let card = await getCard(context.env, txHash);
+      if (!card && body.serial) {
+        card = {
+          serial: String(body.serial),
+          nominal: String(body.nominal || ""),
+          date: String(body.date || ""),
+          txHash: txHash.toLowerCase()
+        };
+      }
+      if (!card) return fail("card_not_found");
+      const pngBase64 = typeof body.pngBase64 === "string" ? body.pngBase64 : "";
+      const sent = await sendEmail(context.env, card, email, pngBase64);
+      return json({ ok: true, emailed: sent.ok, error: sent.ok ? undefined : sent.error });
+    }
+
+    /* Generation path */
     const card = await getOrCreateCard(context.env, txHash);
     const svg = await fillTemplate(context.request, card);
 
