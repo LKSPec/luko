@@ -26,8 +26,37 @@
   var actions = closeButton ? closeButton.parentNode : null;
   if (!button || !dialog || !body || !closeButton || typeof dialog.showModal !== "function") return;
 
-  function track(action) {
+  /* Telemetry: every step of the flow goes to Sentry as a breadcrumb, and
+     failures additionally as a message with the real error code/text, so a
+     failed donation can be diagnosed after the fact instead of guessing. */
+  function track(action, data) {
     try { if (typeof window.track === "function") window.track(action); } catch (e) { /* non-blocking */ }
+    try {
+      if (window.Sentry && typeof window.Sentry.addBreadcrumb === "function") {
+        window.Sentry.addBreadcrumb({
+          category: "donation", message: action, level: "info", data: data || {}
+        });
+      }
+    } catch (e) { /* non-blocking */ }
+  }
+
+  function reportFailure(stage, error, extra) {
+    var detail = {
+      stage: stage,
+      code: error && (error.code !== undefined ? String(error.code) : ""),
+      message: String((error && (error.message || error.error)) || error || "")
+    };
+    if (extra) for (var k in extra) if (extra.hasOwnProperty(k)) detail[k] = extra[k];
+    track("donation_failed", detail);
+    try {
+      if (window.Sentry && typeof window.Sentry.captureMessage === "function") {
+        window.Sentry.captureMessage(
+          "donation_failed:" + stage + " " + (detail.code || "") + " " + detail.message,
+          { level: "error", extra: detail }
+        );
+      }
+    } catch (e) { /* non-blocking */ }
+    return detail;
   }
 
   /* EIP-6963 discovery — same pattern as wallet.js. Announce strings are
@@ -73,10 +102,32 @@
     template_unavailable: "Note template unavailable."
   };
 
-  function showError(code) {
+  /* detail: {stage, code, message} from reportFailure — shown when DEBUG=1 and
+     used to pick a human sentence for wallet-side failures. */
+  function showError(code, detail) {
     setWide(false);
     clearBody();
-    body.appendChild(el("p", "dialog-message", ERRORS[code] || "Could not issue the note."));
+    var text = ERRORS[code];
+    if (!text && detail) {
+      var m = (detail.message || "").toLowerCase();
+      if (/insufficient funds|gas required|exceeds balance/.test(m)) {
+        text = "Not enough ETH on Base to cover gas.";
+      } else if (/transfer amount exceeds balance|erc20/.test(m)) {
+        text = "Not enough LUKO for that amount.";
+      } else if (detail.stage === "send") {
+        text = "The wallet did not send the transaction.";
+      } else if (detail.stage === "confirm") {
+        text = "The donation is taking longer than expected to confirm. Your note can be issued later from the transaction.";
+      }
+    }
+    body.appendChild(el("p", "dialog-message", text || "Could not issue the note."));
+    if (DEBUG && detail) {
+      body.appendChild(el("p", "note-hint",
+        "[" + detail.stage + "] " + (detail.code ? detail.code + " " : "") + detail.message));
+    }
+    if (detail && detail.txHash) {
+      body.appendChild(el("code", "address", detail.txHash));
+    }
     var back = el("button", "copy-button", "Back");
     back.type = "button";
     back.addEventListener("click", showAmountStep);
@@ -84,6 +135,8 @@
     actions.hidden = false;
     openDialog();
   }
+
+  var DEBUG = /[?&]debug=1/.test(location.search);
 
   /* Step 1 — choose an amount. */
   function showAmountStep() {
@@ -159,7 +212,7 @@
 
   function startDonation(amount, email) {
     if (busy) return;
-    track("donation_started");
+    track("donation_started", { amount: amount, withEmail: !!email, wallets: providers.length });
 
     if (providers.length > 1) {
       showWalletChoice(amount, email);
@@ -195,12 +248,18 @@
     setWide(false);
     clearBody();
     actions.hidden = false;
-    body.appendChild(el("p", "dialog-message", "No compatible wallet detected."));
+    body.appendChild(el("p", "dialog-message",
+      "A donation is signed in a wallet. No wallet was detected in this browser."));
+    /* The deep link works on mobile (opens the dapp inside the wallet's own
+       browser); on desktop the visitor needs an extension instead. */
     if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {
       var link = el("a", "dialog-link", "Open in MetaMask →");
       link.href = "https://metamask.app.link/dapp/meetluko.eu";
       link.rel = "noopener";
       body.appendChild(link);
+    } else {
+      body.appendChild(el("p", "note-hint",
+        "Open meetluko.eu in a wallet browser, or install a wallet extension."));
     }
     openDialog();
   }
@@ -226,10 +285,18 @@
     button.disabled = true;
     showStatus("Waiting for wallet…");
 
+    var stage = "connect";
+    var sentTxHash = "";
+
     provider.request({ method: "eth_requestAccounts" }).then(function (accounts) {
       var from = accounts && accounts[0];
       if (!from) throw new Error("no_account");
+      track("donation_connected");
+      stage = "network";
       return ensureBase(provider).then(function () {
+        track("donation_network_ready");
+        stage = "send";
+        showStatus("Confirm the transfer in your wallet…");
         var amountBig = BigInt(amount) * (10n ** 18n);
         return provider.request({
           method: "eth_sendTransaction",
@@ -237,32 +304,63 @@
         });
       });
     }).then(function (txHash) {
-      showStatus("Verifying donation…");
-      return fetch("/api/card", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        /* bearer personalizes the private copy (download + email); public
-           permalink stays generic. Empty email → generic note. */
-        body: JSON.stringify({ txHash: txHash, bearer: email || "" })
-      }).then(function (response) { return response.json(); });
+      sentTxHash = txHash;
+      track("donation_sent", { txHash: txHash, amount: amount });
+      stage = "confirm";
+      showStatus("Waiting for confirmation on Base…");
+      /* The tx needs to land in a block before the Worker can verify it.
+         Poll /api/card until it stops reporting tx_not_found. */
+      return issueWithRetry(txHash, email);
     }).then(function (data) {
-      if (!data || !data.ok) throw { handled: true, code: data && data.error };
-      track("card_generated");
+      track("card_generated", { serial: data.serial });
       if (!email) { showNote(data, null); return; }
-      /* rasterize once, email the copy, then show the note either way */
       showStatus("Sending your copy…");
       var png = rasterize(data.svg);
       return emailNote(data, email, png).then(function (emailed) {
         showNote(data, { email: email, emailed: emailed });
       });
     }).catch(function (error) {
-      track("donation_failed");
-      if (error && error.code === 4001) { showAmountStep(); return; } /* user cancelled */
-      showError(error && error.code);
+      /* user cancelled in the wallet — not an error worth reporting */
+      if (error && (error.code === 4001 || error.code === "ACTION_REJECTED")) {
+        track("donation_cancelled");
+        showAmountStep();
+        return;
+      }
+      var detail = reportFailure(stage, error, sentTxHash ? { txHash: sentTxHash } : null);
+      showError(error && (error.apiError || error.code), detail);
     }).finally(function () {
       busy = false;
       button.disabled = false;
     });
+  }
+
+  /* Ask the Worker for the note, retrying while the tx is not yet mined.
+     ~90s of polling: donations on Base confirm in seconds, but a congested
+     block or a slow RPC should not surface as a false failure. */
+  function issueWithRetry(txHash, email) {
+    var attempts = 0;
+    var MAX = 30;
+    function attempt() {
+      attempts++;
+      return fetch("/api/card", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        /* bearer personalizes the private copy (download + email); the public
+           permalink shows it masked. Empty email → no bearer line. */
+        body: JSON.stringify({ txHash: txHash, bearer: email || "" })
+      }).then(function (response) { return response.json(); }).then(function (data) {
+        if (data && data.ok) return data;
+        var pending = data && (data.error === "tx_not_found" || data.error === "tx_pending");
+        if (pending && attempts < MAX) {
+          track("donation_awaiting_confirmation", { attempt: attempts });
+          return new Promise(function (resolve) { setTimeout(resolve, 3000); }).then(attempt);
+        }
+        var err = new Error((data && data.error) || "issue_failed");
+        err.apiError = data && data.error;
+        throw err;
+      });
+    }
+    return attempt();
   }
 
   /* Rasterize the note SVG to a PNG data URL at 2× (1800×860) — crisp on
@@ -356,6 +454,15 @@
 
   button.addEventListener("click", function () {
     if (busy) return;
+    /* catch wallets injected after load, then decide up front: with no wallet
+       there is nothing to sign with, so ask to open in one instead of making
+       the visitor fill in an amount first and fail afterwards. */
+    window.dispatchEvent(new Event("eip6963:requestProvider"));
+    if (!providers.length && !window.ethereum) {
+      track("donation_no_wallet");
+      showNoWallet();
+      return;
+    }
     showAmountStep();
   });
 
