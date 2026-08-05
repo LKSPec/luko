@@ -20,7 +20,7 @@ Two inks, never more. No gradients, no bevels, no gloss, no outer glow.
 ## Files
 | File | Use |
 |---|---|
-| `logo-dark.svg` | black circular tile + hairline gold ring — wallets, dark UI |
+| `logo-dark-128.svg`, `logo-dark-512.svg` | black circular tile + hairline gold ring — wallets, dark UI |
 | `logo-light.svg` | dark-gold mark + ring for white / champagne backgrounds |
 | `logo-transparent.svg` | gold mark + hairline ring, transparent background |
 | `logo-mark-dark.svg`, `logo-mark-light.svg` | ringless marks, cropped tight — for lockups and tiny UI |
@@ -32,7 +32,7 @@ Two inks, never more. No gradients, no bevels, no gloss, no outer glow.
 | `social-1200x630.png` | OG / Twitter card |
 
 ## Token listing
-Use `logo-dark-256.png` or `logo-dark.svg` for wallet and DEX submissions (Base token list, CoinGecko,
+Use `logo-dark-256.png` or `logo-dark-512.svg` for wallet and DEX submissions (Base token list, CoinGecko,
 Uniswap). The mark is drawn to sit at the same optical weight as ETH and USDC in a 32 px row —
 do not add padding, the circle is already full-bleed.
 
