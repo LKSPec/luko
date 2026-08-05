@@ -447,10 +447,15 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
 }
 
 /* Live market — prominent value */
+/* Two headline values. Stacked full-width on phones so each number keeps its
+   size; paired left/right once there is room for both on one line. */
 .market-value-block {
   margin-top: 20px;
   padding-top: 20px;
   border-top: 1px solid var(--luko-hairline);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 .market-value-big {
   font-size: 40px;
@@ -461,6 +466,13 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
 }
 @media (min-width: 720px) {
   .market-value-big { font-size: 56px; }
+  .market-value-block {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+  }
+  .market-value-item:last-child { text-align: right; }
 }
 
 /* Chart embed — tinted to brand */
