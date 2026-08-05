@@ -66,7 +66,7 @@
     setValue("market-luko", formatFixed(reserves.luko, 0) + " LUKO");
     setValue("market-usdc", formatFixed(reserves.usdc, 2) + " USDC");
     setValue("market-value", "$" + formatFixed(50000 * price, 2));
-    setValue("market-value-190", "$" + formatFixed(190000 * price, 2));
+    setValue("market-value-140", "$" + formatFixed(140000 * price, 2));
   }
 
   /* Load with a single retry; refresh every 30 s. Failures keep "—". */
