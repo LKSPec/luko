@@ -674,3 +674,21 @@ main section[id], #top { scroll-margin-top: 76px; }
 .lang-lt { display: none; }
 [data-lang="lt"] .lang-lt { display: block; }
 [data-lang="lt"] .lang-en { display: none; }
+
+/* Give / take — equal pair */
+#donation-note .copy-button,
+#claim .copy-button { margin-top: 16px; }
+#claim .footnote { margin-top: 10px; }
+.copy-button:disabled,
+.copy-button:disabled:hover {
+  background: #1A1814;
+  border-color: transparent;
+  color: var(--luko-disabled, #4E4940);
+  cursor: not-allowed;
+}
+
+/* Give | take — equal columns on wide screens, stacked on mobile */
+.give-take-grid { display: flex; flex-direction: column; }
+@media (min-width: 720px) {
+  .give-take-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+}
