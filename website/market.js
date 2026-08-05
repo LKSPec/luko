@@ -63,7 +63,8 @@
     if (!(reserves.luko > 0) || !(reserves.usdc > 0)) throw new Error("empty");
     var price = reserves.usdc / reserves.luko;
     setValue("market-price", formatFixed(price, 6) + " USDC");
-    setValue("market-depth", formatFixed(reserves.usdc * 2, 2) + " USDC");
+    setValue("market-luko", formatFixed(reserves.luko, 0) + " LUKO");
+    setValue("market-usdc", formatFixed(reserves.usdc, 2) + " USDC");
     setValue("market-value", "$" + formatFixed(50000 * price, 2));
   }
 

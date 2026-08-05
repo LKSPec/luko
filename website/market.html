@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LUKO — Market</title>
+  <meta name="description" content="Live market record for LUKO. All entries verifiable on-chain.">
+  <link rel="icon" href="assets/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
+  <meta property="og:title" content="LUKO — Market">
+  <meta property="og:description" content="Live market record. All entries verifiable on-chain.">
+  <meta property="og:url" content="https://meetluko.eu/market">
+  <meta property="og:image" content="https://meetluko.eu/assets/social-1200x630.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <!-- SENTRY_DSN -->
+  <script
+    src="https://js-de.sentry-cdn.com/7738fc80396b4b68af0041def3125cb0.min.js"
+    crossorigin="anonymous"
+    defer
+  ></script>
+  <script>
+    (function () {
+      function initSentry() {
+        try {
+          window.Sentry.init({
+            environment: "production",
+            tracesSampleRate: 0
+          });
+        } catch (error) { /* Sentry must never block the site. */ }
+      }
+
+      function configureSentry() {
+        try {
+          if (!window.Sentry) return;
+          if (typeof window.Sentry.onLoad === "function") {
+            window.Sentry.onLoad(initSentry);
+          } else {
+            initSentry();
+          }
+        } catch (error) { /* CDN unavailable or blocked. */ }
+      }
+
+      if (document.readyState === "complete") {
+        configureSentry();
+      } else {
+        window.addEventListener("load", configureSentry, { once: true });
+      }
+    })();
+
+    function track(action) {
+      try {
+        if (window.Sentry && typeof window.Sentry.addBreadcrumb === "function") {
+          window.Sentry.addBreadcrumb({ category: "ui", message: action, level: "info" });
+        }
+      } catch (error) { /* Tracking is non-blocking. */ }
+    }
+
+    document.addEventListener("click", function (event) {
+      if (!(event.target instanceof Element)) return;
+      var target = event.target.closest("a, button, [role='button']");
+      if (!target) return;
+
+      var action = target.getAttribute("data-sentry-action");
+      if (!action && /\/market(?:\.html)?\/?$/.test(location.pathname)) {
+        var marker = [
+          target.id,
+          target.getAttribute("name"),
+          target.getAttribute("aria-label"),
+          target.textContent
+        ].join(" ").toLowerCase();
+        if (marker.indexOf("claim") !== -1) action = "claim_clicked";
+        if (!action && marker.indexOf("connect") !== -1) action = "connect_clicked";
+      }
+
+      if (action) track(action);
+    }, true);
+  </script>
+  <link rel="stylesheet" href="styles.css?v=10">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <a class="lockup" href="https://meetluko.eu/" aria-label="LUKO home">
+      <img src="assets/logo-mark-dark.svg" alt="" width="26" height="26">
+      <span class="wordmark">LUKO</span>
+    </a>
+    <nav class="site-nav" aria-label="Sections">
+      <a href="/">Token</a>
+      <span class="language-toggle" role="group" aria-label="Language">
+        <button type="button" class="language-option is-active" data-language="en" data-sentry-action="lang_switch" aria-pressed="true">EN</button>
+        <span aria-hidden="true">/</span>
+        <button type="button" class="language-option" data-language="lt" data-sentry-action="lang_switch" aria-pressed="false">LT</button>
+      </span>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero" aria-labelledby="market-title">
+      <div class="hero-copy">
+        <h1 id="market-title">MARKET</h1>
+        <p class="tagline" data-en="Streams and live market. All entries verifiable on-chain." data-lt="Srautai ir rinka. Visi įrašai patikrinami on-chain.">Streams and live market. All entries verifiable on-chain.</p>
+      </div>
+    </section>
+
+    <div class="streams-grid">
+    <section id="stream-lambda" class="panel" aria-labelledby="stream-lambda-label">
+      <h2 id="stream-lambda-label" class="label">Genesis Stream Lambda</h2>
+      <dl class="facts">
+        <div class="fact"><dt>Immediate allocation</dt><dd class="accent">50,000 LUKO</dd></div>
+        <div class="fact"><dt>Streaming allocation</dt><dd class="accent">140,000 LUKO</dd></div>
+        <div class="fact"><dt>Stream ends</dt><dd>24 Aug 2027</dd></div>
+        <div class="fact"><dt>Stream status</dt><dd class="pending" data-en="Active (pending)" data-lt="Aktyvus (laukiama)">Active (pending)</dd></div>
+        <div class="fact"><dt>Vested so far</dt><dd class="pending">—</dd></div>
+        <!-- lambda-stream-url -->
+        <div class="fact"><dt>Sablier</dt><dd class="pending" data-en="Pending" data-lt="Laukiama">Pending</dd></div>
+      </dl>
+    </section>
+
+    <section id="stream-delta" class="panel" aria-labelledby="stream-delta-label">
+      <h2 id="stream-delta-label" class="label">Genesis Stream Delta</h2>
+      <dl class="facts">
+        <div class="fact"><dt>Immediate allocation</dt><dd class="accent">50,000 LUKO</dd></div>
+        <div class="fact"><dt>Streaming allocation</dt><dd class="accent">140,000 LUKO</dd></div>
+        <div class="fact"><dt>Stream ends</dt><dd>24 Aug 2027</dd></div>
+        <div class="fact"><dt>Stream status</dt><dd class="pending" id="stream-status">Starts 2 Aug 2026</dd></div>
+        <div class="fact"><dt>Vested so far</dt><dd class="accent" id="vested-amount">—</dd></div>
+        <div class="fact"><dt>Sablier</dt><dd><a href="https://app.sablier.com/vesting/stream/LK3-8453-902" rel="noopener">View on Sablier →</a></dd></div>
+      </dl>
+    </section>
+    </div>
+
+    <section id="market" class="panel" aria-labelledby="market-label">
+      <h2 id="market-label" class="label">Live market</h2>
+      <dl class="facts">
+        <div class="fact"><dt>Price</dt><dd id="market-price">—</dd></div>
+        <div class="fact"><dt data-en="Market LUKO" data-lt="Rinkos LUKO">Market LUKO</dt><dd id="market-luko">—</dd></div>
+        <div class="fact"><dt data-en="Market USDC" data-lt="Rinkos USDC">Market USDC</dt><dd id="market-usdc">—</dd></div>
+      </dl>
+      <div class="market-value-block">
+        <div class="label" data-en="Value of 50,000 LUKO" data-lt="50,000 LUKO vertė">Value of 50,000 LUKO</div>
+        <div class="market-value-big" id="market-value">—</div>
+      </div>
+    </section>
+
+    <section id="chart" class="panel" aria-labelledby="chart-label">
+      <h2 id="chart-label" class="label">Chart</h2>
+      <div class="chart-frame">
+        <iframe
+          id="dextools-widget"
+          title="DEXTools Trading Chart"
+          src="https://www.dextools.io/widget-chart/en/base/pe-light/0x2222a01b83db8c533b062aeb6de4f61d6ae792f2?theme=dark&chartType=1&chartResolution=1D&drawingToolbars=false&showTradeHistory=true&chartInUsd=true&headerColor=0A0A0A&tvPlatformColor=0A0A0A&tvPaneColor=0D0C0A&tradeHistoryColor=0D0C0A"></iframe>
+      </div>
+    </section>
+
+
+  </main>
+
+  <footer class="site-footer">
+    <p>Built by LKSPec · <span lang="lt">Su niekuo nesuderinta</span></p>
+  </footer>
+
+  <script src="app.js?v=4" defer></script>
+  <script src="market.js?v=1" defer></script>
+</body>
+</html>
