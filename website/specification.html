@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title data-en="LUKO — Specification" data-lt="LUKO — Specifikacija">LUKO — Specification</title>
+  <meta name="description" content="LUKO specification. Fixed-supply ERC-20 on Base. The verified source code is authoritative; this document describes it.">
+  <link rel="icon" href="assets/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
+  <meta property="og:title" content="LUKO — Specification">
+  <meta property="og:description" content="Fixed-supply ERC-20 on Base. The verified source code is authoritative; this document describes it.">
+  <meta property="og:url" content="https://meetluko.eu/specification">
+  <meta property="og:image" content="https://meetluko.eu/assets/social-1200x630.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <!-- SENTRY_DSN -->
+  <script
+    src="https://js-de.sentry-cdn.com/7738fc80396b4b68af0041def3125cb0.min.js"
+    crossorigin="anonymous"
+    defer
+  ></script>
+  <script>
+    (function () {
+      function initSentry() {
+        try {
+          window.Sentry.init({
+            environment: "production",
+            tracesSampleRate: 0
+          });
+        } catch (error) { /* Sentry must never block the site. */ }
+      }
+
+      function configureSentry() {
+        try {
+          if (!window.Sentry) return;
+          if (typeof window.Sentry.onLoad === "function") {
+            window.Sentry.onLoad(initSentry);
+          } else {
+            initSentry();
+          }
+        } catch (error) { /* CDN unavailable or blocked. */ }
+      }
+
+      if (document.readyState === "complete") {
+        configureSentry();
+      } else {
+        window.addEventListener("load", configureSentry, { once: true });
+      }
+    })();
+
+    function track(action) {
+      try {
+        if (window.Sentry && typeof window.Sentry.addBreadcrumb === "function") {
+          window.Sentry.addBreadcrumb({ category: "ui", message: action, level: "info" });
+        }
+      } catch (error) { /* Tracking is non-blocking. */ }
+    }
+
+    document.addEventListener("click", function (event) {
+      if (!(event.target instanceof Element)) return;
+      var target = event.target.closest("a, button, [role='button']");
+      if (!target) return;
+      var action = target.getAttribute("data-sentry-action");
+      if (action) track(action);
+    }, true);
+  </script>
+  <link rel="stylesheet" href="styles.css?v=13">
+</head>
+<body>
+  <a class="skip-link" href="#main" data-en="Skip to content" data-lt="Pereiti prie turinio">Skip to content</a>
+
+  <header class="site-header">
+    <a class="lockup" href="https://meetluko.eu/" aria-label="LUKO home">
+      <img src="assets/logo-mark-dark.svg" alt="" width="26" height="26">
+      <span class="wordmark">LUKO</span>
+    </a>
+    <nav class="site-nav" aria-label="Sections">
+      <a href="/" data-en="Token" data-lt="Tokenas">Token</a>
+      <a href="/market" data-en="Market" data-lt="Rinka">Market</a>
+      <span class="language-toggle" role="group" aria-label="Language">
+        <button type="button" class="language-option is-active" data-language="en" data-sentry-action="lang_switch" aria-pressed="true">EN</button>
+        <span aria-hidden="true">/</span>
+        <button type="button" class="language-option" data-language="lt" data-sentry-action="lang_switch" aria-pressed="false">LT</button>
+      </span>
+    </nav>
+  </header>
+
+  <main id="main">
+    <span id="top"></span>
+    <section class="hero" aria-labelledby="spec-title">
+      <div class="hero-copy">
+        <h1 id="spec-title" data-en="SPECIFICATION" data-lt="SPECIFIKACIJA">SPECIFICATION</h1>
+        <p class="tagline" data-en="LUKO (ERC-20), Base mainnet · Document version 1.0 · Status: Final" data-lt="LUKO (ERC-20), Base mainnet · Dokumento versija 1.0 · Būsena: galutinė">LUKO (ERC-20), Base mainnet · Document version 1.0 · Status: Final</p>
+      </div>
+    </section>
+
+    <nav class="spec-toc" aria-label="Contents">
+      <a href="#introduction" data-en="1 · Introduction" data-lt="1 · Įvadas">1 · Introduction</a>
+      <a href="#design-principles" data-en="2 · Design principles" data-lt="2 · Dizaino principai">2 · Design principles</a>
+      <a href="#technical-specification" data-en="3 · Technical specification" data-lt="3 · Techninė specifikacija">3 · Technical specification</a>
+      <a href="#genesis" data-en="4 · Genesis" data-lt="4 · Pradžia (genesis)">4 · Genesis</a>
+      <a href="#administrative-model" data-en="5 · Administrative model" data-lt="5 · Administravimo modelis">5 · Administrative model</a>
+      <a href="#non-goals" data-en="6 · Non-goals" data-lt="6 · Nekeliami tikslai">6 · Non-goals</a>
+      <a href="#intended-audience" data-en="7 · Intended audience" data-lt="7 · Numatyta auditorija">7 · Intended audience</a>
+      <a href="#faq" data-en="8 · FAQ" data-lt="8 · DUK">8 · FAQ</a>
+      <a href="#references" data-en="9 · References" data-lt="9 · Nuorodos">9 · References</a>
+    </nav>
+
+    <section id="introduction" class="panel" aria-labelledby="introduction-label">
+      <div class="panel-head"><h2 id="introduction-label" class="label" data-en="1 · Introduction" data-lt="1 · Įvadas">1 · Introduction</h2><a class="to-top" href="#top" aria-label="Back to top" data-en="↑ top" data-lt="↑ į viršų">↑ top</a></div>
+      <div class="lang-en">
+        <p class="prose">LUKO is a fungible token conforming to the ERC-20 standard, deployed on Base, an Ethereum layer-2 network.</p>
+        <p class="prose">The token was created by a single deployment transaction. That transaction minted the entire supply, assigned it to the deployer address, and terminated the issuance process permanently. No further contract-level action is possible.</p>
+        <p class="prose">LUKO has no administrator, no upgrade mechanism, no treasury logic, no governance module, and no dependency on any off-chain service. The deployed bytecode is the complete and final implementation. There is no second component, no backend, and no protocol layer built on top of it.</p>
+        <p class="prose">This document describes what the contract is and what it does. It does not describe intentions, plans, or expectations, because none exist at the contract level. Readers evaluating LUKO — block explorer reviewers, wallet maintainers, listing desks, auditors — should treat the verified source code as authoritative and this document as a description of it.</p>
+        <p class="prose">LUKO is complete. Nothing is pending.</p>
+      </div>
+      <div class="lang-lt" lang="lt">
+        <p class="prose">LUKO — pakeičiamas (fungible) tokenas, atitinkantis ERC-20 standartą ir įdiegtas Base tinkle, Ethereum antrojo lygio (L2) tinkle.</p>
+        <p class="prose">Tokenas sukurtas viena diegimo transakcija. Ta transakcija iškalė visą emisiją, priskyrė ją diegėjo adresui ir visam laikui užbaigė emisijos procesą. Jokie tolesni veiksmai sutarties lygmeniu nebeįmanomi.</p>
+        <p class="prose">LUKO neturi administratoriaus, atnaujinimo mechanizmo, iždo logikos, valdymo modulio ir jokios priklausomybės nuo išorinių paslaugų. Įdiegtas baitinis kodas yra visa ir galutinė realizacija. Nėra jokio antro komponento, jokios serverio dalies ir jokio ant viršaus pastatyto protokolo sluoksnio.</p>
+        <p class="prose">Šis dokumentas aprašo, kas ši sutartis yra ir ką ji daro. Jame neaprašomi ketinimai, planai ar lūkesčiai, nes sutarties lygmeniu jų nėra. Skaitytojai, vertinantys LUKO — blokų naršyklių prižiūrėtojai, piniginių kūrėjai, biržų sąrašų sudarytojai, auditoriai — turėtų laikyti patvirtintą pirminį kodą autoritetingu, o šį dokumentą — jo aprašymu.</p>
+        <p class="prose">LUKO yra baigtas. Niekas nėra laukiama.</p>
+      </div>
+    </section>
+
+    <section id="design-principles" class="panel" aria-labelledby="design-principles-label">
+      <div class="panel-head"><h2 id="design-principles-label" class="label" data-en="2 · Design principles" data-lt="2 · Dizaino principai">2 · Design principles</h2><a class="to-top" href="#top" aria-label="Back to top" data-en="↑ top" data-lt="↑ į viršų">↑ top</a></div>
+      <div class="lang-en">
+        <p class="prose">The design follows four rules.</p>
+        <p class="prose"><strong>Minimality.</strong> The contract implements the ERC-20 interface and one public constant, and nothing else. No hooks, no fees, no transfer restrictions, no allowlists, no blocklists, no pause switch, no rebasing, no reflection, no callbacks into external contracts. Every line of behaviour not required by the standard was excluded deliberately.</p>
+        <p class="prose"><strong>Immutability as the product.</strong> Most token contracts treat immutability as a property to be mentioned. Here it is the entire deliverable. What LUKO offers is the guarantee that its state transition rules cannot be altered by anyone, including its author. That guarantee is only meaningful if there is nothing else — no admin key that could be added, no proxy that could be repointed, no governance that could vote. Removing capability is what creates the guarantee.</p>
+        <p class="prose"><strong>Absence of privilege.</strong> No address holds a role that other addresses do not. The deployer has no residual rights. After deployment the deployer is an ordinary holder, distinguishable only by balance, not by permission.</p>
+        <p class="prose"><strong>Finality over iteration.</strong> The contract will not be improved, extended, migrated, or replaced by its author. A version 2 would contradict the premise of version 1. The absence of a roadmap is a design decision, not an omission.</p>
+        <p class="prose">Standard implementation code was used rather than custom code. Novelty in an ERC-20 implementation is a liability, not a feature.</p>
+      </div>
+      <div class="lang-lt" lang="lt">
+        <p class="prose">Dizainas remiasi keturiomis taisyklėmis.</p>
+        <p class="prose"><strong>Minimalumas.</strong> Sutartis įgyvendina ERC-20 sąsają ir vieną viešą konstantą — ir nieko daugiau. Jokių kabliukų (hooks), jokių mokesčių, jokių pervedimo apribojimų, jokių leidžiamų ar draudžiamų adresų sąrašų, jokio pauzės jungiklio, jokio emisijos perskaičiavimo (rebasing), jokio atspindžio (reflection), jokių atgalinių iškvietimų į išorines sutartis. Kiekviena elgsena, kurios standartas nereikalauja, buvo sąmoningai pašalinta.</p>
+        <p class="prose"><strong>Nekintamumas kaip produktas.</strong> Daugelis tokenų sutarčių laiko nekintamumą tiesiog paminėtina savybe. Čia tai — visas rezultatas. LUKO siūlo garantiją, kad jos būsenos perėjimo taisyklių negali pakeisti niekas, įskaitant ir jos autorių. Ši garantija prasminga tik tada, kai nėra nieko daugiau: nei administratoriaus rakto, kurį būtų galima pridėti, nei tarpinės sutarties (proxy), kurią būtų galima nukreipti kitur, nei valdymo organo, kuris galėtų balsuoti. Būtent galimybių panaikinimas ir sukuria šią garantiją.</p>
+        <p class="prose"><strong>Privilegijų nebuvimas.</strong> Joks adresas neturi vaidmens, kurio neturėtų kiti adresai. Diegėjas neturi jokių likutinių teisių. Po diegimo diegėjas yra eilinis turėtojas, išsiskiriantis tik balansu, o ne teisėmis.</p>
+        <p class="prose"><strong>Baigtumas vietoj iteracijų.</strong> Autorius sutarties netobulins, neplės, nemigruos ir nekeis. Antra versija prieštarautų pirmosios prielaidai. Veiksmų gairių nebuvimas yra sąmoningas sprendimas, o ne praleidimas.</p>
+        <p class="prose">Naudotas standartinis realizacijos kodas, o ne savas. Naujovės ERC-20 realizacijoje yra rizika, o ne privalumas.</p>
+      </div>
+    </section>
+
+    <section id="technical-specification" class="panel" aria-labelledby="technical-specification-label">
+      <div class="panel-head"><h2 id="technical-specification-label" class="label" data-en="3 · Technical specification" data-lt="3 · Techninė specifikacija">3 · Technical specification</h2><a class="to-top" href="#top" aria-label="Back to top" data-en="↑ top" data-lt="↑ į viršų">↑ top</a></div>
+      <div class="table-scroll">
+        <table class="spec-table">
+          <tbody>
+            <tr><td data-en="Name" data-lt="Pavadinimas">Name</td><td>LUKO</td></tr>
+            <tr><td data-en="Symbol" data-lt="Simbolis">Symbol</td><td>LUKO</td></tr>
+            <tr><td data-en="Standard" data-lt="Standartas">Standard</td><td>ERC-20</td></tr>
+            <tr><td data-en="Network" data-lt="Tinklas">Network</td><td data-en="Base (Ethereum L2)" data-lt="Base (Ethereum L2)">Base (Ethereum L2)</td></tr>
+            <tr><td data-en="Chain ID" data-lt="Grandinės ID">Chain ID</td><td>8453</td></tr>
+            <tr><td data-en="Contract" data-lt="Sutartis">Contract</td><td><code>0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1</code></td></tr>
+            <tr><td data-en="Decimals" data-lt="Skaitmenys po kablelio">Decimals</td><td>18</td></tr>
+            <tr><td data-en="Total supply" data-lt="Bendra emisija">Total supply</td><td class="accent">1,000,000</td></tr>
+            <tr><td data-en="Total supply (base units)" data-lt="Bendra emisija (baziniais vienetais)">Total supply (base units)</td><td><code>1,000,000,000,000,000,000,000,000</code></td></tr>
+            <tr><td data-en="Supply model" data-lt="Emisijos modelis">Supply model</td><td data-en="Fixed, minted once at deployment" data-lt="Fiksuota, iškalta vieną kartą diegimo metu">Fixed, minted once at deployment</td></tr>
+            <tr><td data-en="Implementation" data-lt="Realizacija">Implementation</td><td>OpenZeppelin ERC20</td></tr>
+            <tr><td data-en="Language" data-lt="Kalba">Language</td><td>Solidity, <code>pragma ^0.8.20</code></td></tr>
+            <tr><td data-en="License" data-lt="Licencija">License</td><td>MIT</td></tr>
+            <tr><td data-en="Source verification" data-lt="Kodo patvirtinimas">Source verification</td><td data-en="Verified on BaseScan (exact match)" data-lt="Patvirtinta BaseScan (tikslus atitikimas)">Verified on BaseScan (exact match)</td></tr>
+            <tr><td data-en="Mutability" data-lt="Kintamumas">Mutability</td><td data-en="Immutable; not upgradeable" data-lt="Nekintama; neatnaujinama">Immutable; not upgradeable</td></tr>
+            <tr><td data-en="Proxy" data-lt="Tarpinė sutartis (proxy)">Proxy</td><td data-en="None" data-lt="Nėra">None</td></tr>
+            <tr><td data-en="Owner / admin" data-lt="Savininkas / administratorius">Owner / admin</td><td data-en="None" data-lt="Nėra">None</td></tr>
+            <tr><td data-en="Mint function" data-lt="Kaldinimo funkcija">Mint function</td><td data-en="None reachable post-deployment" data-lt="Po diegimo nepasiekiama">None reachable post-deployment</td></tr>
+            <tr><td data-en="Burn function" data-lt="Deginimo funkcija">Burn function</td><td data-en="Not exposed" data-lt="Neatskleidžiama">Not exposed</td></tr>
+            <tr><td data-en="Transfer fee" data-lt="Pervedimo mokestis">Transfer fee</td><td data-en="None" data-lt="Nėra">None</td></tr>
+            <tr><td data-en="Pause / freeze" data-lt="Pauzė / užšaldymas">Pause / freeze</td><td data-en="None" data-lt="Nėra">None</td></tr>
+            <tr><td data-en="External calls" data-lt="Išoriniai iškvietimai">External calls</td><td data-en="None" data-lt="Nėra">None</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="lang-en">
+        <p class="prose spec-gap">Implemented interface: <code>name()</code>, <code>symbol()</code>, <code>decimals()</code>, <code>totalSupply()</code>, <code>balanceOf(address)</code>, <code>transfer(address,uint256)</code>, <code>allowance(address,address)</code>, <code>approve(address,uint256)</code>, <code>transferFrom(address,address,uint256)</code>, plus the <code>Transfer</code> and <code>Approval</code> events.</p>
+        <p class="prose">The contract is not <code>Ownable</code>. It contains no <code>onlyOwner</code> modifier, no role registry, no <code>AccessControl</code> inheritance, and no <code>selfdestruct</code>. It holds no ETH-handling logic and has no <code>receive</code> or <code>payable</code> function.</p>
+        <p class="prose">Total supply is set once, in the constructor, and is thereafter a constant of the deployed state. <code>totalSupply()</code> will return the same value for the lifetime of the network.</p>
+        <p class="prose">The only member beyond the standard interface is <code>INITIAL_SUPPLY</code>, a public <code>uint256</code> constant equal to the genesis supply in base units. It is compile-time constant and read-only.</p>
+        <p class="prose">Behaviour matches the OpenZeppelin reference implementation exactly; no function was overridden. Integrators may therefore rely on standard ERC-20 assumptions without special handling. Note the standard <code>approve</code> race condition, inherent to ERC-20 itself and not specific to this deployment.</p>
+      </div>
+      <div class="lang-lt" lang="lt">
+        <p class="prose spec-gap">Įgyvendinta sąsaja: <code>name()</code>, <code>symbol()</code>, <code>decimals()</code>, <code>totalSupply()</code>, <code>balanceOf(address)</code>, <code>transfer(address,uint256)</code>, <code>allowance(address,address)</code>, <code>approve(address,uint256)</code>, <code>transferFrom(address,address,uint256)</code> bei įvykiai <code>Transfer</code> ir <code>Approval</code>.</p>
+        <p class="prose">Sutartis nėra <code>Ownable</code>. Joje nėra <code>onlyOwner</code> modifikatoriaus, jokio vaidmenų registro, jokio <code>AccessControl</code> paveldėjimo ir jokio <code>selfdestruct</code>. Ji neturi ETH tvarkymo logikos ir neturi <code>receive</code> ar <code>payable</code> funkcijos.</p>
+        <p class="prose">Bendra emisija nustatoma vieną kartą konstruktoriuje ir nuo tol yra įdiegtos būsenos konstanta. <code>totalSupply()</code> visą tinklo gyvavimo laiką grąžins tą pačią reikšmę.</p>
+        <p class="prose">Vienintelis narys, viršijantis standartinę sąsają, yra <code>INITIAL_SUPPLY</code> — vieša <code>uint256</code> konstanta, lygi pradinei emisijai baziniais vienetais. Ji yra kompiliavimo meto konstanta ir skirta tik skaitymui.</p>
+        <p class="prose">Elgsena tiksliai atitinka OpenZeppelin etaloninę realizaciją; nė viena funkcija nebuvo perrašyta. Todėl integruotojai gali remtis standartinėmis ERC-20 prielaidomis be jokio specialaus apdorojimo. Atkreipkite dėmesį į standartinę <code>approve</code> lenktynių sąlygą (race condition), būdingą pačiam ERC-20 standartui, o ne šiam diegimui.</p>
+      </div>
+      <h3 class="sublabel" data-en="3.1 · Source" data-lt="3.1 · Kodas">3.1 · Source</h3>
+      <p class="prose" data-en="The verified source is reproduced below in full. It is the entire contract." data-lt="Patvirtintas pirminis kodas pateikiamas žemiau visas. Tai yra visa sutartis.">The verified source is reproduced below in full. It is the entire contract.</p>
+      <pre class="code-block"><code>// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+
+contract LUKO is ERC20 {
+    uint256 public constant INITIAL_SUPPLY = 1_000_000 ether;
+
+    constructor() ERC20("LUKO", "LUKO") {
+        _mint(msg.sender, INITIAL_SUPPLY);
+    }
+}</code></pre>
+      <div class="lang-en">
+        <p class="footnote">The <code>ether</code> suffix is a Solidity literal unit denoting 10^18 and carries no monetary meaning; it expresses 1,000,000 tokens at 18 decimals.</p>
+      </div>
+      <div class="lang-lt" lang="lt">
+        <p class="footnote">Priesaga <code>ether</code> yra Solidity literalo vienetas, žymintis 10^18, ir neturi jokios piniginės prasmės; ji išreiškia 1 000 000 tokenų su 18 skaitmenų po kablelio.</p>
+      </div>
+    </section>
+
+    <section id="genesis" class="panel" aria-labelledby="genesis-label">
+      <div class="panel-head"><h2 id="genesis-label" class="label" data-en="4 · Genesis" data-lt="4 · Pradžia (genesis)">4 · Genesis</h2><a class="to-top" href="#top" aria-label="Back to top" data-en="↑ top" data-lt="↑ į viršų">↑ top</a></div>
+      <div class="lang-en">
+        <p class="prose">The entire supply of 1,000,000 LUKO was minted in the contract's constructor during the deployment transaction, included in Base block <strong>49364826</strong>.</p>
+        <p class="prose">That mint is the only issuance event that has occurred and the only one that can occur. The minting code path exists solely inside the constructor and is unreachable once the contract is deployed. There is no scheduled emission, no vesting contract, no inflation parameter, no staking rewards, and no mechanism by which <code>totalSupply()</code> can increase.</p>
+        <p class="prose">All minted tokens were credited to the deploying address at genesis. Subsequent distribution, if any, has occurred through ordinary transfers recorded on-chain. Current holder distribution is observable on any Base block explorer and is not restated here, as it changes independently of this document.</p>
+        <p class="prose">Tokens sent to unrecoverable addresses are permanently removed from circulation. The contract exposes no burn function; supply reduction is possible only in that incidental sense.</p>
+      </div>
+      <div class="lang-lt" lang="lt">
+        <p class="prose">Visa 1 000 000 LUKO emisija buvo iškalta sutarties konstruktoriuje diegimo transakcijos metu, įtrauktos į Base bloką <strong>49364826</strong>.</p>
+        <p class="prose">Šis kaldinimas yra vienintelis įvykęs ir vienintelis įmanomas emisijos įvykis. Kaldinimo kodo kelias egzistuoja tik konstruktoriaus viduje ir tampa nepasiekiamas, vos tik sutartis įdiegiama. Nėra jokios suplanuotos emisijos, jokios dalinio išmokėjimo (vesting) sutarties, jokio infliacijos parametro, jokių steikingo apdovanojimų ir jokio mechanizmo, kuriuo <code>totalSupply()</code> galėtų padidėti.</p>
+        <p class="prose">Visi iškalti tokenai pradžioje buvo įskaityti diegimo adresui. Vėlesnis paskirstymas, jei toks buvo, vyko įprastais pervedimais, užfiksuotais grandinėje. Dabartinis turėtojų pasiskirstymas matomas bet kurioje Base blokų naršyklėje ir čia nekartojamas, nes jis keičiasi nepriklausomai nuo šio dokumento.</p>
+        <p class="prose">Tokenai, išsiųsti į neatkuriamus adresus, visam laikui pašalinami iš apyvartos. Sutartis neatskleidžia jokios deginimo funkcijos; emisiją sumažinti galima tik šiuo šalutiniu būdu.</p>
+      </div>
+    </section>
+
+    <section id="administrative-model" class="panel" aria-labelledby="administrative-model-label">
+      <div class="panel-head"><h2 id="administrative-model-label" class="label" data-en="5 · Administrative model" data-lt="5 · Administravimo modelis">5 · Administrative model</h2><a class="to-top" href="#top" aria-label="Back to top" data-en="↑ top" data-lt="↑ į viršų">↑ top</a></div>
+      <div class="lang-en">
+        <p class="prose">There is no administrative model. This section exists to state that explicitly, because its absence is otherwise indistinguishable from an omission.</p>
+        <p class="prose">The contract has no owner. Ownership functionality was not renounced after deployment — it was never included. This distinction matters: a renounced-ownership contract passed through a window in which privileged action was possible. LUKO had no such window.</p>
+        <p class="prose">Consequently:</p>
+        <ul class="spec-list">
+          <li>No address can mint tokens.</li>
+          <li>No address can burn or seize the tokens of another address.</li>
+          <li>No address can pause, freeze, or restrict transfers.</li>
+          <li>No address can modify balances, allowances, metadata, or supply.</li>
+          <li>No address can upgrade, replace, or migrate the contract.</li>
+          <li>No address can extract funds from the contract, which holds none.</li>
+        </ul>
+        <p class="prose">There is no proxy, no implementation slot, no beacon, and no <code>delegatecall</code>. The address a user interacts with contains the executing logic directly. The code returned by <code>eth_getCode</code> at that address is the code that will run, permanently.</p>
+        <p class="prose">The author retains no capability over the contract beyond that of any other address. There is no key whose compromise could alter the token's behaviour, because no such key exists.</p>
+      </div>
+      <div class="lang-lt" lang="lt">
+        <p class="prose">Administravimo modelio nėra. Šis skyrius egzistuoja tam, kad tai būtų pasakyta tiesiogiai, nes kitaip jo nebuvimą sunku atskirti nuo paprasto praleidimo.</p>
+        <p class="prose">Sutartis neturi savininko. Nuosavybės funkcionalumo nebuvo atsisakyta po diegimo — jis niekada nebuvo įtrauktas. Šis skirtumas svarbus: sutartis, kurios nuosavybės atsisakyta, praėjo pro langą, kuriame privilegijuoti veiksmai buvo įmanomi. LUKO tokio lango neturėjo.</p>
+        <p class="prose">Todėl:</p>
+        <ul class="spec-list">
+          <li>Joks adresas negali iškalti tokenų.</li>
+          <li>Joks adresas negali sudeginti ar pasisavinti kito adreso tokenų.</li>
+          <li>Joks adresas negali pristabdyti, užšaldyti ar apriboti pervedimų.</li>
+          <li>Joks adresas negali keisti balansų, leidimų, metaduomenų ar emisijos.</li>
+          <li>Joks adresas negali atnaujinti, pakeisti ar migruoti sutarties.</li>
+          <li>Joks adresas negali išimti lėšų iš sutarties, nes ji jų neturi.</li>
+        </ul>
+        <p class="prose">Nėra jokios tarpinės sutarties (proxy), jokio realizacijos lizdo, jokio švyturio (beacon) ir jokio <code>delegatecall</code>. Adresas, su kuriuo sąveikauja naudotojas, tiesiogiai turi vykdomąją logiką. Kodas, kurį tuo adresu grąžina <code>eth_getCode</code>, yra kodas, kuris bus vykdomas visada.</p>
+        <p class="prose">Autorius neturi jokių galimybių sutarties atžvilgiu, viršijančių bet kurio kito adreso galimybes. Nėra rakto, kurio kompromitavimas galėtų pakeisti tokeno elgseną, nes tokio rakto paprasčiausiai nėra.</p>
+      </div>
+    </section>
+
+    <section id="non-goals" class="panel" aria-labelledby="non-goals-label">
+      <div class="panel-head"><h2 id="non-goals-label" class="label" data-en="6 · Non-goals" data-lt="6 · Nekeliami tikslai">6 · Non-goals</h2><a class="to-top" href="#top" aria-label="Back to top" data-en="↑ top" data-lt="↑ į viršų">↑ top</a></div>
+      <div class="lang-en">
+        <p class="prose">LUKO is explicitly <strong>not</strong> the following:</p>
+        <ul class="spec-list">
+          <li><strong>Not a governance token.</strong> It confers no voting rights over anything, on-chain or off-chain. There is no DAO, no proposal system, no snapshot process.</li>
+          <li><strong>Not equity.</strong> It represents no ownership of, claim on, or entitlement to any entity, asset, revenue, dividend, or distribution.</li>
+          <li><strong>Not a protocol.</strong> There is no lending, exchange, staking, bridging, or settlement layer. A single ERC-20 contract is the whole system.</li>
+          <li><strong>Not an investment vehicle.</strong> No return is offered, implied, projected, or managed. There is no fund, no strategy, and no party acting on a holder's behalf.</li>
+          <li><strong>Not a promise of future utility.</strong> No feature is planned. No integration is committed. No product will be built to give the token a use.</li>
+          <li><strong>Not a claim to solve a problem.</strong> LUKO does not assert a market inefficiency, a technical gap, or a use case.</li>
+          <li><strong>Not a security-audited guarantee of user outcomes.</strong> The implementation is standard and the source is verified; neither fact protects a holder from their own transactions, from price, or from third-party contracts they choose to interact with.</li>
+        </ul>
+        <p class="prose">The absence of utility is intentional and permanent. It should be read as a specification, not as an early stage.</p>
+      </div>
+      <div class="lang-lt" lang="lt">
+        <p class="prose">LUKO aiškiai <strong>nėra</strong> šie dalykai:</p>
+        <ul class="spec-list">
+          <li><strong>Ne valdymo tokenas.</strong> Jis nesuteikia jokių balsavimo teisių niekur — nei grandinėje, nei už jos ribų. Nėra jokios DAO, jokios pasiūlymų sistemos, jokio snapshot proceso.</li>
+          <li><strong>Ne nuosavybės dalis.</strong> Jis nereiškia jokios nuosavybės, pretenzijos ar teisės į jokį subjektą, turtą, pajamas, dividendus ar paskirstymą.</li>
+          <li><strong>Ne protokolas.</strong> Nėra jokio skolinimo, keitimo, steikingo, tiltų ar atsiskaitymo sluoksnio. Viena ERC-20 sutartis yra visa sistema.</li>
+          <li><strong>Ne investicinė priemonė.</strong> Jokia grąža nėra siūloma, numanoma, prognozuojama ar valdoma. Nėra jokio fondo, jokios strategijos ir jokios šalies, veikiančios turėtojo vardu.</li>
+          <li><strong>Ne pažadas dėl būsimo panaudojimo.</strong> Jokia funkcija neplanuojama. Jokia integracija neįsipareigota. Nebus kuriamas joks produktas, kuris suteiktų tokenui paskirtį.</li>
+          <li><strong>Ne pretenzija išspręsti problemą.</strong> LUKO neteigia esant rinkos neefektyvumo, techninės spragos ar panaudojimo atvejo.</li>
+          <li><strong>Ne saugumo audito garantuotas rezultatas naudotojui.</strong> Realizacija yra standartinė, o kodas patvirtintas; nė vienas iš šių faktų neapsaugo turėtojo nuo jo paties sandorių, nuo kainos ar nuo trečiųjų šalių sutarčių, su kuriomis jis pasirenka sąveikauti.</li>
+        </ul>
+        <p class="prose">Panaudojimo nebuvimas yra sąmoningas ir nuolatinis. Tai skaitytina kaip specifikacija, o ne kaip ankstyva stadija.</p>
+      </div>
+    </section>
+
+    <section id="intended-audience" class="panel" aria-labelledby="intended-audience-label">
+      <div class="panel-head"><h2 id="intended-audience-label" class="label" data-en="7 · Intended audience" data-lt="7 · Numatyta auditorija">7 · Intended audience</h2><a class="to-top" href="#top" aria-label="Back to top" data-en="↑ top" data-lt="↑ į viršų">↑ top</a></div>
+      <div class="lang-en">
+        <p class="prose">LUKO is not designed to satisfy every possible expectation of an ERC-20 token.</p>
+        <p class="prose">The intended audience is not defined by what they expect to be added, but by what they accept will never be added. For those who consider the deliberate absence of governance, utility, administrative control and future obligations to be features rather than deficiencies.</p>
+      </div>
+      <div class="lang-lt" lang="lt">
+        <p class="prose">LUKO nėra sukurtas taip, kad tenkintų visus įmanomus lūkesčius ERC-20 tokenui.</p>
+        <p class="prose">Numatytą auditoriją apibrėžia ne tai, ko ji tikisi būsiant pridėta, o tai, ką ji priima kaip niekada nebūsiantį pridėta. Ji skirta tiems, kurie sąmoningą valdymo, panaudojimo, administracinės kontrolės ir būsimų įsipareigojimų nebuvimą laiko privalumais, o ne trūkumais.</p>
+      </div>
+    </section>
+
+    <section id="faq" class="panel" aria-labelledby="faq-label">
+      <div class="panel-head"><h2 id="faq-label" class="label" data-en="8 · Frequently asked questions" data-lt="8 · Dažniausiai užduodami klausimai">8 · Frequently asked questions</h2><a class="to-top" href="#top" aria-label="Back to top" data-en="↑ top" data-lt="↑ į viršų">↑ top</a></div>
+      <div class="faq-item">
+        <p class="faq-q" data-en="Why 1,000,000?" data-lt="Kodėl 1 000 000?">Why 1,000,000?</p>
+        <p class="prose" data-en="Because a fixed number was required and a small round one is legible. One million units at 18 decimals is unambiguous, easy to reason about, and requires no explanation of emission curves. No modelling justifies the figure; none was performed. The specific number matters less than the fact that it cannot change." data-lt="Nes reikėjo fiksuoto skaičiaus, o mažas ir apvalus yra lengvai suvokiamas. Vienas milijonas vienetų su 18 skaitmenų po kablelio yra nedviprasmiškas, lengvai apmąstomas ir nereikalauja jokių emisijos kreivių paaiškinimo. Jokie modeliavimai šio skaičiaus nepagrindžia; jie nebuvo atlikti. Konkretus skaičius mažiau svarbus nei faktas, kad jis negali pasikeisti.">Because a fixed number was required and a small round one is legible. One million units at 18 decimals is unambiguous, easy to reason about, and requires no explanation of emission curves. No modelling justifies the figure; none was performed. The specific number matters less than the fact that it cannot change.</p>
+      </div>
+      <div class="faq-item">
+        <p class="faq-q" data-en="Why no owner?" data-lt="Kodėl nėra savininko?">Why no owner?</p>
+        <p class="prose" data-en="An owner is a trust assumption. Any privileged address must be trusted not to use its privileges, and trusted to keep its key secure indefinitely. Omitting the role removes both risks at the cost of removing all administrative flexibility — flexibility this contract does not need." data-lt="Savininkas yra pasitikėjimo prielaida. Bet kuriuo privilegijuotu adresu tenka pasitikėti, kad jis nesinaudos savo privilegijomis ir kad neribotą laiką saugos savo raktą. Šio vaidmens praleidimas pašalina abi rizikas, atsisakant bet kokio administracinio lankstumo — lankstumo, kurio šiai sutarčiai nereikia.">An owner is a trust assumption. Any privileged address must be trusted not to use its privileges, and trusted to keep its key secure indefinitely. Omitting the role removes both risks at the cost of removing all administrative flexibility — flexibility this contract does not need.</p>
+      </div>
+      <div class="faq-item">
+        <p class="faq-q" data-en="Why immutable?" data-lt="Kodėl nekintama?">Why immutable?</p>
+        <p class="prose" data-en="Upgradeability means the rules a holder agreed to can be replaced later by someone else. Immutability means the rules verified today are the rules that apply permanently. For a contract with no functionality beyond balance accounting, there is nothing to upgrade toward, so upgradeability would add only risk." data-lt="Atnaujinamumas reiškia, kad taisykles, su kuriomis turėtojas sutiko, vėliau gali pakeisti kažkas kitas. Nekintamumas reiškia, kad šiandien patvirtintos taisyklės galioja visam laikui. Sutarčiai, neturinčiai jokio kito funkcionalumo, išskyrus balansų apskaitą, nėra kur atsinaujinti, todėl atnaujinamumas pridėtų tik riziką.">Upgradeability means the rules a holder agreed to can be replaced later by someone else. Immutability means the rules verified today are the rules that apply permanently. For a contract with no functionality beyond balance accounting, there is nothing to upgrade toward, so upgradeability would add only risk.</p>
+      </div>
+      <div class="faq-item">
+        <p class="faq-q" data-en="Why is the initial liquidity pool so small?" data-lt="Kodėl pradinis likvidumo telkinys toks mažas?">Why is the initial liquidity pool so small?</p>
+        <p class="prose" data-en="The liquidity pool exists to establish a public market and enable permissionless transfers between holders. It is not intended to provide deep liquidity, support speculation, or facilitate large-scale trading. LUKO is not structured as an investment product, and the pool should not be interpreted as one." data-lt="Likvidumo telkinys egzistuoja tam, kad būtų sukurta vieša rinka ir įmanomi pervedimai tarp turėtojų be leidimo. Jis neskirtas giliam likvidumui užtikrinti, spekuliacijoms palaikyti ar didelės apimties prekybai palengvinti. LUKO nėra sudarytas kaip investicinis produktas, todėl ir telkinys neturėtų būti taip suprantamas.">The liquidity pool exists to establish a public market and enable permissionless transfers between holders. It is not intended to provide deep liquidity, support speculation, or facilitate large-scale trading. LUKO is not structured as an investment product, and the pool should not be interpreted as one.</p>
+      </div>
+      <div class="faq-item">
+        <p class="faq-q" data-en="Why are so many tokens held in reserve?" data-lt="Kodėl tiek daug tokenų laikoma rezerve?">Why are so many tokens held in reserve?</p>
+        <p class="prose" data-en="Tokens held in reserve are simply held. They confer no additional rights, generate no yield, and possess no administrative capability. A token in reserve is technically indistinguishable from a token in any other wallet. Reserve balances exist only as balances, not as protocol-controlled assets." data-lt="Rezerve laikomi tokenai tiesiog yra laikomi. Jie nesuteikia jokių papildomų teisių, negeneruoja grąžos ir neturi jokių administracinių galimybių. Tokenas rezerve techniškai nesiskiria nuo tokeno bet kurioje kitoje piniginėje. Rezervo balansai egzistuoja tik kaip balansai, o ne kaip protokolo valdomas turtas.">Tokens held in reserve are simply held. They confer no additional rights, generate no yield, and possess no administrative capability. A token in reserve is technically indistinguishable from a token in any other wallet. Reserve balances exist only as balances, not as protocol-controlled assets.</p>
+      </div>
+      <div class="faq-item">
+        <p class="faq-q" data-en="Why disclose the genesis allocation?" data-lt="Kodėl atskleidžiamas pradinis paskirstymas?">Why disclose the genesis allocation?</p>
+        <p class="prose" data-en="Because the initial distribution is part of the artifact. Publishing it allows every subsequent transfer to be interpreted in the context of the original state." data-lt="Nes pradinis paskirstymas yra artefakto dalis. Jo paskelbimas leidžia kiekvieną vėlesnį pervedimą interpretuoti pirminės būsenos kontekste.">Because the initial distribution is part of the artifact. Publishing it allows every subsequent transfer to be interpreted in the context of the original state.</p>
+      </div>
+      <div class="faq-item">
+        <p class="faq-q" data-en="Why no roadmap?" data-lt="Kodėl nėra veiksmų gairių?">Why no roadmap?</p>
+        <p class="prose" data-en="A roadmap is a set of unenforceable commitments about future work. Publishing one would create expectations the contract cannot guarantee, and the contract is the only thing that can be guaranteed. The deployment is the deliverable, and it is finished." data-lt="Veiksmų gairės yra neįpareigojantys pažadai apie būsimą darbą. Jų paskelbimas sukurtų lūkesčius, kurių sutartis negali garantuoti, o sutartis yra vienintelis dalykas, kurį galima garantuoti. Diegimas yra rezultatas, ir jis yra baigtas.">A roadmap is a set of unenforceable commitments about future work. Publishing one would create expectations the contract cannot guarantee, and the contract is the only thing that can be guaranteed. The deployment is the deliverable, and it is finished.</p>
+      </div>
+      <div class="faq-item">
+        <p class="faq-q" data-en="Why no utility?" data-lt="Kodėl nėra panaudojimo?">Why no utility?</p>
+        <p class="prose" data-en="Utility implies a system the token operates within, and that system would require maintenance, operators, and continued trust — the properties this design removes. LUKO is defined by what it does not depend on. Attaching a use case would reintroduce the dependencies." data-lt="Panaudojimas reiškia sistemą, kurioje tokenas veikia, o tokiai sistemai reikėtų priežiūros, operatorių ir nuolatinio pasitikėjimo — savybių, kurias šis dizainas pašalina. LUKO apibrėžiamas tuo, nuo ko jis nepriklauso. Panaudojimo atvejo pridėjimas šias priklausomybes grąžintų.">Utility implies a system the token operates within, and that system would require maintenance, operators, and continued trust — the properties this design removes. LUKO is defined by what it does not depend on. Attaching a use case would reintroduce the dependencies.</p>
+      </div>
+      <div class="faq-item">
+        <p class="faq-q" data-en="Why Base?" data-lt="Kodėl Base?">Why Base?</p>
+        <p class="prose" data-en="Base is an Ethereum layer-2 with EVM equivalence, low transaction costs, standard tooling, and established explorer and wallet support. It requires no custom client, no non-standard token behaviour, and no bespoke integration work. No property of LUKO depends on Base specifically; it is a deployment target, not a component of the design." data-lt="Base yra Ethereum antrojo lygio tinklas su EVM ekvivalentiškumu, mažomis sandorių sąnaudomis, standartiniais įrankiais ir nusistovėjusiu naršyklių bei piniginių palaikymu. Jam nereikia jokio atskiro kliento, jokios nestandartinės tokeno elgsenos ir jokio individualaus integravimo darbo. Jokia LUKO savybė nepriklauso būtent nuo Base; tai diegimo vieta, o ne dizaino komponentas.">Base is an Ethereum layer-2 with EVM equivalence, low transaction costs, standard tooling, and established explorer and wallet support. It requires no custom client, no non-standard token behaviour, and no bespoke integration work. No property of LUKO depends on Base specifically; it is a deployment target, not a component of the design.</p>
+      </div>
+    </section>
+
+    <section id="references" class="panel" aria-labelledby="references-label">
+      <div class="panel-head"><h2 id="references-label" class="label" data-en="9 · References" data-lt="9 · Nuorodos">9 · References</h2><a class="to-top" href="#top" aria-label="Back to top" data-en="↑ top" data-lt="↑ į viršų">↑ top</a></div>
+      <h3 class="sublabel" data-en="Primary" data-lt="Pagrindinės">Primary</h3>
+      <div class="link-rows">
+        <div class="link-row">
+          <span class="link-name" data-en="Contract address" data-lt="Sutarties adresas">Contract address</span>
+          <code class="address">0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1</code>
+        </div>
+        <div class="link-row">
+          <span class="link-name" data-en="Block explorer (BaseScan)" data-lt="Blokų naršyklė (BaseScan)">Block explorer (BaseScan)</span>
+          <a href="https://basescan.org/token/0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1" rel="noopener" data-sentry-action="outbound_basescan">basescan.org/token/0x4a9D…1fD1 →</a>
+        </div>
+        <div class="link-row">
+          <span class="link-name" data-en="Source repository (GitHub)" data-lt="Pirminio kodo saugykla (GitHub)">Source repository (GitHub)</span>
+          <a href="https://github.com/LKSPec/luko" rel="noopener">github.com/LKSPec/luko →</a>
+        </div>
+        <div class="link-row">
+          <span class="link-name" data-en="Website" data-lt="Svetainė">Website</span>
+          <a href="https://meetluko.eu/">meetluko.eu →</a>
+        </div>
+        <div class="link-row">
+          <span class="link-name" data-en="Genesis block" data-lt="Pradžios blokas">Genesis block</span>
+          <code class="address">49364826</code>
+        </div>
+      </div>
+      <h3 class="sublabel spec-gap" data-en="Standards and network" data-lt="Standartai ir tinklas">Standards and network</h3>
+      <div class="link-rows">
+        <div class="link-row">
+          <span class="link-name" data-en="Standard" data-lt="Standartas">Standard</span>
+          <span class="link-plain">ERC-20 (EIP-20)</span>
+        </div>
+        <div class="link-row">
+          <span class="link-name" data-en="Implementation reference" data-lt="Realizacijos etalonas">Implementation reference</span>
+          <span class="link-plain">OpenZeppelin Contracts — ERC20</span>
+        </div>
+        <div class="link-row">
+          <span class="link-name" data-en="Network" data-lt="Tinklas">Network</span>
+          <a href="https://base.org" rel="noopener">base.org →</a>
+        </div>
+      </div>
+      <h3 class="sublabel spec-gap" data-en="Third-party venues and data sources" data-lt="Trečiųjų šalių platformos ir duomenų šaltiniai">Third-party venues and data sources</h3>
+      <p class="prose" data-en="The following are operated by unaffiliated parties. They are listed because they reference the contract address, not because they are endorsed, controlled, or maintained by the token's author. Their availability, pricing, and liquidity are outside the scope of this specification." data-lt="Toliau nurodytas platformas valdo nesusijusios šalys. Jos įtrauktos todėl, kad jose nurodytas sutarties adresas, o ne todėl, kad tokeno autorius joms pritartų, jas kontroliuotų ar prižiūrėtų. Jų pasiekiamumas, kainos ir likvidumas yra už šios specifikacijos ribų.">The following are operated by unaffiliated parties. They are listed because they reference the contract address, not because they are endorsed, controlled, or maintained by the token's author. Their availability, pricing, and liquidity are outside the scope of this specification.</p>
+      <div class="link-rows">
+        <div class="link-row">
+          <span class="link-name">Aerodrome (DEX)</span>
+          <a href="https://aerodrome.finance/swap?from=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913&amp;to=0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1" rel="noopener" data-sentry-action="outbound_aerodrome">aerodrome.finance →</a>
+        </div>
+        <div class="link-row">
+          <span class="link-name">DexScreener</span>
+          <a href="https://dexscreener.com/base/0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1" rel="noopener" data-sentry-action="outbound_dexscreener">dexscreener.com →</a>
+        </div>
+        <div class="link-row">
+          <span class="link-name">GeckoTerminal</span>
+          <a href="https://www.geckoterminal.com/base/pools/0x2222A01b83Db8c533B062AEb6DE4F61D6Ae792F2" rel="noopener" data-sentry-action="outbound_geckoterminal">geckoterminal.com →</a>
+        </div>
+      </div>
+      <p class="footnote spec-gap" data-en="In case of any discrepancy between this document and the verified source code at the contract address, the source code is authoritative." data-lt="Kilus bet kokiam neatitikimui tarp šio dokumento ir patvirtinto pirminio kodo sutarties adresu, autoritetingu laikomas pirminis kodas.">In case of any discrepancy between this document and the verified source code at the contract address, the source code is authoritative.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Built by LKSPec · <span lang="lt">Su niekuo nesuderinta</span></p>
+  </footer>
+
+  <script src="app.js?v=10" defer></script>
+</body>
+</html>

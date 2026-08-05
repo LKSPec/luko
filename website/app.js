@@ -32,8 +32,15 @@
       else currentUrl.searchParams.delete("lang");
       window.history.replaceState(null, "", currentUrl.pathname + currentUrl.search + currentUrl.hash);
 
-      document.querySelectorAll(".lockup, .site-nav a").forEach(function (link) {
+      /* Carry the language across every internal link, so any page added
+         later inherits it without being listed here. In-page anchors and
+         third-party links are left untouched. */
+      document.querySelectorAll("a[href]").forEach(function (link) {
+        var raw = link.getAttribute("href");
+        if (!raw || raw.charAt(0) === "#") return;
         var url = new URL(link.href, window.location.href);
+        var internal = url.hostname === window.location.hostname || url.hostname === "meetluko.eu";
+        if (!internal) return;
         if (language === "lt") url.searchParams.set("lang", "lt");
         else url.searchParams.delete("lang");
         link.href = url.href;
@@ -44,6 +51,9 @@
   function setLanguage(nextLanguage) {
     language = nextLanguage === "lt" ? "lt" : "en";
     document.documentElement.lang = language;
+    /* Long-form pages keep both languages as parallel blocks (.lang-en /
+       .lang-lt) so inline markup survives switching; CSS shows one of them. */
+    document.documentElement.setAttribute("data-lang", language);
 
     document.querySelectorAll("[data-en][data-lt]").forEach(function (element) {
       element.textContent = element.dataset[language];

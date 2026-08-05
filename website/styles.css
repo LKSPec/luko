@@ -559,3 +559,106 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; }
 }
+
+/* Specification page */
+.spec-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.spec-table td {
+  padding: 7px 12px;
+  text-align: right;
+  border-bottom: 1px solid var(--luko-divider);
+  color: var(--luko-offwhite);
+}
+.spec-table tr:last-child td { border-bottom: none; }
+.spec-table td:first-child { text-align: left; padding-left: 0; color: var(--luko-muted); }
+.spec-table td:last-child { padding-right: 0; }
+.spec-table code { font-family: var(--font-mono); font-size: 11px; word-break: break-all; }
+.spec-table .accent { color: var(--luko-gold); }
+.prose code { font-family: var(--font-mono); font-size: 11px; color: var(--luko-offwhite); }
+.prose strong { font-weight: 400; color: var(--luko-offwhite); }
+.prose + .prose { margin-top: 12px; }
+.spec-gap { margin-top: 20px; }
+.sublabel {
+  margin: 24px 0 12px;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--luko-faint);
+}
+.code-block {
+  margin: 12px 0 0;
+  padding: 16px;
+  border: 1px solid var(--luko-divider);
+  background: var(--luko-bg, #0A0A0A);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--luko-offwhite);
+  overflow-x: auto;
+}
+.spec-list {
+  margin: 12px 0;
+  padding-left: 18px;
+  color: var(--luko-muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+.spec-list li { margin-bottom: 6px; }
+.spec-list li:last-child { margin-bottom: 0; }
+.spec-list strong { font-weight: 400; color: var(--luko-offwhite); }
+.faq-item { padding: 14px 0; border-bottom: 1px solid var(--luko-divider); }
+.faq-item:last-child { border-bottom: none; padding-bottom: 3px; }
+.faq-q {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--luko-offwhite);
+}
+.link-plain { font-size: 13px; color: var(--luko-offwhite); }
+.doc-link { display: inline-block; margin-top: 4px; }
+
+/* Spec — contents + back-to-top */
+html { scroll-behavior: smooth; }
+main section[id], #top { scroll-margin-top: 76px; }
+.spec-toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  padding: 0 0 24px;
+}
+.spec-toc a {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--luko-muted);
+  border-bottom: 1px solid transparent;
+  transition: color var(--motion), border-color var(--motion);
+}
+.spec-toc a:hover { color: var(--luko-gold); border-bottom-color: var(--luko-gold); }
+.panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+.panel-head .label { margin-bottom: 12px; }
+.to-top {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--luko-faint);
+  border-bottom: 1px solid transparent;
+  white-space: nowrap;
+  transition: color var(--motion), border-color var(--motion);
+}
+.to-top:hover { color: var(--luko-gold); border-bottom-color: var(--luko-gold); }
+
+/* Parallel-language blocks. Long documents keep both languages in the markup
+   so inline <code>/<strong> survives switching; only one block is shown.
+   English is the default, including without JavaScript. */
+.lang-lt { display: none; }
+[data-lang="lt"] .lang-lt { display: block; }
+[data-lang="lt"] .lang-en { display: none; }
