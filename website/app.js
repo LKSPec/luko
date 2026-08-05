@@ -19,11 +19,27 @@
   });
 })();
 
-/* In-memory language switch. English remains the default on every page load. */
+/* Language switch carried between pages by an explicit URL parameter. */
 (function () {
-  var language = "en";
+  var language = new URLSearchParams(window.location.search).get("lang") === "lt" ? "lt" : "en";
   var options = document.querySelectorAll("[data-language]");
   if (!options.length) return;
+
+  function syncLanguageLinks() {
+    try {
+      var currentUrl = new URL(window.location.href);
+      if (language === "lt") currentUrl.searchParams.set("lang", "lt");
+      else currentUrl.searchParams.delete("lang");
+      window.history.replaceState(null, "", currentUrl.pathname + currentUrl.search + currentUrl.hash);
+
+      document.querySelectorAll(".lockup, .site-nav a").forEach(function (link) {
+        var url = new URL(link.href, window.location.href);
+        if (language === "lt") url.searchParams.set("lang", "lt");
+        else url.searchParams.delete("lang");
+        link.href = url.href;
+      });
+    } catch (error) { /* keep the language toggle usable if URL APIs are unavailable */ }
+  }
 
   function setLanguage(nextLanguage) {
     language = nextLanguage === "lt" ? "lt" : "en";
@@ -38,6 +54,8 @@
       option.classList.toggle("is-active", isActive);
       option.setAttribute("aria-pressed", String(isActive));
     });
+
+    syncLanguageLinks();
   }
 
   options.forEach(function (option) {
