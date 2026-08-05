@@ -129,8 +129,10 @@
       setValue("vested-amount", "—");
       return;
     }
-    if (status && status.textContent !== "Active") {
-      status.textContent = "Active";
+    if (status && status.dataset.en !== "Active") {
+      status.dataset.en = "Active";
+      status.dataset.lt = "Aktyvus";
+      status.textContent = document.documentElement.lang === "lt" ? status.dataset.lt : status.dataset.en;
       status.className = "accent";
     }
     var vested = vestedAt(nowSec) + vestOffset;

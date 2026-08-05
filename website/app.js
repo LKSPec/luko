@@ -23,14 +23,13 @@
 (function () {
   var language = "en";
   var options = document.querySelectorAll("[data-language]");
-  var copy = document.querySelectorAll("[data-en][data-lt]");
   if (!options.length) return;
 
   function setLanguage(nextLanguage) {
     language = nextLanguage === "lt" ? "lt" : "en";
     document.documentElement.lang = language;
 
-    copy.forEach(function (element) {
+    document.querySelectorAll("[data-en][data-lt]").forEach(function (element) {
       element.textContent = element.dataset[language];
     });
 

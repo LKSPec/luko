@@ -84,6 +84,15 @@
     if (text != null) node.textContent = text;
     return node;
   }
+  function localizedText(en, lt) {
+    return document.documentElement.lang === "lt" ? lt : en;
+  }
+  function localizedEl(tag, className, en, lt) {
+    var node = el(tag, className, localizedText(en, lt));
+    node.dataset.en = en;
+    node.dataset.lt = lt;
+    return node;
+  }
   function openDialog() {
     if (!dialog.open) dialog.showModal();
   }
@@ -143,8 +152,9 @@
     setWide(false);
     clearBody();
     actions.hidden = false;
-    body.appendChild(el("p", "dialog-message",
-      "A genesis donation note is issued to the bearer upon donation. Choose an amount."));
+    body.appendChild(localizedEl("p", "dialog-message",
+      "A genesis donation note is issued to the bearer upon donation. Choose an amount.",
+      "Genesis rėmėjo sertifikatas išduodamas turėtojui. Pasirink sumą."));
 
     var input = el("input", "amount-input");
     input.type = "number";
@@ -171,7 +181,7 @@
     emailInput.autocomplete = "email";
     emailInput.placeholder = "Email for a copy (optional)";
 
-    var donate = el("button", "copy-button gold-action donate-submit", "Donate");
+    var donate = localizedEl("button", "copy-button gold-action donate-submit", "Donate", "PAREMTI");
     donate.type = "button";
     donate.addEventListener("click", function () {
       var amount = parseInt(input.value, 10);
