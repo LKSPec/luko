@@ -34,18 +34,18 @@
     </g>
     <path d="M182 122h52V312H346l16 16V358H182Z" fill="#C9A86A"></path>
   </g>
-  <text x="136" y="92" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="34" font-weight="200" letter-spacing="7" fill="#EDE7DA">LUKO</text>
+  <text x="136" y="92" font-family="Archivo, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="34" font-weight="200" letter-spacing="7" fill="#EDE7DA">LUKO</text>
 
   <!-- header: network annotation -->
-  <text x="1136" y="74" text-anchor="end" font-family="SF Mono, Menlo, DejaVu Sans Mono, monospace" font-size="15" letter-spacing="2.5" fill="#8C8577">GENESIS ERC-20 · BASE</text>
-  <text x="1136" y="99" text-anchor="end" font-family="SF Mono, Menlo, DejaVu Sans Mono, monospace" font-size="15" letter-spacing="2.5" fill="#6E6759">CHAIN 8453</text>
+  <text x="1136" y="74" text-anchor="end" font-family="JetBrains Mono, SF Mono, Menlo, DejaVu Sans Mono, monospace" font-size="15" letter-spacing="2.5" fill="#8C8577">GENESIS ERC-20 · BASE</text>
+  <text x="1136" y="99" text-anchor="end" font-family="JetBrains Mono, SF Mono, Menlo, DejaVu Sans Mono, monospace" font-size="15" letter-spacing="2.5" fill="#6E6759">CHAIN 8453</text>
 
   <line x1="64" y1="140" x2="1136" y2="140" stroke="#C9A86A" stroke-opacity="0.2" stroke-width="2"></line>
 
   <!-- dominant figure -->
-  <text x="600" y="340" text-anchor="middle" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="152" font-weight="200" letter-spacing="2" fill="#C9A86A">{{PRICE}}</text>
-  <text x="600" y="388" text-anchor="middle" font-family="SF Mono, Menlo, DejaVu Sans Mono, monospace" font-size="18" letter-spacing="5" fill="#8C8577">USDC / 1,000 LUKO</text>
-  <text x="600" y="418" text-anchor="middle" font-family="SF Mono, Menlo, DejaVu Sans Mono, monospace" font-size="16" letter-spacing="1" fill="#6E6759">1 LUKO = {{PRICE_SUB}} USDC</text>
+  <text x="600" y="340" text-anchor="middle" font-family="Archivo, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="152" font-weight="200" letter-spacing="2" fill="#C9A86A">{{PRICE}}</text>
+  <text x="600" y="388" text-anchor="middle" font-family="JetBrains Mono, SF Mono, Menlo, DejaVu Sans Mono, monospace" font-size="18" letter-spacing="5" fill="#8C8577">USDC / 1,000 LUKO</text>
+  <text x="600" y="418" text-anchor="middle" font-family="JetBrains Mono, SF Mono, Menlo, DejaVu Sans Mono, monospace" font-size="16" letter-spacing="1" fill="#6E6759">1 LUKO = {{PRICE_SUB}} USDC</text>
 
   <!-- stat band -->
   <line x1="64" y1="474" x2="1136" y2="474" stroke="#C9A86A" stroke-opacity="0.2" stroke-width="2"></line>
@@ -53,15 +53,15 @@
   <line x1="421" y1="474" x2="421" y2="566" stroke="#C9A86A" stroke-opacity="0.12" stroke-width="2"></line>
   <line x1="779" y1="474" x2="779" y2="566" stroke="#C9A86A" stroke-opacity="0.12" stroke-width="2"></line>
 
-  <text x="243" y="520" text-anchor="middle" font-family="SF Mono, Menlo, DejaVu Sans Mono, monospace" font-size="28" fill="#EDE7DA">1,000,000</text>
-  <text x="243" y="548" text-anchor="middle" font-family="SF Mono, Menlo, DejaVu Sans Mono, monospace" font-size="13" letter-spacing="2.5" fill="#6E6759">FIXED SUPPLY</text>
+  <text x="243" y="520" text-anchor="middle" font-family="JetBrains Mono, SF Mono, Menlo, DejaVu Sans Mono, monospace" font-size="28" fill="#EDE7DA">1,000,000</text>
+  <text x="243" y="548" text-anchor="middle" font-family="JetBrains Mono, SF Mono, Menlo, DejaVu Sans Mono, monospace" font-size="13" letter-spacing="2.5" fill="#6E6759">FIXED SUPPLY</text>
 
-  <text x="600" y="520" text-anchor="middle" font-family="SF Mono, Menlo, DejaVu Sans Mono, monospace" font-size="28" fill="#EDE7DA">{{HOLDERS}}</text>
-  <text x="600" y="548" text-anchor="middle" font-family="SF Mono, Menlo, DejaVu Sans Mono, monospace" font-size="13" letter-spacing="2.5" fill="#6E6759">HOLDERS</text>
+  <text x="600" y="520" text-anchor="middle" font-family="JetBrains Mono, SF Mono, Menlo, DejaVu Sans Mono, monospace" font-size="28" fill="#EDE7DA">{{HOLDERS}}</text>
+  <text x="600" y="548" text-anchor="middle" font-family="JetBrains Mono, SF Mono, Menlo, DejaVu Sans Mono, monospace" font-size="13" letter-spacing="2.5" fill="#6E6759">HOLDERS</text>
 
-  <text x="957" y="520" text-anchor="middle" font-family="SF Mono, Menlo, DejaVu Sans Mono, monospace" font-size="28" fill="#EDE7DA">{{BLOCK}}</text>
-  <text x="957" y="548" text-anchor="middle" font-family="SF Mono, Menlo, DejaVu Sans Mono, monospace" font-size="13" letter-spacing="2.5" fill="#6E6759">BLOCK</text>
+  <text x="957" y="520" text-anchor="middle" font-family="JetBrains Mono, SF Mono, Menlo, DejaVu Sans Mono, monospace" font-size="28" fill="#EDE7DA">{{BLOCK}}</text>
+  <text x="957" y="548" text-anchor="middle" font-family="JetBrains Mono, SF Mono, Menlo, DejaVu Sans Mono, monospace" font-size="13" letter-spacing="2.5" fill="#6E6759">BLOCK</text>
 
   <!-- footer -->
-  <text x="600" y="606" text-anchor="middle" font-family="SF Mono, Menlo, DejaVu Sans Mono, monospace" font-size="14" letter-spacing="1.5" fill="#6E6759">meetluko.eu · {{DATE}} UTC · 1 LUKO = 1 LUKO</text>
+  <text x="600" y="606" text-anchor="middle" font-family="JetBrains Mono, SF Mono, Menlo, DejaVu Sans Mono, monospace" font-size="14" letter-spacing="1.5" fill="#6E6759">meetluko.eu · {{DATE}} UTC · 1 LUKO = 1 LUKO</text>
 </svg>
