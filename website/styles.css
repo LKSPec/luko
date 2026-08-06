@@ -324,6 +324,17 @@ main {
   text-transform: uppercase;
   color: var(--luko-faint);
 }
+/* Attribution line — a sentence, so it drops the uppercase tracking of the
+   line above it and stays quieter than any link on the page. */
+.site-footer .footer-note {
+  margin-top: 12px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: var(--luko-faint);
+}
+.site-footer .footer-note a { border-bottom-color: rgba(201, 168, 106, 0.25); }
+.footer-sep { padding: 0 6px; opacity: 0.5; }
 
 @media (min-width: 720px) {
   .site-header { padding: 26px 80px; }
