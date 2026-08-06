@@ -231,7 +231,6 @@ export async function onRequestGet(context) {
       .replaceAll("{{PRICE}}", price ? (price * 1000).toFixed(2) : "—")
       .replaceAll("{{PRICE_SUB}}", price ? price.toFixed(6) : "—")
       .replaceAll("{{HOLDERS}}", holders !== null ? holders.toLocaleString("en-US") : "—")
-      .replaceAll("{{BLOCK}}", market ? market.block.toLocaleString("en-US") : "—")
       .replaceAll("{{DATE}}", now.slice(0, 10) + " " + now.slice(11, 16));
 
     if (!wasmReady) wasmReady = initWasm(wasmModule);

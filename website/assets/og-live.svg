@@ -2,14 +2,18 @@
   <!--
     LUKO — live link-preview card (og:image), 1200x630.
 
-    This file is a TEMPLATE. Five placeholders are substituted server-side and
+    This file is a TEMPLATE. Four placeholders are substituted server-side and
     the result is rasterized to PNG on every share, so the numbers are current:
 
       {{PRICE}}      big figure — USDC per 1,000 LUKO, e.g. "2.50"
       {{PRICE_SUB}}  price of one LUKO, e.g. "0.002503"
       {{HOLDERS}}    holder count, e.g. "37"
-      {{BLOCK}}      block the read was taken at, e.g. "49542102"
       {{DATE}}       UTC timestamp of the read, e.g. "2026-08-05 17:04"
+
+    The genesis block is printed as a literal, not read from the chain: it is
+    a permanent fact and must agree with the block quoted in the site copy.
+    Showing the current chain head here instead read as a second, conflicting
+    "genesis" number. Freshness is carried by the {{DATE}} footer.
 
     Every placeholder may be filled with an em dash when a chain read fails;
     the layout is anchored, not text-driven, so the card still reads as
@@ -59,8 +63,8 @@
   <text x="600" y="520" text-anchor="middle" font-family="JetBrains Mono, SF Mono, Menlo, DejaVu Sans Mono, monospace" font-size="28" fill="#EDE7DA">{{HOLDERS}}</text>
   <text x="600" y="548" text-anchor="middle" font-family="JetBrains Mono, SF Mono, Menlo, DejaVu Sans Mono, monospace" font-size="13" letter-spacing="2.5" fill="#6E6759">HOLDERS</text>
 
-  <text x="957" y="520" text-anchor="middle" font-family="JetBrains Mono, SF Mono, Menlo, DejaVu Sans Mono, monospace" font-size="28" fill="#EDE7DA">{{BLOCK}}</text>
-  <text x="957" y="548" text-anchor="middle" font-family="JetBrains Mono, SF Mono, Menlo, DejaVu Sans Mono, monospace" font-size="13" letter-spacing="2.5" fill="#6E6759">BLOCK</text>
+  <text x="957" y="520" text-anchor="middle" font-family="JetBrains Mono, SF Mono, Menlo, DejaVu Sans Mono, monospace" font-size="28" fill="#EDE7DA">49,364,826</text>
+  <text x="957" y="548" text-anchor="middle" font-family="JetBrains Mono, SF Mono, Menlo, DejaVu Sans Mono, monospace" font-size="13" letter-spacing="2.5" fill="#6E6759">GENESIS BLOCK</text>
 
   <!-- footer -->
   <text x="600" y="606" text-anchor="middle" font-family="JetBrains Mono, SF Mono, Menlo, DejaVu Sans Mono, monospace" font-size="14" letter-spacing="1.5" fill="#6E6759">meetluko.eu · {{DATE}} UTC · 1 LUKO = 1 LUKO</text>
