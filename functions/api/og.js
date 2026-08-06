@@ -30,10 +30,27 @@ const ZERO_ADDRESS = "0000000000000000000000000000000000000000";
 /* public RPCs cap eth_getLogs around a 10,000-block range */
 const CHUNK_SIZE = 10000;
 const CHECKPOINT_KEY = "og-holders-checkpoint-v1";
+/* Every public Base RPC rate-limits Cloudflare's shared egress IPs, so two
+   endpoints are not enough — a card render would fall back to em dashes
+   whenever both were throttled. Same six verified endpoints the donation
+   verifier uses, entered at a random index to spread the load. */
 const RPC_URLS = [
   "https://mainnet.base.org",
-  "https://base.drpc.org"
+  "https://base.drpc.org",
+  "https://base.meowrpc.com",
+  "https://base.gateway.tenderly.co",
+  "https://base-mainnet.public.blastapi.io",
+  "https://1rpc.io/base"
 ];
+
+function rotatedRpcUrls() {
+  const start = Math.floor(Math.random() * RPC_URLS.length);
+  const urls = [];
+  for (let i = 0; i < RPC_URLS.length; i++) {
+    urls.push(RPC_URLS[(start + i) % RPC_URLS.length]);
+  }
+  return urls;
+}
 const FONT_PATHS = [
   "/assets/fonts/Archivo-ExtraLight.ttf",
   "/assets/fonts/JetBrainsMono-Regular.ttf"
@@ -54,7 +71,7 @@ function keyedRpcUrls(env) {
 }
 
 async function rpc(env, method, params) {
-  const urls = keyedRpcUrls(env).concat(RPC_URLS);
+  const urls = keyedRpcUrls(env).concat(rotatedRpcUrls());
   for (const url of urls) {
     try {
       const response = await fetch(url, {
@@ -77,7 +94,7 @@ function balanceCalldata(holder) {
 
 /* Pool reserves + latest block, one batched request. Null on failure. */
 async function fetchMarket(env) {
-  const urls = keyedRpcUrls(env).concat(RPC_URLS);
+  const urls = keyedRpcUrls(env).concat(rotatedRpcUrls());
   for (const url of urls) {
     try {
       const response = await fetch(url, {
@@ -179,15 +196,34 @@ async function staticFallback(origin) {
 }
 
 export async function onRequestGet(context) {
-  const origin = new URL(context.request.url).origin;
+  const url = new URL(context.request.url);
+  const origin = url.origin;
+  /* ?debug=1 reports what the edge actually read, as JSON. The card itself
+     degrades silently to em dashes, which hides whether the chain read or the
+     rasterizer failed; this makes that visible without guessing. */
+  const debug = url.searchParams.get("debug") === "1";
   const cache = caches.default;
-  const cached = await cache.match(context.request);
-  if (cached) return cached;
+  if (!debug) {
+    const cached = await cache.match(context.request);
+    if (cached) return cached;
+  }
   try {
     const market = await fetchMarket(context.env);
     const holders = market ? await fetchHolders(context.env, market.block) : null;
     const price = market && market.luko > 0 ? market.usdc / market.luko : null;
     const now = new Date().toISOString();
+
+    if (debug) {
+      return new Response(JSON.stringify({
+        market: market,
+        price: price,
+        holders: holders,
+        keyedRpc: keyedRpcUrls(context.env).length,
+        kvBound: !!(context.env && context.env.CARDS)
+      }, null, 2), {
+        headers: { "Content-Type": "application/json", "Cache-Control": "no-store" }
+      });
+    }
 
     let svg = await (await fetch(origin + "/assets/og-live.svg")).text();
     /* replaceAll: the template's header comment also mentions each token */
