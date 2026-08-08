@@ -3,19 +3,20 @@
    Function verifies the tx and returns a personalized SVG note, which we show
    and offer as PNG / SVG. All signing happens in the user's wallet; this file
    never handles keys. Progressive enhancement — the site works without it. */
+import { CONFIG } from "./config.js";
+
 (function () {
   "use strict";
 
-  var LUKO_ADDRESS = "0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1";
-  /* Must match DONATION_ADDRESS in functions/api/card.js */
-  var DONATION_ADDRESS = "0x7D9766F447a6B86Cf589A31db5b5535e379863E7";
-  var BASE_CHAIN_ID = "0x2105";
+  var LUKO_ADDRESS = CONFIG.addresses.luko;
+  var DONATION_ADDRESS = CONFIG.addresses.donation;
+  var BASE_CHAIN_ID = CONFIG.network.chainId;
   var BASE_CHAIN_PARAMS = {
     chainId: BASE_CHAIN_ID,
-    chainName: "Base",
-    nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
-    rpcUrls: ["https://mainnet.base.org"],
-    blockExplorerUrls: ["https://basescan.org"]
+    chainName: CONFIG.network.chainName,
+    nativeCurrency: CONFIG.network.nativeCurrency,
+    rpcUrls: [CONFIG.network.clientRpc],
+    blockExplorerUrls: [CONFIG.network.explorer]
   };
   var PRESETS = [1000, 5000, 25000];
 

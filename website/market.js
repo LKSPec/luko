@@ -1,13 +1,15 @@
 /* Live market data for the genesis page, read directly from Base public RPC.
    No third-party price APIs, no keys. The page renders "—" placeholders and
    stays usable without this script. */
+import { CONFIG } from "./config.js";
+
 (function () {
   "use strict";
 
-  var RPC_URL = "https://mainnet.base.org";
-  var POOL_ADDRESS = "0x2222A01b83Db8c533B062AEb6DE4F61D6Ae792F2";
-  var LUKO_ADDRESS = "0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1";
-  var USDC_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+  var RPC_URL = CONFIG.network.clientRpc;
+  var POOL_ADDRESS = CONFIG.addresses.pool;
+  var LUKO_ADDRESS = CONFIG.addresses.luko;
+  var USDC_ADDRESS = CONFIG.addresses.usdc;
   var BALANCE_OF = "0x70a08231"; /* balanceOf(address) */
 
   if (typeof BigInt === "undefined" || !window.fetch) return;
@@ -86,37 +88,15 @@
   loadMarketWithRetry();
   setInterval(loadMarketWithRetry, 30000);
 
-  /* Vested-so-far counter — Sablier Lockup v4.0 stream on Base.
-     The stream is linear, so time math reproduces the exact on-chain curve;
-     timestamps and deposit below were read from the contract for stream 902.
-     One streamedAmountOf(uint256) call (0x4869e12d) calibrates the counter
-     when RPC is available; without it the counter still runs. */
-  var LOCKUP_ADDRESS = "0xc19a09A66887017F603E5dF420ed3Cb9a5c07C0A";
-  var STREAM_ID = 902;
-  var VEST_START = 1785697200; /* getStartTime(902) — 2 Aug 2026 22:00 */
-  var VEST_END = 1819055100;   /* getEndTime(902) — 24 Aug 2027 00:05 */
-  var VEST_TOTAL = 140000;     /* getDepositedAmount(902), LUKO */
-
-  var vestOffset = 0;
-
-  function ethCall(to, calldata) {
-    return fetch(RPC_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        jsonrpc: "2.0", id: 1, method: "eth_call",
-        params: [{ to: to, data: calldata }, "latest"]
-      })
-    }).then(function (response) {
-      if (!response.ok) throw new Error("rpc");
-      return response.json();
-    }).then(function (json) {
-      if (!json || typeof json.result !== "string" || json.result === "0x") {
-        throw new Error("rpc");
-      }
-      return json.result;
-    });
-  }
+  /* Vested-so-far counter — Sablier Lockup, linear stream. The vested amount
+     is computed purely from the stream's start/end/total (from config), so
+     the counter runs entirely client-side with no runtime RPC call. The
+     config values must match the on-chain stream exactly; a "Verify on-chain"
+     link next to the counter points at the Sablier stream page. */
+  var DELTA = CONFIG.streams.delta;
+  var VEST_START = DELTA.start;
+  var VEST_END = DELTA.end;
+  var VEST_TOTAL = DELTA.total;
 
   function vestedAt(nowSec) {
     if (nowSec <= VEST_START) return 0;
@@ -137,24 +117,10 @@
       status.textContent = document.documentElement.lang === "lt" ? status.dataset.lt : status.dataset.en;
       status.className = "accent";
     }
-    var vested = vestedAt(nowSec) + vestOffset;
-    vested = Math.min(Math.max(vested, 0), VEST_TOTAL);
+    var vested = Math.min(Math.max(vestedAt(nowSec), 0), VEST_TOTAL);
     setValue("vested-amount", formatFixed(vested, 2) + " LUKO");
-  }
-
-  function calibrate() {
-    var calldata = "0x4869e12d" + STREAM_ID.toString(16).padStart(64, "0");
-    return ethCall(LOCKUP_ADDRESS, calldata).then(function (result) {
-      var onchain = Number(BigInt(result)) / 1e18;
-      vestOffset = onchain - vestedAt(Date.now() / 1000);
-    });
   }
 
   renderVested();
   setInterval(renderVested, 1000);
-  calibrate().catch(function () {
-    setTimeout(function () {
-      calibrate().catch(function () { /* time math only */ });
-    }, 3000);
-  });
 })();

@@ -2,23 +2,25 @@
    wallet_watchAsset. Providers are discovered through EIP-6963 with
    window.ethereum as a legacy fallback. The site never requests accounts.
    The page is fully usable without this script. */
+import { CONFIG } from "./config.js";
+
 (function () {
   "use strict";
 
-  var LUKO_ADDRESS = "0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1";
+  var LUKO_ADDRESS = CONFIG.addresses.luko;
   var LUKO_TOKEN = {
     address: LUKO_ADDRESS,
-    symbol: "LUKO",
-    decimals: 18,
-    image: "https://meetluko.eu/assets/token-logo-512.png"
+    symbol: CONFIG.token.symbol,
+    decimals: CONFIG.token.decimals,
+    image: CONFIG.token.image
   };
-  var BASE_CHAIN_ID = "0x2105";
+  var BASE_CHAIN_ID = CONFIG.network.chainId;
   var BASE_CHAIN_PARAMS = {
     chainId: BASE_CHAIN_ID,
-    chainName: "Base",
-    nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
-    rpcUrls: ["https://mainnet.base.org"],
-    blockExplorerUrls: ["https://basescan.org"]
+    chainName: CONFIG.network.chainName,
+    nativeCurrency: CONFIG.network.nativeCurrency,
+    rpcUrls: [CONFIG.network.clientRpc],
+    blockExplorerUrls: [CONFIG.network.explorer]
   };
 
   var button = document.getElementById("add-luko");

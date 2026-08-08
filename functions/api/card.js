@@ -42,26 +42,18 @@
  *   npx wrangler pages dev website --kv CARDS
  */
 
-/* Donation recipient. RECOMMENDATION: use a DEDICATED address (a fresh wallet
-   that holds nothing else), not the main LUKO treasury. Then every inbound LUKO
-   transfer to it is unambiguously a donation — verification has no false matches
-   from unrelated treasury movement, the deployer address stays private, and the
-   donation total is trivially auditable. Fill the 20-byte address below. */
-const DONATION_ADDRESS = "0x7D9766F447a6B86Cf589A31db5b5535e379863E7";
+import { CONFIG } from "../../website/config.js";
 
-const LUKO_ADDRESS = "0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1";
-/* Public Base RPCs, all keyless. Every one of them rate-limits Cloudflare's
-   shared egress IPs (429 / "usage limit"), and that was surfacing as failed
-   donations — so we spread across several and start at a random one rather
-   than hammering the same endpoint first on every request. */
-const RPC_URLS = [
-  "https://mainnet.base.org",
-  "https://base.drpc.org",
-  "https://base.meowrpc.com",
-  "https://base.gateway.tenderly.co",
-  "https://base-mainnet.public.blastapi.io",
-  "https://1rpc.io/base"
-];
+/* Donation recipient and LUKO token — single source of truth in config.js.
+   The donation address is a dedicated wallet holding nothing else, so every
+   inbound LUKO transfer to it is unambiguously a donation. */
+const DONATION_ADDRESS = CONFIG.addresses.donation;
+
+const LUKO_ADDRESS = CONFIG.addresses.luko;
+/* Server-side RPC pool (see config.js). Public Base RPCs rate-limit
+   Cloudflare's shared egress IPs, so requests spread across all endpoints,
+   entered at a random one rather than hammering the same first on every call. */
+const RPC_URLS = CONFIG.rpc.endpoints;
 /* keccak256("Transfer(address,address,uint256)") */
 const TRANSFER_TOPIC = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
 

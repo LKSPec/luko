@@ -19,29 +19,21 @@
 
 import { initWasm, Resvg } from "../lib/resvg.js";
 import wasmModule from "../lib/resvg.wasm";
+import { CONFIG } from "../../website/config.js";
 
-const LUKO_ADDRESS = "0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1";
-const USDC_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
-const POOL_ADDRESS = "0x2222A01b83Db8c533B062AEb6DE4F61D6Ae792F2";
-/* LUKO contract creation block (found via eth_getCode binary search) */
-const DEPLOY_BLOCK = 49364826;
+const LUKO_ADDRESS = CONFIG.addresses.luko;
+const USDC_ADDRESS = CONFIG.addresses.usdc;
+const POOL_ADDRESS = CONFIG.addresses.pool;
+const DEPLOY_BLOCK = CONFIG.network.deployBlock;
 const TRANSFER_TOPIC = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
 const ZERO_ADDRESS = "0000000000000000000000000000000000000000";
 /* public RPCs cap eth_getLogs around a 10,000-block range */
 const CHUNK_SIZE = 10000;
 const CHECKPOINT_KEY = "og-holders-checkpoint-v1";
-/* Every public Base RPC rate-limits Cloudflare's shared egress IPs, so two
-   endpoints are not enough — a card render would fall back to em dashes
-   whenever both were throttled. Same six verified endpoints the donation
-   verifier uses, entered at a random index to spread the load. */
-const RPC_URLS = [
-  "https://mainnet.base.org",
-  "https://base.drpc.org",
-  "https://base.meowrpc.com",
-  "https://base.gateway.tenderly.co",
-  "https://base-mainnet.public.blastapi.io",
-  "https://1rpc.io/base"
-];
+/* Server-side RPC pool (see config.js). Public Base RPCs rate-limit
+   Cloudflare's shared egress IPs, so requests spread across all endpoints,
+   entered at a random index. */
+const RPC_URLS = CONFIG.rpc.endpoints;
 
 function rotatedRpcUrls() {
   const start = Math.floor(Math.random() * RPC_URLS.length);
