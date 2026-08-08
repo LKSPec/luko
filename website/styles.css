@@ -466,7 +466,12 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
   border-top: 1px solid var(--luko-hairline);
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
+}
+.market-stake-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
 }
 .market-value-big {
   font-size: 40px;
@@ -475,15 +480,34 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
   line-height: 1;
   color: var(--luko-gold);
 }
+.market-stake-units { font-size: 13px; color: var(--luko-faint); }
+/* Composition bar — immediate vs streaming, in true proportion (50k / 140k) */
+.market-split {
+  display: flex;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--luko-divider);
+}
+.market-split-immediate { width: 26.3%; background: var(--luko-gold); }
+.market-split-streaming { width: 73.7%; background: #6E5F45; }
+.market-components { display: flex; flex-direction: column; gap: 14px; }
+.market-value-item .label { display: flex; align-items: center; gap: 8px; }
+.market-value-mid {
+  font-size: 22px;
+  font-weight: 200;
+  color: var(--luko-offwhite);
+}
+.swatch { width: 9px; height: 9px; border-radius: 2px; flex: 0 0 auto; }
+.swatch-immediate { background: var(--luko-gold); }
+.swatch-streaming { background: #6E5F45; }
 @media (min-width: 720px) {
   .market-value-big { font-size: 56px; }
-  .market-value-block {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 24px;
-  }
+  .market-value-mid { font-size: 30px; }
+  .market-components { flex-direction: row; gap: 24px; }
+  .market-components .market-value-item { flex: 1; }
   .market-value-item:last-child { text-align: right; }
+  .market-value-item:last-child .label { justify-content: flex-end; }
 }
 
 /* Chart embed — tinted to brand */
