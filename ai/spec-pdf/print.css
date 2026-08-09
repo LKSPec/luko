@@ -1,0 +1,167 @@
+/* Print stylesheet for the LUKO specification PDF.
+   Light, typeset, serif — deliberately NOT the dark web theme. Generic
+   `serif` / `monospace` families are used on purpose: the reference PDF was
+   rendered on Linux (Liberation Serif / DejaVu Sans Mono) and generic names
+   keep the document reproducible on any host.
+   Page numbers come from Chrome's footerTemplate (see build.mjs), not CSS. */
+
+@page { size: A4; margin: 22mm 18mm 20mm; }
+
+:root {
+  --gold: #9A7E4E;
+  --ink: #1A1A1A;
+  --muted: #55524C;
+  --rule: #D8D4CC;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: #FFFFFF;
+  color: var(--ink);
+  font-family: serif;
+  font-size: 10.5pt;
+  line-height: 1.55;
+}
+
+code, .mono { font-family: monospace; font-size: 9pt; }
+
+/* ---------- Page 1 · cover ---------- */
+.cover {
+  height: 247mm;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  page-break-after: always;
+}
+.cover-mark {
+  width: 96px;
+  height: 96px;
+  margin-bottom: 34px;
+  border: 1px solid var(--gold);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cover-mark img { width: 44px; height: 44px; }
+.cover-word {
+  font-size: 34pt;
+  letter-spacing: 0.22em;
+  margin: 0 0 14px;
+  font-weight: normal;
+  text-indent: 0.22em;
+}
+.cover-kicker {
+  font-family: monospace;
+  font-size: 9pt;
+  letter-spacing: 0.28em;
+  color: var(--gold);
+  margin: 0 0 40px;
+  text-indent: 0.28em;
+}
+.cover-title {
+  font-size: 15pt;
+  letter-spacing: 0.28em;
+  margin: 0 0 26px;
+  font-weight: normal;
+  text-indent: 0.28em;
+}
+.cover-rule { width: 62px; height: 1px; background: var(--gold); margin: 0 0 44px; }
+.cover-meta {
+  font-family: monospace;
+  font-size: 8.5pt;
+  line-height: 1.9;
+  color: var(--muted);
+  margin: 0;
+}
+
+/* ---------- Page 2 · contents ---------- */
+.contents { page-break-after: always; }
+.contents h2 {
+  font-size: 12pt;
+  font-weight: normal;
+  letter-spacing: 0.22em;
+  margin: 0 0 6px;
+  text-indent: 0.22em;
+}
+.contents-rule { height: 1px; background: var(--gold); margin-bottom: 22px; }
+.toc-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 9px 2px;
+  border-bottom: 1px dotted var(--rule);
+}
+.toc-num { color: var(--gold); min-width: 14px; }
+
+/* ---------- Content sections ---------- */
+section { page-break-inside: auto; }
+h2.sec {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  font-size: 13pt;
+  font-weight: normal;
+  margin: 26px 0 4px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--gold);
+  page-break-after: avoid;
+}
+section:first-of-type h2.sec { margin-top: 0; }
+h2.sec .n { color: var(--gold); }
+h3.sub {
+  font-size: 10.5pt;
+  font-weight: bold;
+  margin: 18px 0 6px;
+  page-break-after: avoid;
+}
+
+p { margin: 0 0 9px; text-align: justify; orphans: 3; widows: 3; }
+p.lede { font-style: italic; color: var(--muted); }
+ul { margin: 0 0 9px; padding-left: 18px; }
+li { margin-bottom: 5px; text-align: justify; }
+strong { font-weight: bold; }
+
+table { width: 100%; border-collapse: collapse; margin: 4px 0 12px; }
+td {
+  padding: 6px 4px;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+  page-break-inside: avoid;
+}
+td:first-child { color: var(--muted); width: 38%; }
+td:last-child { text-align: right; font-family: monospace; font-size: 8.5pt; }
+
+pre {
+  font-family: monospace;
+  font-size: 8pt;
+  line-height: 1.5;
+  background: #FAF9F7;
+  border: 1px solid var(--rule);
+  padding: 10px 12px;
+  margin: 4px 0 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  page-break-inside: avoid;
+}
+
+.faq { page-break-inside: avoid; margin-bottom: 12px; }
+.faq-q { font-weight: bold; margin-bottom: 4px; }
+
+.links { margin-bottom: 12px; }
+.link-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 6px 2px;
+  border-bottom: 1px solid var(--rule);
+  page-break-inside: avoid;
+}
+.link-row .name { color: var(--muted); }
+.link-row .val { font-family: monospace; font-size: 8.5pt; text-align: right; word-break: break-all; }
+.note { font-family: monospace; font-size: 8.5pt; color: var(--muted); margin-top: 10px; }
+a { color: inherit; text-decoration: none; }
