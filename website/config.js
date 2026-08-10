@@ -22,7 +22,7 @@ export const CONFIG = {
     sablierLockup: "0xc19a09A66887017F603E5dF420ed3Cb9a5c07C0A",
     /* Donation recipient. Dedicated wallet, holds nothing else, so every
        inbound LUKO transfer is unambiguously a donation. */
-    donation:      "0x7D9766F447a6B86Cf589A31db5b5535e379863E7"
+    donation:      "0x33D857fb6f06aaFc498De09654Da82A8f68BE233"
   },
 
   network: {
