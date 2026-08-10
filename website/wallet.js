@@ -8,13 +8,17 @@ import { CONFIG } from "./config.js";
   "use strict";
 
   var LUKO_ADDRESS = CONFIG.addresses.luko;
+  var BASE_CHAIN_ID = CONFIG.network.chainId;
   var LUKO_TOKEN = {
     address: LUKO_ADDRESS,
     symbol: CONFIG.token.symbol,
     decimals: CONFIG.token.decimals,
-    image: CONFIG.token.image
+    image: CONFIG.token.image,
+    /* Final EIP-747 chainId (numeric). Wallets that honour it pin the asset
+       to Base; older wallets ignore the field. Belt and suspenders alongside
+       the network guard in addToken(). */
+    chainId: parseInt(CONFIG.network.chainId, 16)
   };
-  var BASE_CHAIN_ID = CONFIG.network.chainId;
   var BASE_CHAIN_PARAMS = {
     chainId: BASE_CHAIN_ID,
     chainName: CONFIG.network.chainName,
@@ -142,23 +146,39 @@ import { CONFIG } from "./config.js";
   }
 
   function addToken(provider) {
-    /* network guard — remove this block (through the closing .then) to skip
-       chain switching; wallet_watchAsset targets the wallet's active chain */
-    return provider.request({ method: "eth_chainId" }).then(function (chainId) {
-      if (chainId === BASE_CHAIN_ID) return;
-      return provider.request({
-        method: "wallet_switchEthereumChain",
-        params: [{ chainId: BASE_CHAIN_ID }]
-      }).catch(function (error) {
-        if (error && error.code === 4902) {
-          return provider.request({
-            method: "wallet_addEthereumChain",
-            params: [BASE_CHAIN_PARAMS]
+    /* Network guard: wallet_watchAsset targets the wallet's ACTIVE chain, so we
+       must land on Base before calling it. Some wallets (e.g. Robinhood) resolve
+       wallet_switchEthereumChain without actually switching — so after the switch
+       we re-read eth_chainId and refuse to watch the asset on any chain but Base,
+       instead of trusting the switch promise. */
+    function ensureBase() {
+      return provider.request({ method: "eth_chainId" }).then(function (chainId) {
+        if (chainId === BASE_CHAIN_ID) return true;
+        return provider.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: BASE_CHAIN_ID }]
+        }).catch(function (error) {
+          if (error && error.code === 4902) {
+            return provider.request({
+              method: "wallet_addEthereumChain",
+              params: [BASE_CHAIN_PARAMS]
+            });
+          }
+          throw error; /* includes 4001 (user rejected) → aborts, no watchAsset */
+        }).then(function () {
+          /* re-verify: trust the chain, not the switch resolution */
+          return provider.request({ method: "eth_chainId" }).then(function (now) {
+            return now === BASE_CHAIN_ID;
           });
-        }
-        throw error;
+        });
       });
-    }).then(function () {
+    }
+    return ensureBase().then(function (onBase) {
+      if (!onBase) {
+        var wrong = new Error("wrong-network");
+        wrong.code = "WRONG_NETWORK";
+        throw wrong;
+      }
       return provider.request({
         method: "wallet_watchAsset",
         params: { type: "ERC20", options: LUKO_TOKEN }
@@ -178,6 +198,8 @@ import { CONFIG } from "./config.js";
     }, function (error) {
       if (error && error.code === 4001) {
         showResult("Not added.");
+      } else if (error && error.code === "WRONG_NETWORK") {
+        showResult("Switch your wallet to the Base network, then try again.");
       } else {
         showFallback(error);
       }
