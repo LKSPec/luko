@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title data-en="LUKO — Deed of Founder Status" data-lt="LUKO — Steigėjo statuso aktas">LUKO — Deed of Founder Status</title>
+  <meta name="description" content="LUKO deed of founder status.">
+  <link rel="icon" href="assets/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
+  <meta property="og:title" content="LUKO — Deed of Founder Status">
+  <meta property="og:description" content="LUKO deed of founder status.">
+  <meta property="og:url" content="https://meetluko.eu/deed">
+  <meta property="og:image" content="https://meetluko.eu/api/og">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="LUKO">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:alt" content="LUKO — fixed-supply ERC-20 on Base">
+  <meta name="twitter:image" content="https://meetluko.eu/api/og">
+  <meta name="twitter:title" content="LUKO — Deed of Founder Status">
+  <meta name="twitter:description" content="LUKO deed of founder status.">
+  <!-- SENTRY_DSN -->
+  <script
+    src="https://js-de.sentry-cdn.com/7738fc80396b4b68af0041def3125cb0.min.js"
+    crossorigin="anonymous"
+    defer
+  ></script>
+  <script>
+    (function () {
+      function initSentry() {
+        try {
+          window.Sentry.init({
+            environment: "production",
+            tracesSampleRate: 0
+          });
+        } catch (error) { /* Sentry must never block the site. */ }
+      }
+
+      function configureSentry() {
+        try {
+          if (!window.Sentry) return;
+          if (typeof window.Sentry.onLoad === "function") {
+            window.Sentry.onLoad(initSentry);
+          } else {
+            initSentry();
+          }
+        } catch (error) { /* CDN unavailable or blocked. */ }
+      }
+
+      if (document.readyState === "complete") {
+        configureSentry();
+      } else {
+        window.addEventListener("load", configureSentry, { once: true });
+      }
+    })();
+
+    function track(action) {
+      try {
+        if (window.Sentry && typeof window.Sentry.addBreadcrumb === "function") {
+          window.Sentry.addBreadcrumb({ category: "ui", message: action, level: "info" });
+        }
+      } catch (error) { /* Tracking is non-blocking. */ }
+    }
+
+    document.addEventListener("click", function (event) {
+      if (!(event.target instanceof Element)) return;
+      var target = event.target.closest("a, button, [role='button']");
+      if (!target) return;
+      var action = target.getAttribute("data-sentry-action");
+      if (action) track(action);
+    }, true);
+  </script>
+  <link rel="stylesheet" href="styles.css?v=16">
+</head>
+<body>
+  <a class="skip-link" href="#main" data-en="Skip to content" data-lt="Pereiti prie turinio">Skip to content</a>
+
+  <header class="site-header">
+    <a class="lockup" href="https://meetluko.eu/" aria-label="LUKO home">
+      <img src="assets/logo-mark-dark.svg" alt="" width="26" height="26">
+      <span class="wordmark">LUKO</span>
+    </a>
+    <nav class="site-nav" aria-label="Sections">
+      <a href="/" data-en="Token" data-lt="Tokenas">Token</a>
+      <a href="/market" data-en="Market" data-lt="Rinka">Market</a>
+      <span class="language-toggle" role="group" aria-label="Language">
+        <button type="button" class="language-option is-active" data-language="en" data-sentry-action="lang_switch" aria-pressed="true">EN</button>
+        <span aria-hidden="true">/</span>
+        <button type="button" class="language-option" data-language="lt" data-sentry-action="lang_switch" aria-pressed="false">LT</button>
+      </span>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero" aria-labelledby="deed-title">
+      <div class="hero-copy">
+        <h1 id="deed-title" data-en="DEED OF FOUNDER STATUS" data-lt="STEIGĖJŲ STATUSO AKTAS">DEED OF FOUNDER STATUS</h1>
+      </div>
+    </section>
+
+    <section class="panel" aria-label="Deed">
+      <div class="lang-en">
+        <p class="prose deed-opening">Be it recorded:</p>
+        <ol class="deed-list">
+          <li>Token <code>0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1</code> (Base, genesis block <code>49364826</code>) has a fixed supply of <span class="gold">1,000,000 LUKO</span>.</li>
+          <li>Within the capital of LUKO stand two founder holdings — <span class="gold">LAMBDA</span> and <span class="gold">DELTA</span> — the only registered holdings in the capital, pari passu in all founder status, recognition, and rights arising from the genesis of the project. The remaining issuance belongs to the functions of the institution — Market, Operations, Reserve — as recorded at genesis.</li>
+          <li>Each founder holding is represented on-chain by 190,000 LUKO (<span class="gold">19% of supply</span>):
+            <ol type="a">
+              <li>50,000 LUKO transferred outright;</li>
+              <li>140,000 LUKO delivered by non-cancelable on-chain stream through 24 August 2027.</li>
+            </ol>
+          </li>
+          <li>There vests in the owner of each holding, absolutely and in perpetuity:
+            <ol type="a">
+              <li>title to the allocated holding — free of restriction, consent, or notice;</li>
+              <li>the full right to hold, use, transfer, or dispose of it;</li>
+              <li>an equal, undivided share in the name, the mark, and the works of LUKO;</li>
+              <li>founder status of record;</li>
+              <li>freedom from any obligation arising herefrom.</li>
+            </ol>
+          </li>
+          <li>The allocations are enforced by the contracts themselves. Founder status exists independently of any future activity, valuation, or subsequent ownership of the tokens; it is <span class="gold">final, irrevocable</span>, and cannot be amended or reassigned.</li>
+          <li>The deed is issued by the technical deployer; the signatures of both founder holdings constitute mutual recognition of equal founder status.</li>
+          <li>Upon both signatures, the contract becomes: <span class="gold">Sealed</span>.</li>
+        </ol>
+      </div>
+      <div class="lang-lt">
+        <p class="prose deed-opening">Šiuo aktu įtvirtinama:</p>
+        <ol class="deed-list">
+          <li>Tokeno <code>0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1</code> (Base, genesis blokas <code>49364826</code>) emisija yra fiksuota — <span class="gold">1 000 000 LUKO</span>.</li>
+          <li>LUKO kapitale įtvirtintos dvi steigėjų dalys — <span class="gold">LAMBDA</span> ir <span class="gold">DELTA</span> — vienintelės vardinės dalys kapitale; jos lygiavertės (pari passu) visame steigėjų statuse, pripažinime ir teisėse, kylančiose iš projekto genesis. Likusi emisija priklauso institucijos funkcijoms — Market, Operations, Reserve — pagal genesis įrašą.</li>
+          <li>Kiekviena steigėjų dalis on-chain išreiškiama 190 000 LUKO (<span class="gold">19 % emisijos</span>):
+            <ol type="a">
+              <li>50 000 LUKO perduodami iš karto;</li>
+              <li>140 000 LUKO tiekiami neatšaukiamu on-chain srautu iki 2027 m. rugpjūčio 24 d.</li>
+            </ol>
+          </li>
+          <li>Kiekvienos dalies savininkui absoliučiai ir amžinai priklauso:
+            <ol type="a">
+              <li>nuosavybės teisė į priskirtą dalį — be apribojimų, sutikimų ar pranešimų;</li>
+              <li>visa teisė ją laikyti, naudoti, perleisti ar disponuoti;</li>
+              <li>lygi, nedaloma dalis LUKO vardo, ženklo ir kūrinių;</li>
+              <li>įrašyto steigėjo statusas;</li>
+              <li>laisvė nuo bet kokių iš to kylančių įsipareigojimų.</li>
+            </ol>
+          </li>
+          <li>Paskirstymą užtikrina patys kontraktai. Steigėjų statusas galioja nepriklausomai nuo būsimos veiklos, vertės ar vėlesnės tokenų nuosavybės; jis yra <span class="gold">galutinis, neatšaukiamas</span> ir negali būti keičiamas ar perleidžiamas.</li>
+          <li>Aktą išleidžia techninis diegėjas; abiejų steigėjų dalių parašai reiškia abipusį lygiaverčio steigėjų statuso pripažinimą.</li>
+          <li>Gavus abu parašus, kontraktas tampa: <span class="gold">„Sealed"</span> („Užrakintas").</li>
+        </ol>
+      </div>
+      <p class="footnote spec-gap" data-en="The canonical deed is the constant COVENANT, stored on-chain. COVENANT_LT is its Lithuanian rendering. This page is their formatting." data-lt="Kanoninis aktas yra konstanta COVENANT, saugoma on-chain. COVENANT_LT — jos lietuviškas atitikmuo. Šis puslapis — tik jų formatavimas.">The canonical deed is the constant COVENANT, stored on-chain. COVENANT_LT is its Lithuanian rendering. This page is their formatting.</p>
+    </section>
+
+    <section class="panel" aria-labelledby="signatures-label">
+      <h2 id="signatures-label" class="label" data-en="Signatures" data-lt="PARAŠAI">Signatures</h2>
+      <div class="link-rows">
+        <div class="link-row">
+          <span class="link-name" data-en="Signed by founder Λ" data-lt="Pasirašė steigėjas Λ">Signed by founder Λ</span>
+          <code class="address">0x000000 · 2024-08-14</code>
+        </div>
+        <div class="link-row">
+          <span class="link-name" data-en="Signed by founder Δ" data-lt="Pasirašė steigėjas Δ">Signed by founder Δ</span>
+          <code class="address">0xbC170538038ADC0651292e28A42Dab4286641e02 · 2024-08-14</code>
+        </div>
+        <div class="link-row">
+          <span class="link-name" data-en="Verification on Base" data-lt="Patikra Base tinkle">Verification on Base</span>
+          <a href="https://basescan.org/tx/0x000000" rel="noopener" data-sentry-action="outbound_deed_verification"><code class="address">0x000000</code> →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Built by LKSPec · <span data-en="All is stated · Nothing is missed · Look again" data-lt="Viskas pasakyta · Nieko nepraleista · Pažvelk dar kartą">All is stated · Nothing is missed · Look again</span></p>
+    <p class="footer-note">LKSPec is the publishing identity of <a href="https://www.linkedin.com/in/bykovas/" rel="noopener me">Denisas Bykovas</a>.<span class="footer-sep">·</span><a href="https://x.com/MeetLUKO" rel="noopener me" data-sentry-action="outbound_x">x.com/MeetLUKO</a></p>
+  </footer>
+
+  <script src="app.js?v=10" defer></script>
+</body>
+</html>

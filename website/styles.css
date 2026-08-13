@@ -727,3 +727,13 @@ main section[id], #top { scroll-margin-top: 76px; }
 @media (min-width: 720px) {
   .give-take-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 }
+
+/* Deed */
+.deed-opening { color: var(--luko-offwhite); }
+.deed-list { margin: 16px 0 0; padding-left: 24px; color: var(--luko-muted); font-size: 13px; line-height: 1.8; }
+.deed-list > li { margin-bottom: 16px; padding-left: 8px; }
+.deed-list > li:last-child { margin-bottom: 0; }
+.deed-list ol { margin: 8px 0 0; padding-left: 22px; }
+.deed-list ol li { margin-bottom: 4px; padding-left: 6px; }
+.deed-list code { font-family: var(--font-mono); font-size: 11px; color: var(--luko-offwhite); word-break: break-all; }
+.deed-list .gold, .gold { color: var(--luko-gold); }
