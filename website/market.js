@@ -11,6 +11,7 @@ import { CONFIG } from "./config.js?v=2";
   var LUKO_ADDRESS = CONFIG.addresses.luko;
   var USDC_ADDRESS = CONFIG.addresses.usdc;
   var BALANCE_OF = "0x70a08231"; /* balanceOf(address) */
+  var lastPrice = null; /* latest USDC/LUKO price, set on each market fetch */
 
   if (typeof BigInt === "undefined" || !window.fetch) return;
 
@@ -70,6 +71,23 @@ import { CONFIG } from "./config.js?v=2";
     setValue("market-value", "$" + formatFixed(50000 * price, 2));
     setValue("market-value-140", "$" + formatFixed(140000 * price, 2));
     setValue("market-value-190", "$" + formatFixed(190000 * price, 2));
+    lastPrice = price;
+    renderAvailable();
+  }
+
+  /* "available now" under the streaming value: the vested-so-far portion of one
+     founder's 140,000 streaming allocation, in LUKO (ticks client-side from the
+     stream schedule) and, once a price is known, its USD value. Makes the split
+     between the full allocation and the already-available part explicit. */
+  function renderAvailable() {
+    var el = document.getElementById("market-avail-140");
+    if (!el) return;
+    var d = CONFIG.streams.delta;
+    var nowSec = Date.now() / 1000;
+    var vested = Math.min(Math.max(vestedAt(d, nowSec), 0), d.total);
+    var text = formatFixed(vested, 0) + " LUKO";
+    if (lastPrice !== null) text += " · ~$" + formatFixed(vested * lastPrice, 2);
+    el.textContent = text;
   }
 
   /* Load with a single retry; refresh every 30 s. Failures keep "—". */
@@ -120,6 +138,7 @@ import { CONFIG } from "./config.js?v=2";
   function renderStreams() {
     renderVestedFor(CONFIG.streams.delta, "stream-status", "vested-amount");
     renderVestedFor(CONFIG.streams.lambda, "stream-status-lambda", "vested-amount-lambda");
+    renderAvailable();
   }
 
   renderStreams();
