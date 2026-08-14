@@ -1,7 +1,7 @@
 /* Live market data for the genesis page, read directly from Base public RPC.
    No third-party price APIs, no keys. The page renders "—" placeholders and
    stays usable without this script. */
-import { CONFIG } from "./config.js";
+import { CONFIG } from "./config.js?v=2";
 
 (function () {
   "use strict";

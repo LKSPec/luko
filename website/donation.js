@@ -3,7 +3,7 @@
    Function verifies the tx and returns a personalized SVG note, which we show
    and offer as PNG / SVG. All signing happens in the user's wallet; this file
    never handles keys. Progressive enhancement — the site works without it. */
-import { CONFIG } from "./config.js";
+import { CONFIG } from "./config.js?v=2";
 
 (function () {
   "use strict";
