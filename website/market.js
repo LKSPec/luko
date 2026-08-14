@@ -93,22 +93,18 @@ import { CONFIG } from "./config.js";
      the counter runs entirely client-side with no runtime RPC call. The
      config values must match the on-chain stream exactly; a "Verify on-chain"
      link next to the counter points at the Sablier stream page. */
-  var DELTA = CONFIG.streams.delta;
-  var VEST_START = DELTA.start;
-  var VEST_END = DELTA.end;
-  var VEST_TOTAL = DELTA.total;
-
-  function vestedAt(nowSec) {
-    if (nowSec <= VEST_START) return 0;
-    if (nowSec >= VEST_END) return VEST_TOTAL;
-    return VEST_TOTAL * (nowSec - VEST_START) / (VEST_END - VEST_START);
+  function vestedAt(cfg, nowSec) {
+    if (nowSec <= cfg.start) return 0;
+    if (nowSec >= cfg.end) return cfg.total;
+    return cfg.total * (nowSec - cfg.start) / (cfg.end - cfg.start);
   }
 
-  function renderVested() {
+  function renderVestedFor(cfg, statusId, vestedId) {
+    if (!cfg) return;
     var nowSec = Date.now() / 1000;
-    var status = document.getElementById("stream-status");
-    if (nowSec < VEST_START) {
-      setValue("vested-amount", "—");
+    var status = document.getElementById(statusId);
+    if (nowSec < cfg.start) {
+      setValue(vestedId, "—");
       return;
     }
     if (status && status.dataset.en !== "Active") {
@@ -117,10 +113,15 @@ import { CONFIG } from "./config.js";
       status.textContent = document.documentElement.lang === "lt" ? status.dataset.lt : status.dataset.en;
       status.className = "accent";
     }
-    var vested = Math.min(Math.max(vestedAt(nowSec), 0), VEST_TOTAL);
-    setValue("vested-amount", formatFixed(vested, 2) + " LUKO");
+    var vested = Math.min(Math.max(vestedAt(cfg, nowSec), 0), cfg.total);
+    setValue(vestedId, formatFixed(vested, 2) + " LUKO");
   }
 
-  renderVested();
-  setInterval(renderVested, 1000);
+  function renderStreams() {
+    renderVestedFor(CONFIG.streams.delta, "stream-status", "vested-amount");
+    renderVestedFor(CONFIG.streams.lambda, "stream-status-lambda", "vested-amount-lambda");
+  }
+
+  renderStreams();
+  setInterval(renderStreams, 1000);
 })();
