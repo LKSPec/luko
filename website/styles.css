@@ -506,6 +506,33 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
   color: var(--luko-faint);
   margin-top: 4px;
 }
+/* Footnote reference marker (superscript "1") next to the price and stake,
+   linking to the #price-note explanation at the foot of the page. */
+.note-ref {
+  font-size: 11px;
+  line-height: 1;
+  vertical-align: super;
+  margin-left: 3px;
+  color: var(--luko-gold);
+  text-decoration: none;
+  border-bottom: none;
+}
+.note-ref:hover { text-decoration: underline; }
+/* Price-calculation footnote at the foot of the market page. */
+.market-note {
+  max-width: 640px;
+  margin: 8px auto 0;
+  padding: 0 20px;
+  color: var(--luko-faint);
+  font-size: 12px;
+  line-height: 1.55;
+}
+.market-note p { margin: 0; }
+.market-note-verify { margin-top: 6px; }
+.market-note a {
+  color: var(--luko-gold);
+  border-bottom: 1px solid rgba(201, 168, 106, 0.25);
+}
 .swatch { width: 9px; height: 9px; border-radius: 2px; flex: 0 0 auto; }
 .swatch-immediate { background: var(--luko-gold); }
 .swatch-streaming { background: #6E5F45; }
