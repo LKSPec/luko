@@ -67,7 +67,13 @@ export const CONFIG = {
       total: 140000,
       sablierUrl: "https://app.sablier.com/vesting/stream/LK3-8453-902"
     },
-    /* Λ — filled by a commit once the stream is live (after 16 Aug 2026). */
-    lambda: null
+    /* Λ — mirror of Δ (same schedule/total), distinct on-chain stream id. */
+    lambda: {
+      id:    932,
+      start: 1785697200,   /* Aug 2 2026, 22:00 Europe/Vilnius (19:00 UTC) */
+      end:   1819055100,   /* Aug 24 2027, 00:05 Europe/Vilnius */
+      total: 140000,
+      sablierUrl: "https://app.sablier.com/vesting/stream/LK3-8453-932"
+    }
   }
 };
