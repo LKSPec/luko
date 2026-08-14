@@ -85,7 +85,7 @@
       if (action) track(action);
     }, true);
   </script>
-  <link rel="stylesheet" href="styles.css?v=17">
+  <link rel="stylesheet" href="styles.css?v=18">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -143,13 +143,13 @@
     <section id="market" class="panel" aria-labelledby="market-label">
       <h2 id="market-label" class="label" data-en="Live market" data-lt="RINKA">Live market</h2>
       <dl class="facts">
-        <div class="fact"><dt data-en="Price" data-lt="Kaina">Price</dt><dd id="market-price">—</dd></div>
+        <div class="fact"><dt><span data-en="Price" data-lt="Kaina">Price</span><a class="note-ref" href="#price-note" title="Live pool price — see note below" aria-label="How the price is calculated">1</a></dt><dd id="market-price">—</dd></div>
         <div class="fact"><dt data-en="Market LUKO" data-lt="Rinkoje LUKO">Market LUKO</dt><dd id="market-luko">—</dd></div>
         <div class="fact"><dt data-en="Market USDC" data-lt="Rinkoje USDC">Market USDC</dt><dd id="market-usdc">—</dd></div>
       </dl>
       <div class="market-value-block">
         <div class="market-stake">
-          <div class="label" data-en="One founder's full stake" data-lt="Vieno steigėjo visa dalis">One founder's full stake</div>
+          <div class="label"><span data-en="One founder's full stake" data-lt="Vieno steigėjo visa dalis">One founder's full stake</span><a class="note-ref" href="#price-note" title="Live pool price — see note below" aria-label="How the price is calculated">1</a></div>
           <div class="market-stake-row">
             <span class="market-value-big" id="market-value-190">—</span>
             <span class="market-stake-units">190,000 LUKO</span>
@@ -182,6 +182,11 @@
           src="https://www.dextools.io/widget-chart/en/base/pe-light/0x2222a01b83db8c533b062aeb6de4f61d6ae792f2?theme=dark&chartType=1&chartResolution=1D&drawingToolbars=false&showTradeHistory=true&chartInUsd=true&headerColor=0A0A0A&tvPlatformColor=0A0A0A&tvPaneColor=0D0C0A&tradeHistoryColor=0D0C0A"></iframe>
       </div>
     </section>
+
+    <aside class="market-note" id="price-note" aria-label="How the price is calculated">
+      <p class="market-note-body"><sup>1</sup> <span data-en="Price is read live on-chain as the reserve ratio (USDC ÷ LUKO) of the LUKO/USDC Aerodrome pool on Base, taking 1 USDC ≈ $1. Every USD figure on this page is derived from it — no third-party price feed. This is the pool's current price; wallets and aggregators can lag it briefly on a thin pool, so their numbers may differ." data-lt="Kaina skaitoma tiesiogiai on-chain kaip LUKO/USDC „Aerodrome“ baseino (Base) rezervų santykis (USDC ÷ LUKO), laikant 1 USDC ≈ $1. Visi šio puslapio USD skaičiai iš jos išvedami — jokio išorinio kainos šaltinio. Tai dabartinė baseino kaina; piniginės ir agregatoriai plonam baseinui gali trumpam vėluoti, todėl jų skaičiai gali skirtis.">Price is read live on-chain as the reserve ratio (USDC ÷ LUKO) of the LUKO/USDC Aerodrome pool on Base, taking 1 USDC ≈ $1. Every USD figure on this page is derived from it — no third-party price feed. This is the pool's current price; wallets and aggregators can lag it briefly on a thin pool, so their numbers may differ.</span></p>
+      <p class="market-note-verify"><span data-en="Verify:" data-lt="Patikrinti:">Verify:</span> <a href="https://basescan.org/address/0x2222A01b83Db8c533B062AEb6DE4F61D6Ae792F2#readContract" rel="noopener"><span data-en="pool reserves on BaseScan" data-lt="baseino rezervai BaseScan">pool reserves on BaseScan</span></a> · <a href="https://www.geckoterminal.com/base/pools/0x2222A01b83Db8c533B062AEb6DE4F61D6Ae792F2" rel="noopener">GeckoTerminal</a></p>
+    </aside>
 
 
   </main>
