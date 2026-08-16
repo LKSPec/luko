@@ -1039,25 +1039,14 @@ main section[id], #top { scroll-margin-top: 76px; }
 .pt-person-name { font-family: var(--pt-display-font); font-size: clamp(17px, 1.8vw, 22px); }
 .pt-portrait {
   flex: none;
+  display: block;
   width: 52px;
   height: 52px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   object-fit: cover;
   object-position: 50% 16%;
   background: var(--pt-ink);
 }
-/* Placeholder until Lukas has a photograph — same box, so dropping a real
-   portrait in changes nothing about the layout. */
-.pt-portrait--lp {
-  background: var(--pt-pink);
-  color: var(--pt-ink);
-  font-family: var(--pt-display-font);
-  font-size: 20px;
-}
 .pt-portrait--lg { width: 62px; height: 62px; }
-.pt-portrait--lg.pt-portrait--lp { font-size: 24px; letter-spacing: 0.04em; }
 .pt-hero-address {
   padding: clamp(14px, 1.8vw, 20px) clamp(18px, 3vw, 34px);
   font-family: var(--pt-mono);
