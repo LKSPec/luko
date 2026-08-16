@@ -830,13 +830,17 @@ main section[id], #top { scroll-margin-top: 76px; }
   line-height: 1.5;
 }
 
-/* The site-wide link and layout rules assume the dark system; unwind them. */
-.pt-body a {
+/* The site-wide link and layout rules assume the dark system; unwind them.
+   :where() keeps this reset at zero specificity for the `a`, so a bordered
+   link like the secondary button or the dashed card keeps the border it asks
+   for — without it the reset outranks them and the box renders open at the
+   bottom. */
+.pt-body :where(a) {
   color: inherit;
   border-bottom: 0;
   transition: background-color var(--motion), color var(--motion), border-color var(--motion);
 }
-.pt-body a:hover { color: inherit; border-bottom-color: transparent; }
+.pt-body :where(a:hover) { color: inherit; border-bottom-color: transparent; }
 .pt-body ::selection { background: rgba(176, 0, 127, 0.22); }
 .pt-body :focus-visible { outline: 2px solid var(--pt-magenta); outline-offset: 2px; }
 .pt-body .skip-link {
@@ -1006,13 +1010,11 @@ main section[id], #top { scroll-margin-top: 76px; }
 
 /* Footer */
 .pt-footer {
-  /* Phone browsers float a toolbar over the bottom of the viewport, so the last
-     line needs more room than the design's 30px or it reads as sitting under
-     the chrome. The inset is a separate declaration: a browser without env()
-     drops that line alone and keeps the padding above, rather than throwing
-     out the shorthand and losing the side gutters with it. */
-  padding: 0 18px 64px;
-  padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  /* The design's 30px, plus whatever the device reserves for its home
+     indicator. Separate declaration so a browser without env() keeps the
+     shorthand — and its side gutters — instead of dropping the lot. */
+  padding: 0 18px 30px;
+  padding-bottom: calc(30px + env(safe-area-inset-bottom, 0px));
   font-family: var(--pt-mono);
   font-size: 10px;
   line-height: 1.6;
