@@ -533,6 +533,31 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
   color: var(--luko-gold);
   border-bottom: 1px solid rgba(201, 168, 106, 0.25);
 }
+/* Point — placeholder page: centered logo + "coming soon" caption. */
+.point-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 24px;
+  padding: 72px 0 56px;
+  min-height: 42vh;
+}
+.point-logo { width: 96px; height: 96px; }
+.point-title {
+  font-size: 34px;
+  font-weight: 200;
+  letter-spacing: 0.14em;
+  margin: 0;
+  color: var(--luko-offwhite);
+}
+.point-soon { color: var(--luko-faint); font-size: 16px; letter-spacing: 0.02em; margin: 0; }
+@media (min-width: 720px) {
+  .point-logo { width: 128px; height: 128px; }
+  .point-title { font-size: 44px; }
+  .point-soon { font-size: 18px; }
+}
 .swatch { width: 9px; height: 9px; border-radius: 2px; flex: 0 0 auto; }
 .swatch-immediate { background: var(--luko-gold); }
 .swatch-streaming { background: #6E5F45; }
