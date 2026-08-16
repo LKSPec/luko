@@ -1006,7 +1006,10 @@ main section[id], #top { scroll-margin-top: 76px; }
 
 /* Footer */
 .pt-footer {
-  padding: 0 18px 30px;
+  /* Phone browsers float a toolbar over the bottom of the viewport, so the last
+     line needs more room than the design's 30px or it reads as sitting under
+     the chrome. The inset only resolves where the browser reports one. */
+  padding: 0 18px calc(64px + env(safe-area-inset-bottom, 0px));
   font-family: var(--pt-mono);
   font-size: 10px;
   line-height: 1.6;
