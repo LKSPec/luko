@@ -1008,8 +1008,11 @@ main section[id], #top { scroll-margin-top: 76px; }
 .pt-footer {
   /* Phone browsers float a toolbar over the bottom of the viewport, so the last
      line needs more room than the design's 30px or it reads as sitting under
-     the chrome. The inset only resolves where the browser reports one. */
-  padding: 0 18px calc(64px + env(safe-area-inset-bottom, 0px));
+     the chrome. The inset is a separate declaration: a browser without env()
+     drops that line alone and keeps the padding above, rather than throwing
+     out the shorthand and losing the side gutters with it. */
+  padding: 0 18px 64px;
+  padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
   font-family: var(--pt-mono);
   font-size: 10px;
   line-height: 1.6;
