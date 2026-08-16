@@ -799,11 +799,11 @@ main section[id], #top { scroll-margin-top: 76px; }
 .deed-list .gold, .gold { color: var(--luko-gold); }
 
 /* ---------------------------------------------------------------------------
-   Point — the page written for friends rather than for the record.
-   It runs its own visual identity: apricot paper with a dot screen, Anton
-   display type, neon fills. Everything here is scoped to `.pt-body` so the
-   black/champagne system used by every other page is untouched.
-   Mobile-first; one breakpoint at 900px.
+   LUKO main page. Its own visual identity: apricot paper with a dot screen,
+   Anton display type, neon fills — deliberately not the black/champagne system
+   that oficial.html, market.html, deed.html and specification.html share, so
+   every rule here is scoped to `.pt-body` and inert on those pages.
+   Mobile-first; one breakpoint at 900px, with clamp() carrying the type between.
    --------------------------------------------------------------------------- */
 .pt-body {
   --pt-bg: #FFDFAF;
@@ -812,14 +812,16 @@ main section[id], #top { scroll-margin-top: 76px; }
   --pt-ink-soft: #7A5F3C;
   --pt-rule: #1E140833;
   --pt-rule-dark: #FFDFAF33;
+  --pt-dim-dark: #FFDFAFCC;
   --pt-note-dark: #FFDFAF99;
+  --pt-half-dark: #FFDFAF8A;
   --pt-magenta: #B0007F;
   --pt-pink: #FF4BD8;
   --pt-green: #8BFF6B;
-  --pt-on-dark: #FFDFAF;
-  --pt-display: Anton, "Arial Narrow", "Helvetica Neue", sans-serif;
+  --pt-display-font: Anton, "Arial Narrow", "Helvetica Neue", sans-serif;
   --pt-sans: "Space Grotesk", "Helvetica Neue", Arial, sans-serif;
   --pt-mono: "DM Mono", ui-monospace, Menlo, monospace;
+  --pt-gutter: clamp(18px, 4vw, 56px);
 
   background: var(--pt-bg);
   background-image: radial-gradient(#00000018 1px, transparent 1px);
@@ -830,11 +832,9 @@ main section[id], #top { scroll-margin-top: 76px; }
   line-height: 1.5;
 }
 
-/* The site-wide link and layout rules assume the dark system; unwind them.
-   :where() keeps this reset at zero specificity for the `a`, so a bordered
-   link like the secondary button or the dashed card keeps the border it asks
-   for — without it the reset outranks them and the box renders open at the
-   bottom. */
+/* The site-wide link rules assume the dark system; unwind them. :where() keeps
+   this reset at zero specificity for the anchor, so a bordered link keeps the
+   border it asks for instead of losing it to this rule. */
 .pt-body :where(a) {
   color: inherit;
   border-bottom: 0;
@@ -846,350 +846,455 @@ main section[id], #top { scroll-margin-top: 76px; }
 .pt-body .skip-link {
   background: var(--pt-ink);
   border-color: var(--pt-ink);
-  color: var(--pt-on-dark);
+  color: var(--pt-bg);
   font-family: var(--pt-mono);
 }
-.pt-body main { max-width: 656px; margin: 0 auto; padding: 0; }
-.pt-body main section[id] { scroll-margin-top: 24px; }
-.pt-header,
-.pt-footer { max-width: 656px; margin: 0 auto; }
+/* Sections run edge to edge by design, so `main` gives up the site's wrapper. */
+.pt-body main { max-width: none; margin: 0; padding: 0; }
+.pt-body main section[id] { scroll-margin-top: 12px; }
 
-/* Header */
-.pt-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 18px;
+/* Shared primitives ------------------------------------------------------- */
+.pt-label {
+  display: block;
+  font-family: var(--pt-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--pt-ink-soft);
 }
-.pt-lockup { display: flex; align-items: center; gap: 10px; }
+.pt-label--dark { color: var(--pt-note-dark); letter-spacing: 0.2em; }
+.pt-accent { color: var(--pt-magenta); }
+.pt-green { color: var(--pt-green); }
+.pt-dim { color: var(--pt-dim-dark); }
+.pt-section-title {
+  margin: 12px 0 0;
+  font-family: var(--pt-display-font);
+  font-weight: 400;
+  font-size: clamp(30px, 4.2vw, 56px);
+  line-height: 1.08;
+}
+.pt-section-title--sm { font-size: clamp(28px, 3.6vw, 48px); line-height: 1.1; }
+.pt-display {
+  margin: 0;
+  font-family: var(--pt-display-font);
+  font-weight: 400;
+  font-size: clamp(24px, 2.9vw, 38px);
+  line-height: 1.18;
+}
+.pt-display--sm { font-size: clamp(20px, 2.2vw, 28px); line-height: 1.2; }
+.pt-body-copy { margin: 0; font-size: clamp(15px, 1.5vw, 17px); line-height: 1.6; text-wrap: pretty; }
+.pt-pull { margin: 0; font-size: clamp(17px, 1.9vw, 22px); line-height: 1.45; text-wrap: pretty; }
+.pt-note { margin: 0; font-size: 14px; line-height: 1.6; color: var(--pt-ink-soft); text-wrap: pretty; }
+.pt-stack { display: flex; flex-direction: column; gap: 16px; }
+.pt-stack--centred { align-self: center; }
+
+/* The mark is champagne and vanishes on apricot, so it always sits on an
+   ink disc — never on the paper itself. */
 .pt-chip {
   flex: none;
-  width: 46px;
-  height: 46px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #000;
+  background: var(--pt-ink);
   border-radius: 50%;
 }
-.pt-chip img { display: block; width: 26px; height: 26px; }
-.pt-wordmark { font-family: var(--pt-display); font-size: 19px; letter-spacing: 0.04em; }
-.pt-nav { display: none; }
-.pt-body .pt-header-cta { display: none; }
-.pt-meta { display: flex; align-items: center; gap: 14px; margin-left: auto; }
-.pt-tag {
-  font-family: var(--pt-mono);
-  font-size: 10px;
-  letter-spacing: 0.16em;
-  color: var(--pt-ink-soft);
+.pt-chip img { display: block; width: 25px; height: 25px; }
+.pt-chip--sm { width: 40px; height: 40px; }
+.pt-chip--sm img { width: 23px; height: 23px; }
+.pt-chip--hero { width: clamp(76px, 8vw, 112px); height: clamp(76px, 8vw, 112px); }
+.pt-chip--hero img { width: 56%; height: 56%; }
+.pt-lockup { display: flex; align-items: center; gap: 12px; }
+.pt-wordmark { font-family: var(--pt-display-font); font-size: 20px; letter-spacing: 0.04em; }
+.pt-wordmark--sm { font-size: 18px; }
+
+/* Buttons. The solid one carries a border in its own colour so a solid and an
+   outlined button standing side by side measure exactly the same box. */
+.pt-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 15px 24px;
+  border: 3px solid var(--pt-ink);
+  font-family: var(--pt-display-font);
+  font-size: clamp(15px, 1.5vw, 18px);
+  line-height: 1.15;
 }
+.pt-body .pt-btn--solid { background: var(--pt-ink); color: var(--pt-bg); }
+.pt-body .pt-btn--solid:hover { background: var(--pt-ink-hover); border-color: var(--pt-ink-hover); }
+.pt-body .pt-btn--outline:hover { background: var(--pt-ink); color: var(--pt-bg); }
+.pt-btn--inline {
+  align-self: start;
+  padding: 14px 22px;
+  font-family: var(--pt-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+}
+
+/* Header ------------------------------------------------------------------ */
+.pt-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 18px var(--pt-gutter);
+  border-bottom: 2px solid var(--pt-ink);
+}
+.pt-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px clamp(12px, 1.8vw, 26px);
+  font-family: var(--pt-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+/* 12px above and below a 20px line clears the 44px tap target on a phone. */
+.pt-nav > a { padding: 12px 0; }
+.pt-nav > a:hover { color: var(--pt-magenta); }
+.pt-nav-out { color: var(--pt-ink-soft); }
+.pt-body .pt-header-cta {
+  flex: none;
+  padding: 13px 18px;
+  background: var(--pt-ink);
+  color: var(--pt-bg);
+}
+.pt-body .pt-header-cta:hover { background: var(--pt-ink-hover); color: var(--pt-bg); }
 .pt-body .language-toggle {
   font-family: var(--pt-mono);
-  font-size: 10px;
-  letter-spacing: 0.16em;
+  font-size: 11px;
+  letter-spacing: 0.14em;
   color: var(--pt-ink-soft);
 }
 .pt-body .language-option { font-family: inherit; color: var(--pt-ink-soft); }
 .pt-body .language-option:hover,
 .pt-body .language-option.is-active { color: var(--pt-ink); }
 
-/* Hero */
-.pt-hero-copy { padding: 10px 18px 22px; }
+/* Hero -------------------------------------------------------------------- */
+/* Vertical rules are drawn as border-left pulled back by its own width inside
+   an overflow-hidden grid: when the grid collapses to one column the rule
+   slides off-canvas instead of stranding a line across the layout. */
+.pt-hero {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(330px, 100%), 1fr));
+  border-bottom: 2px solid var(--pt-ink);
+  overflow: hidden;
+}
+.pt-hero-copy { padding: clamp(28px, 4.2vw, 60px) var(--pt-gutter) clamp(26px, 3.4vw, 44px); min-width: 0; }
+.pt-hero-lockup { display: flex; align-items: center; gap: clamp(14px, 1.8vw, 24px); }
 .pt-h1 {
   margin: 0;
-  font-family: var(--pt-display);
+  font-family: var(--pt-display-font);
   font-weight: 400;
-  font-size: 46px;
-  /* Anton never goes below line-height 1: Lithuanian diacritics (Ė, Ų, Ž, Š, Ū)
-     collide with the line above. */
-  line-height: 1.05;
+  font-size: clamp(56px, 7vw, 108px);
+  /* 0.95 is safe for LUKO alone — no diacritic reaches above the caps. */
+  line-height: 0.95;
+  letter-spacing: 0.01em;
 }
-.pt-accent { color: var(--pt-magenta); }
-.pt-lead { margin: 16px 0 0; font-size: 17px; line-height: 1.5; font-weight: 500; }
-.pt-facts {
-  list-style: none;
-  margin: 0 18px 22px;
-  padding: 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-}
-.pt-fact { padding: 16px 14px; border-top: 2px solid var(--pt-ink); }
-.pt-fact:nth-child(odd) { border-right: 2px solid var(--pt-ink); }
-.pt-fact-value {
-  display: block;
-  font-family: var(--pt-display);
-  font-weight: 400;
-  font-size: 26px;
-  line-height: 1;
-}
-.pt-fact-label {
-  display: block;
-  margin-top: 8px;
-  font-family: var(--pt-mono);
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  color: var(--pt-ink-soft);
-}
-
-/* Questions */
-.pt-qa { padding: 0 18px 22px; }
-.pt-section-title {
-  margin: 0 0 12px;
-  font-family: var(--pt-display);
-  font-weight: 400;
-  font-size: 24px;
+.pt-kicker {
+  margin: clamp(18px, 2.2vw, 28px) 0 0;
+  font-family: var(--pt-display-font);
+  font-size: clamp(24px, 2.8vw, 40px);
   line-height: 1.1;
 }
-.pt-cards { display: flex; flex-direction: column; gap: 10px; }
-.pt-card {
-  display: block;
-  padding: 16px;
-  border: 3px solid var(--pt-ink);
+.pt-lead {
+  margin: clamp(16px, 2vw, 22px) 0 0;
+  font-size: clamp(18px, 1.9vw, 22px);
+  line-height: 1.45;
+  max-width: 520px;
+  text-wrap: pretty;
 }
-/* The filled cards carry a border in their own colour so every card in the row
-   has the same box, fill or no fill. */
-.pt-card--pink { background: var(--pt-pink); border-color: var(--pt-pink); }
-.pt-card--green { background: var(--pt-green); border-color: var(--pt-green); }
-.pt-card--ask { display: none; }
-.pt-q {
-  display: block;
-  margin: 0 0 7px;
-  font-family: var(--pt-display);
-  font-weight: 400;
-  font-size: 19px;
-  line-height: 1.15;
-}
-.pt-a { display: block; margin: 0; font-size: 15px; line-height: 1.5; }
-
-/* That night */
-.pt-night { padding: 0 18px 22px; }
-.pt-night-note { display: none; }
-.pt-steps {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  border-top: 2px solid var(--pt-ink);
-}
-.pt-step {
+/* Three CTAs: equal boxes that fill the row when they fit and stack cleanly
+   when they don't, so the third never leaves a stranded half-width button. */
+.pt-actions {
   display: grid;
-  grid-template-columns: 62px 1fr;
-  padding: 14px 0;
+  grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr));
+  gap: 12px;
+  margin-top: clamp(20px, 2.6vw, 32px);
 }
-.pt-step + .pt-step { border-top: 1px solid var(--pt-rule); }
-.pt-time { font-family: var(--pt-mono); font-size: 13px; color: var(--pt-ink-soft); }
-.pt-step--last .pt-time { color: var(--pt-magenta); }
-.pt-step-body { margin: 0; font-size: 15px; line-height: 1.5; }
-
-/* Statement and call to action */
-.pt-close { padding: 0 18px 26px; }
-.pt-statement {
-  margin: 0 0 22px;
-  padding: 20px 18px;
-  background: var(--pt-ink);
-  color: var(--pt-on-dark);
-  font-size: 17px;
-  line-height: 1.55;
+.pt-hero-facts {
+  border-left: 2px solid var(--pt-ink);
+  margin-left: -2px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
-.pt-mark { color: var(--pt-green); }
-.pt-actions { display: flex; flex-direction: column; gap: 10px; }
-.pt-btn { display: block; text-align: center; }
-.pt-body .pt-btn--primary {
+.pt-hero-row {
+  padding: clamp(16px, 2vw, 24px) clamp(18px, 3vw, 34px);
+  border-bottom: 2px solid var(--pt-ink);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+}
+.pt-hero-row--green { background: var(--pt-green); }
+.pt-hero-row--green .pt-label { color: var(--pt-ink); }
+.pt-hero-row--people { flex-direction: column; align-items: stretch; gap: 12px; flex: 1; justify-content: center; }
+.pt-hero-value { font-family: var(--pt-display-font); font-size: clamp(18px, 1.9vw, 24px); text-align: right; }
+.pt-person { display: flex; align-items: center; gap: 12px; }
+.pt-person-name { font-family: var(--pt-display-font); font-size: clamp(17px, 1.8vw, 22px); }
+.pt-portrait {
+  flex: none;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  object-fit: cover;
+  object-position: 50% 16%;
   background: var(--pt-ink);
-  color: var(--pt-on-dark);
-  padding: 18px;
-  font-family: var(--pt-display);
+}
+/* Placeholder until Lukas has a photograph — same box, so dropping a real
+   portrait in changes nothing about the layout. */
+.pt-portrait--lp {
+  background: var(--pt-pink);
+  color: var(--pt-ink);
+  font-family: var(--pt-display-font);
   font-size: 20px;
 }
-.pt-btn--secondary {
+.pt-portrait--lg { width: 62px; height: 62px; }
+.pt-portrait--lg.pt-portrait--lp { font-size: 24px; letter-spacing: 0.04em; }
+.pt-hero-address {
+  padding: clamp(14px, 1.8vw, 20px) clamp(18px, 3vw, 34px);
+  font-family: var(--pt-mono);
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--pt-ink-soft);
+  word-break: break-all;
+}
+
+/* Questions --------------------------------------------------------------- */
+.pt-qa { padding: clamp(30px, 4vw, 52px) var(--pt-gutter); border-bottom: 2px solid var(--pt-ink); }
+.pt-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  gap: 14px;
+  margin-top: clamp(22px, 3vw, 34px);
+}
+.pt-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px;
   border: 3px solid var(--pt-ink);
-  padding: 14px;
+}
+/* Filled cards carry a border in their own colour so every box measures the
+   same, fill or no fill, and the rows stay aligned. */
+.pt-card--pink { background: var(--pt-pink); border-color: var(--pt-pink); }
+.pt-card--green { background: var(--pt-green); border-color: var(--pt-green); }
+.pt-q {
+  margin: 0;
+  font-family: var(--pt-display-font);
+  font-weight: 400;
+  font-size: clamp(18px, 1.9vw, 22px);
+  line-height: 1.2;
+}
+.pt-a { margin: 0; font-size: 15px; line-height: 1.6; text-wrap: pretty; }
+
+/* Emission ---------------------------------------------------------------- */
+.pt-emission { border-bottom: 2px solid var(--pt-ink); }
+.pt-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
+  overflow: hidden;
+}
+.pt-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: clamp(22px, 2.8vw, 34px) clamp(16px, 2.4vw, 32px);
+  border-left: 2px solid var(--pt-ink);
+  margin-left: -2px;
+}
+.pt-cell--pink { background: var(--pt-pink); }
+.pt-cell--green { background: var(--pt-green); }
+.pt-cell--pink .pt-label,
+.pt-cell--green .pt-label { color: var(--pt-ink); }
+.pt-cell-value { font-family: var(--pt-display-font); font-size: clamp(36px, 4.2vw, 58px); line-height: 1; }
+.pt-cell-value--sm { font-size: clamp(32px, 3.6vw, 50px); }
+.pt-split {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+  gap: clamp(18px, 3vw, 48px);
+  padding: clamp(24px, 3.4vw, 44px) var(--pt-gutter);
+  border-top: 2px solid var(--pt-ink);
+}
+.pt-split .pt-stack { gap: 14px; }
+
+/* Founders ---------------------------------------------------------------- */
+.pt-founders {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  gap: clamp(20px, 3vw, 48px);
+  padding: clamp(28px, 3.8vw, 52px) var(--pt-gutter);
+  border-bottom: 2px solid var(--pt-ink);
+}
+.pt-founders > .pt-stack { gap: clamp(18px, 2.4vw, 26px); }
+.pt-founder-cards { display: flex; flex-direction: column; gap: 12px; max-width: 460px; }
+.pt-founder { display: flex; align-items: center; gap: 14px; padding: 14px; border: 3px solid var(--pt-ink); }
+.pt-founder-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.pt-founder-name { font-family: var(--pt-display-font); font-size: 20px; line-height: 1.15; }
+.pt-founder .pt-label { letter-spacing: 0.12em; }
+
+/* Principle — the dark band ------------------------------------------------ */
+.pt-principle { background: var(--pt-ink); color: var(--pt-bg); }
+.pt-principle-head { padding: clamp(34px, 5vw, 76px) var(--pt-gutter) clamp(22px, 3vw, 34px); }
+.pt-principle-title {
+  margin: 14px 0 0;
+  font-family: var(--pt-display-font);
+  font-weight: 400;
+  font-size: clamp(34px, 5.4vw, 76px);
+  line-height: 1.06;
+}
+.pt-principle-copy {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  gap: clamp(20px, 3vw, 48px);
+  padding: 0 var(--pt-gutter) clamp(26px, 3.4vw, 42px);
+}
+.pt-principle-copy .pt-stack { gap: 14px; }
+.pt-principle-copy .pt-pull { font-size: clamp(17px, 1.8vw, 20px); line-height: 1.5; }
+.pt-principle-copy .pt-body-copy { font-size: 15px; line-height: 1.65; }
+.pt-principle-close {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: clamp(10px, 2.4vw, 26px);
+  padding: clamp(20px, 2.6vw, 32px) var(--pt-gutter) clamp(32px, 4.4vw, 56px);
+  border-top: 1px solid var(--pt-rule-dark);
+}
+.pt-closing { font-family: var(--pt-display-font); font-size: clamp(22px, 2.8vw, 36px); }
+.pt-closing--dim { color: var(--pt-half-dark); }
+
+/* Genesis ----------------------------------------------------------------- */
+.pt-genesis { border-bottom: 2px solid var(--pt-ink); }
+.pt-genesis-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding: clamp(30px, 4vw, 52px) var(--pt-gutter) clamp(18px, 2.4vw, 26px);
+}
+.pt-genesis-title {
+  margin: 0;
+  font-family: var(--pt-display-font);
+  font-weight: 400;
+  font-size: clamp(34px, 5vw, 68px);
+  line-height: 1.05;
+}
+.pt-genesis-head .pt-label { font-size: 12px; }
+.pt-strip--steps { grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr)); }
+.pt-cell--step {
+  gap: 12px;
+  padding: clamp(20px, 2.4vw, 30px) clamp(16px, 2.2vw, 28px);
+  border-top: 2px solid var(--pt-ink);
+}
+.pt-time { font-family: var(--pt-mono); font-size: 14px; color: var(--pt-ink-soft); }
+.pt-time--now { color: var(--pt-ink); }
+.pt-step-copy { font-size: 15px; line-height: 1.55; text-wrap: pretty; }
+.pt-genesis-close {
+  margin: 0;
+  padding: clamp(22px, 3vw, 36px) var(--pt-gutter) clamp(28px, 3.8vw, 48px);
+  font-family: var(--pt-display-font);
+  font-size: clamp(22px, 2.8vw, 36px);
+  line-height: 1.2;
+  max-width: 900px;
+}
+
+/* On-chain records -------------------------------------------------------- */
+.pt-records { border-bottom: 2px solid var(--pt-ink); }
+.pt-records-head {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+  gap: clamp(16px, 3vw, 44px);
+  padding: clamp(30px, 4vw, 52px) var(--pt-gutter) clamp(20px, 2.6vw, 30px);
+}
+.pt-records-note { margin: 0; align-self: end; font-size: 15px; line-height: 1.6; text-wrap: pretty; }
+.pt-rows { display: flex; flex-direction: column; }
+.pt-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr));
+  gap: 10px 12px;
+  align-items: baseline;
+  padding: clamp(22px, 2.4vw, 28px) var(--pt-gutter);
+  border-top: 2px solid var(--pt-ink);
+}
+.pt-rows .pt-row:last-child { border-bottom: 2px solid var(--pt-ink); }
+.pt-body .pt-row:hover { background: var(--pt-ink); color: var(--pt-bg); }
+.pt-row-name { font-family: var(--pt-display-font); font-size: clamp(21px, 2.3vw, 28px); }
+.pt-row-desc { font-size: 15px; line-height: 1.55; }
+.pt-row-go { font-family: var(--pt-mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; }
+.pt-records-address {
+  padding: 16px var(--pt-gutter) clamp(24px, 3vw, 34px);
+  font-family: var(--pt-mono);
+  font-size: 11px;
+  color: var(--pt-ink-soft);
+  word-break: break-all;
+}
+
+/* What's next ------------------------------------------------------------- */
+.pt-next {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+  gap: clamp(18px, 3vw, 48px);
+  padding: clamp(30px, 4vw, 52px) var(--pt-gutter);
+  border-bottom: 2px solid var(--pt-ink);
+}
+
+/* Footer ------------------------------------------------------------------ */
+.pt-footer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  gap: clamp(20px, 3vw, 40px);
+  padding: clamp(28px, 3.6vw, 48px) var(--pt-gutter) clamp(32px, 4vw, 52px);
+  /* A phone's bottom chrome floats over the viewport; add whatever the device
+     reserves. Separate declaration so a browser without env() keeps the rest. */
+  padding-bottom: calc(clamp(32px, 4vw, 52px) + env(safe-area-inset-bottom, 0px));
+}
+.pt-footer-brand { display: flex; flex-direction: column; gap: 10px; }
+.pt-footer-claim {
+  align-self: center;
+  font-family: var(--pt-display-font);
+  font-size: clamp(20px, 2.2vw, 26px);
+  line-height: 1.2;
+}
+.pt-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  align-self: center;
   font-family: var(--pt-mono);
   font-size: 12px;
   letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
-
-/* Footer */
-.pt-footer {
-  /* The design's 30px, plus whatever the device reserves for its home
-     indicator. Separate declaration so a browser without env() keeps the
-     shorthand — and its side gutters — instead of dropping the lot. */
-  padding: 0 18px 30px;
-  padding-bottom: calc(30px + env(safe-area-inset-bottom, 0px));
+.pt-footer-links a:hover { color: var(--pt-magenta); }
+.pt-footer-meta {
+  grid-column: 1 / -1;
+  margin: 0;
   font-family: var(--pt-mono);
-  font-size: 10px;
-  line-height: 1.6;
+  font-size: 11px;
   color: var(--pt-ink-soft);
 }
-.pt-address { margin: 0; word-break: break-all; }
-.pt-footer-note,
-.pt-footer-meta { margin: 8px 0 0; }
 .pt-footer-meta a { text-decoration: underline; text-underline-offset: 3px; }
-
-/* Hover — colour only. Nothing moves, scales or casts a shadow. */
-.pt-body .pt-header-cta:hover,
-.pt-body .pt-btn--primary:hover { background: var(--pt-ink-hover); }
-.pt-body .pt-btn--secondary:hover,
-.pt-body .pt-card--ask:hover { background: var(--pt-ink); color: var(--pt-on-dark); }
-.pt-nav a:hover,
-.pt-footer-meta a:hover,
-.pt-lockup:hover .pt-wordmark { text-decoration: underline; text-underline-offset: 4px; }
+.pt-footer-meta a:hover { color: var(--pt-magenta); }
 
 @media (prefers-reduced-motion: reduce) {
   .pt-body a,
   .pt-body button { transition: none; }
 }
 
-/* Desktop ---------------------------------------------------------------- */
+/* Desktop ----------------------------------------------------------------- */
 @media (min-width: 900px) {
-  .pt-body main,
-  .pt-header,
-  .pt-footer { max-width: 1280px; }
-
-  .pt-header {
-    gap: 28px;
-    padding: 22px 56px;
-    border-bottom: 2px solid var(--pt-ink);
-  }
-  .pt-lockup { gap: 12px; }
-  .pt-chip { width: 44px; height: 44px; }
-  .pt-chip img { width: 25px; height: 25px; }
-  .pt-wordmark { font-size: 20px; }
-  .pt-nav {
-    display: flex;
-    align-items: center;
-    gap: 28px;
-    margin-left: auto;
-    font-family: var(--pt-mono);
-    font-size: 11px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-  }
-  .pt-meta { margin-left: 0; }
-  .pt-tag { display: none; }
-  .pt-body .language-toggle { font-size: 11px; letter-spacing: 0.14em; }
-  .pt-body .pt-header-cta {
-    display: inline-block;
-    background: var(--pt-ink);
-    color: var(--pt-on-dark);
-    padding: 10px 18px;
-    font-family: var(--pt-mono);
-    font-size: 11px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-  }
-
-  .pt-hero {
-    display: grid;
-    grid-template-columns: 1.15fr 1fr;
-    border-bottom: 2px solid var(--pt-ink);
-  }
-  .pt-hero-copy { padding: 64px 56px; min-width: 0; }
-  /* 82px is the size at the 1280px reference width; below that it tracks the
-     viewport so the longest word never pushes the hero grid wider than the page. */
-  .pt-h1 { font-size: clamp(56px, 6.4vw, 82px); line-height: 1.03; }
-  .pt-lead { margin-top: 26px; font-size: 21px; max-width: 560px; }
-  .pt-facts { margin: 0; min-width: 0; border-left: 2px solid var(--pt-ink); }
-  .pt-fact { padding: 28px; }
-  .pt-fact:nth-child(1),
-  .pt-fact:nth-child(2) { border-top: 0; }
-  .pt-fact:nth-child(1),
-  .pt-fact:nth-child(2) { border-bottom: 2px solid var(--pt-ink); }
-  .pt-fact-value { font-size: 40px; }
-  .pt-fact-label { font-size: 11px; }
-
-  .pt-qa { padding: 48px 56px 44px; }
-  .pt-section-title { font-size: 30px; margin-bottom: 32px; }
-  .pt-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-  .pt-card { padding: 22px; }
-  .pt-card--ask {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 10px;
-    border-style: dashed;
-  }
-  .pt-card--ask .pt-q { margin-bottom: 0; }
-  .pt-q { font-size: 22px; margin-bottom: 10px; }
-  .pt-a { font-size: 16px; line-height: 1.55; }
-
-  .pt-night {
-    padding: 40px 56px 48px;
-    background: var(--pt-ink);
-    color: var(--pt-on-dark);
-    border-top: 2px solid var(--pt-ink);
-    border-bottom: 2px solid var(--pt-ink);
-  }
-  .pt-night-head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 24px;
-    padding-bottom: 12px;
-  }
-  .pt-night-head .pt-section-title { margin: 0; }
-  .pt-night-note {
-    display: block;
-    margin: 0;
-    font-family: var(--pt-mono);
-    font-size: 12px;
-    letter-spacing: 0.14em;
-    color: var(--pt-note-dark);
-    text-align: right;
-  }
-  .pt-steps {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    border-top: 0;
-    padding-top: 24px;
-  }
-  .pt-step {
-    display: block;
-    padding: 0 24px;
-    border-right: 1px solid var(--pt-rule-dark);
-  }
-  .pt-step + .pt-step { border-top: 0; }
-  .pt-step:first-child { padding-left: 0; }
-  .pt-step:last-child { padding-right: 0; border-right: 0; }
-  .pt-time { display: block; margin-bottom: 12px; font-size: 14px; color: var(--pt-green); }
-  .pt-step--last .pt-time { color: var(--pt-pink); }
-  .pt-step-body { font-size: 16px; line-height: 1.55; }
-
-  .pt-close {
-    display: grid;
-    grid-template-columns: 1.4fr 1fr;
-    align-items: center;
-    gap: 40px;
-    padding: 52px 56px;
-  }
-  .pt-statement {
-    margin: 0;
-    padding: 0;
-    background: transparent;
-    color: var(--pt-ink);
-    font-size: 24px;
-    line-height: 1.5;
-  }
-  .pt-mark { background: var(--pt-green); color: var(--pt-ink); padding: 0 6px; }
-  .pt-actions { gap: 12px; }
-  .pt-body .pt-btn--primary { padding: 20px; font-size: 22px; }
-  .pt-btn--secondary { padding: 16px; }
-
-  .pt-footer {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 24px 56px 30px;
-    border-top: 2px solid var(--pt-ink);
-    font-size: 11px;
-  }
-  .pt-address,
-  .pt-footer-note { margin: 0; }
-  .pt-footer-meta { flex-basis: 100%; margin: 0; }
-}
-
-/* The three-column question grid needs the room; below 1100px it stays at two. */
-@media (min-width: 1100px) {
-  .pt-cards { grid-template-columns: repeat(3, 1fr); }
+  /* Cap the running text so lines don't over-run on a wide screen; the
+     sections themselves stay edge to edge. */
+  .pt-records-note,
+  .pt-next .pt-body-copy,
+  .pt-founders .pt-body-copy { max-width: 560px; }
+  .pt-split .pt-body-copy { max-width: 680px; }
 }

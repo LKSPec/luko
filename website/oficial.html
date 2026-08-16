@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LUKO — Genesis token on Base</title>
+  <meta name="description" content="LUKO is a fixed-supply ERC-20 token on Base. Total supply 1,000,000. No further minting. No owner privileges.">
+  <link rel="icon" href="assets/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
+  <meta property="og:title" content="LUKO — Genesis token on Base">
+  <meta property="og:description" content="Fixed-supply ERC-20 token on Base. Total supply 1,000,000. No further minting. No owner privileges.">
+  <meta property="og:url" content="https://meetluko.eu/oficial">
+  <meta property="og:image" content="https://meetluko.eu/api/og">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="LUKO">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:alt" content="LUKO — fixed-supply ERC-20 on Base">
+  <meta name="twitter:image" content="https://meetluko.eu/api/og">
+  <meta name="twitter:title" content="LUKO — Genesis token on Base">
+  <meta name="twitter:description" content="Fixed-supply ERC-20 token on Base. Total supply 1,000,000. No further minting. No owner privileges.">
+  <!-- SENTRY_DSN -->
+  <script
+    src="https://js-de.sentry-cdn.com/7738fc80396b4b68af0041def3125cb0.min.js"
+    crossorigin="anonymous"
+    defer
+  ></script>
+  <script>
+    (function () {
+      function initSentry() {
+        try {
+          window.Sentry.init({
+            environment: "production",
+            tracesSampleRate: 0
+          });
+        } catch (error) { /* Sentry must never block the site. */ }
+      }
+
+      function configureSentry() {
+        try {
+          if (!window.Sentry) return;
+          if (typeof window.Sentry.onLoad === "function") {
+            window.Sentry.onLoad(initSentry);
+          } else {
+            initSentry();
+          }
+        } catch (error) { /* CDN unavailable or blocked. */ }
+      }
+
+      if (document.readyState === "complete") {
+        configureSentry();
+      } else {
+        window.addEventListener("load", configureSentry, { once: true });
+      }
+    })();
+
+    function track(action) {
+      try {
+        if (window.Sentry && typeof window.Sentry.addBreadcrumb === "function") {
+          window.Sentry.addBreadcrumb({ category: "ui", message: action, level: "info" });
+        }
+      } catch (error) { /* Tracking is non-blocking. */ }
+    }
+
+    document.addEventListener("click", function (event) {
+      if (!(event.target instanceof Element)) return;
+      var target = event.target.closest("a, button, [role='button']");
+      if (!target) return;
+
+      var action = target.getAttribute("data-sentry-action");
+      if (!action && /\/genesis(?:\.html)?\/?$/.test(location.pathname)) {
+        var marker = [
+          target.id,
+          target.getAttribute("name"),
+          target.getAttribute("aria-label"),
+          target.textContent
+        ].join(" ").toLowerCase();
+        if (marker.indexOf("claim") !== -1) action = "claim_clicked";
+        if (!action && marker.indexOf("connect") !== -1) action = "connect_clicked";
+      }
+
+      if (action) track(action);
+    }, true);
+  </script>
+  <link rel="stylesheet" href="styles.css?v=24">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <a class="lockup" href="https://meetluko.eu/" aria-label="LUKO home">
+      <img src="assets/logo-mark-dark.svg" alt="" width="26" height="26">
+      <span class="wordmark">LUKO</span>
+    </a>
+    <nav class="site-nav" aria-label="Sections">
+      <a href="/" data-en="Token" data-lt="Tokenas">Token</a>
+      <a href="/market">Market</a>
+      <a href="/deed" data-en="Deed" data-lt="Aktas">Deed</a>
+      <span class="language-toggle" role="group" aria-label="Language">
+        <button type="button" class="language-option is-active" data-language="en" data-sentry-action="lang_switch" aria-pressed="true">EN</button>
+        <span aria-hidden="true">/</span>
+        <button type="button" class="language-option" data-language="lt" data-sentry-action="lang_switch" aria-pressed="false">LT</button>
+      </span>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero" aria-labelledby="hero-title">
+      <img class="hero-mark" src="assets/luko-logo.png" alt="LUKO mark" width="96" height="96">
+      <div class="hero-copy">
+        <h1 id="hero-title">LUKO</h1>
+        <p class="hero-kicker">Genesis token · ERC-20 · Base</p>
+      </div>
+    </section>
+
+    <section class="statement" aria-label="Statement">
+      <p class="statement-line" data-en="Nothing is chosen here. That is the choice." data-lt="Čia nieko nesprendžiama. Tai ir yra sprendimas.">Nothing is chosen here. That is the choice.</p>
+    </section>
+
+    <section id="token" class="panel" aria-labelledby="token-label">
+      <h2 id="token-label" class="label" data-en="Token" data-lt="TOKEN">Token</h2>
+      <dl class="facts">
+        <div class="fact"><dt data-en="Total supply" data-lt="Bendras kiekis">Total supply</dt><dd class="accent">1,000,000 LUKO</dd></div>
+        <div class="fact"><dt data-en="Network" data-lt="Tinklas">Network</dt><dd>Base</dd></div>
+        <div class="fact"><dt data-en="Standard" data-lt="Standartas">Standard</dt><dd>ERC-20</dd></div>
+        <div class="fact"><dt data-en="Further minting" data-lt="Papildoma emisija">Further minting</dt><dd data-en="Impossible" data-lt="Neįmanomas">Impossible</dd></div>
+        <div class="fact"><dt data-en="Owner privileges" data-lt="Savininko privilegijos">Owner privileges</dt><dd data-en="None" data-lt="Nėra">None</dd></div>
+        <div class="fact"><dt data-en="Genesis allocation" data-lt="Genezės paskirstymas">Genesis allocation</dt><dd data-en="Published below" data-lt="Paskelbta žemiau">Published below</dd></div>
+      </dl>
+      <p class="coin-line" data-en="1 LUKO = 1 LUKO. The rest is not denominated." data-lt="1 LUKO = 1 LUKO. Visa kita nominalo neturi.">1 LUKO = 1 LUKO. The rest is not denominated.</p>
+    </section>
+
+    <section id="allocation" class="panel" aria-labelledby="allocation-label">
+      <h2 id="allocation-label" class="label" data-en="Genesis allocation" data-lt="Genesis · Pradžia ir paskirstymas">Genesis allocation</h2>
+      <div class="allocation-layout">
+        <div class="allocation-chart-col">
+          <svg class="allocation-chart" viewBox="0 0 200 200" role="img" aria-label="Genesis allocation: Founder Λ 19%, Founder Δ 19%, Market 19%, Operations 19%, Reserve 24%">
+            <g fill="none" stroke-width="26">
+              <circle cx="100" cy="100" r="80" stroke="#C9A86A" stroke-dasharray="95.5 407.15" transform="rotate(-90 100 100)"></circle>
+              <circle cx="100" cy="100" r="80" stroke="#9A7E4E" stroke-dasharray="95.5 407.15" transform="rotate(-21.6 100 100)"></circle>
+              <circle cx="100" cy="100" r="80" stroke="#3B3226" stroke-dasharray="95.5 407.15" transform="rotate(46.8 100 100)"></circle>
+              <circle cx="100" cy="100" r="80" stroke="#4E4940" stroke-dasharray="95.5 407.15" transform="rotate(115.2 100 100)"></circle>
+              <circle cx="100" cy="100" r="80" stroke="#6E6759" stroke-dasharray="120.6 382.05" transform="rotate(183.6 100 100)"></circle>
+            </g>
+            <text x="145" y="33.8" text-anchor="middle" dominant-baseline="middle" font-size="9" fill="#0A0A0A">19%</text>
+            <text x="178.1" y="117.4" text-anchor="middle" dominant-baseline="middle" font-size="9" fill="#0A0A0A">19%</text>
+            <text x="112.5" y="179" text-anchor="middle" dominant-baseline="middle" font-size="9" fill="#EDE7DA">19%</text>
+            <text x="31.1" y="140.7" text-anchor="middle" dominant-baseline="middle" font-size="9" fill="#EDE7DA">19%</text>
+            <text x="45.3" y="41.7" text-anchor="middle" dominant-baseline="middle" font-size="9" fill="#0A0A0A">24%</text>
+            <text x="100" y="96" text-anchor="middle" font-size="17" font-weight="200" letter-spacing="1" fill="#E8E4DC">1,000,000</text>
+            <text x="100" y="114" text-anchor="middle" font-size="8" letter-spacing="3" fill="#C9A86A">LUKO</text>
+          </svg>
+        </div>
+        <div class="table-scroll">
+          <table class="allocation-table">
+            <thead>
+              <tr>
+                <th data-en="Allocation" data-lt="Paskirstymas">Allocation</th>
+                <th data-en="Amount" data-lt="Kiekis">Amount</th>
+                <th data-en="Percent" data-lt="Dalis">Percent</th>
+                <th data-en="Immediate" data-lt="Iš karto">Immediate</th>
+                <th data-en="Vesting" data-lt="Palaipsniui">Vesting</th>
+                <th data-en="Status" data-lt="Būsena">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="row-swatch" style="background:#C9A86A"></span><span data-en="Founder — Λ" data-lt="Steigėjas — Λ">Founder — Λ</span></td>
+                <td>190,000</td><td>19%</td><td>50,000</td><td>140,000</td>
+                <td class="accent" data-en="Active" data-lt="Aktyvus">Active</td>
+              </tr>
+              <tr>
+                <td><span class="row-swatch" style="background:#9A7E4E"></span><span data-en="Founder — Δ" data-lt="Steigėjas — Δ">Founder — Δ</span></td>
+                <td>190,000</td><td>19%</td><td>50,000</td><td>140,000</td>
+                <td class="accent" data-en="Active" data-lt="Aktyvus">Active</td>
+              </tr>
+              <tr>
+                <td><span class="row-swatch" style="background:#3B3226"></span><span data-en="Market" data-lt="Apyvarta rinkoje">Market</span></td>
+                <td>190,000</td><td>19%</td><td>100,000</td><td>90,000</td>
+                <td class="accent" data-en="Active" data-lt="Aktyvus">Active</td>
+              </tr>
+              <tr>
+                <td><span class="row-swatch" style="background:#4E4940"></span><span data-en="Operations" data-lt="Operacijos">Operations</span></td>
+                <td>190,000</td><td>19%</td><td>190,000</td><td class="muted">—</td>
+                <td class="muted" data-en="Held" data-lt="Laikoma">Held</td>
+              </tr>
+              <tr>
+                <td><span class="row-swatch" style="background:#6E6759"></span><span data-en="Reserve" data-lt="Rezervas">Reserve</span></td>
+                <td>240,000</td><td>24%</td><td>240,000</td><td class="muted">—</td>
+                <td class="muted" data-en="Held" data-lt="Laikoma">Held</td>
+              </tr>
+              <tr class="total-row">
+                <td data-en="Total" data-lt="Iš viso">Total</td>
+                <td>1,000,000</td><td>100%</td><td>630,000</td><td>370,000</td><td class="muted">—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <p class="coin-line" data-en="Operations proceed without announcement." data-lt="Operacijos vyksta be pranešimo.">Operations proceed without announcement.</p>
+    </section>
+
+    <section id="genesis" class="panel" aria-labelledby="issuance-label">
+      <h2 id="issuance-label" class="label" data-en="Issuance" data-lt="IŠLEIDIMAS">Issuance</h2>
+      <p class="prose" data-en="One million LUKO, created on 31 July 2026 — twenty-four days before — in a single transaction at block 49364826 on Base, complete in the same moment. There was never going to be more." data-lt="Vienas milijonas LUKO — sukurtas 2026 m. liepos 31 d. — likus dvidešimt keturioms dienoms — viena transakcija, block 49364826, užbaigtas tą pačią akimirką. Daugiau neturėjo būti ir niekada nebus.">One million LUKO, created on 31 July 2026 — twenty-four days before — in a single transaction at block 49364826 on Base, complete in the same moment. There was never going to be more.</p>
+    </section>
+
+    <section id="mandate" class="panel" aria-labelledby="mandate-label">
+      <h2 id="mandate-label" class="label" data-en="Mandate" data-lt="MANDATAS">Mandate</h2>
+      <p class="prose" data-en="LUKO has no mandate. That is the mandate." data-lt="LUKO neturi mandato. Tai ir yra mandatas.">LUKO has no mandate. That is the mandate.</p>
+      <p class="prose" data-en="This is not an oversight. Nothing here is." data-lt="Tai ne atsitiktinumas. Atsitiktinumų čia nėra.">This is not an oversight. Nothing here is.</p>
+    </section>
+
+    <section class="band" aria-label="Fixed">
+      <p data-en="Everything here is fixed. Nothing here is settled." data-lt="Viskas čia fiksuota. Niekas čia nenulemta.">Everything here is fixed. Nothing here is settled.</p>
+    </section>
+
+    <section id="control" class="panel" aria-labelledby="control-label">
+      <h2 id="control-label" class="label" data-en="Control" data-lt="VALDYMAS">Control</h2>
+      <p class="prose" data-en="No owner. No admin keys. Nothing can be changed — including by whoever deployed it. Verified on Base." data-lt="Be owner'io. Be admin keys. Nieko pakeisti negalima — net tam, kuris sukurė. Verified on Base.">No owner. No admin keys. Nothing can be changed — including by whoever deployed it. Verified on Base.</p>
+      <p class="prose" data-en="Immutability is a property of the contract. It is not advice." data-lt="Nekeičiamumas yra kontrakto esmė. Tai ne patarimas.">Immutability is a property of the contract. It is not advice.</p>
+      <p class="footnote" data-en="The contract specifies eighteen decimal places. Standard. Unremarkable." data-lt="Kontrakte nurodyta aštuoniolika skaičių po kablelio. Tai standartas. Nieko ypatingo.">The contract specifies eighteen decimal places. Standard. Unremarkable.</p>
+      <p class="footnote nineteen" data-en="Precision ends at eighteen. Some things make more sense at nineteen. What begins there is in your hands." data-lt="Bet tikslumas baigiasi ties aštuoniolika. Kai kurie dalykai prasmingesni tampa tik ties devyniolika. Kas prasideda ten — yra tavo rankose.">Precision ends at eighteen. Some things make more sense at nineteen. What begins there is in your hands.</p>
+    </section>
+
+    <section id="links" class="panel" aria-labelledby="links-label">
+      <h2 id="links-label" class="label" data-en="Links" data-lt="NUORODOS">Links</h2>
+      <div class="link-rows">
+        <div class="link-row contract-row">
+          <span class="link-name">Contract</span>
+          <div class="contract">
+            <code class="address" id="contract-address">0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1</code>
+            <div class="contract-actions">
+              <button type="button" class="copy-button" id="copy-address" data-sentry-action="copy_contract" hidden>Copy</button>
+              <button type="button" class="copy-button" id="add-luko" data-sentry-action="add_luko_clicked" hidden>Add LUKO</button>
+              <a href="https://basescan.org/token/0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1" rel="noopener" data-sentry-action="outbound_basescan">View on BaseScan →</a>
+            </div>
+          </div>
+        </div>
+        <div class="link-row">
+          <span class="link-name" data-en="Holders" data-lt="Turėtojai">Holders</span>
+          <a href="https://basescan.org/token/tokenholderchart/0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1" rel="noopener" data-sentry-action="outbound_basescan">Holder chart on BaseScan →</a>
+        </div>
+        <div class="link-row">
+          <span class="link-name">Market</span>
+          <a href="https://aerodrome.finance/swap?from=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913&amp;to=0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1" rel="noopener" data-sentry-action="outbound_aerodrome">Trade on Aerodrome →</a>
+        </div>
+        <div class="link-row">
+          <span class="link-name">Chart</span>
+          <a href="https://dexscreener.com/base/0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1" rel="noopener" data-sentry-action="outbound_dexscreener">DexScreener →</a>
+        </div>
+        <div class="link-row">
+          <span class="link-name">Chart</span>
+          <a href="https://www.geckoterminal.com/base/pools/0x2222A01b83Db8c533B062AEb6DE4F61D6Ae792F2" data-sentry-action="outbound_geckoterminal">GeckoTerminal →</a>
+        </div>
+        <div class="link-row">
+          <span class="link-name">GitHub</span>
+          <a href="https://github.com/LKSPec/luko" rel="noopener">github.com/LKSPec/luko</a>
+        </div>
+        <div class="link-row">
+          <span class="link-name">X</span>
+          <a href="https://x.com/MeetLUKO" rel="noopener me" data-sentry-action="outbound_x">x.com/MeetLUKO</a>
+        </div>
+        <div class="link-row">
+          <span class="link-name">Network</span>
+          <a href="https://base.org" rel="noopener">Base</a>
+        </div>
+      </div>
+    </section>
+
+    <div class="give-take-grid">
+    <section id="donation-note" class="panel" aria-labelledby="donation-note-label">
+      <h2 id="donation-note-label" class="label" data-en="For those who give" data-lt="TIEMS, KURIE DUODA">For those who give</h2>
+      <p class="prose" data-en="Give to the genesis. Receive a unique numbered note, issued to the bearer. Nothing is promised. That is the promise." data-lt="Paremk genesis. Gauk unikalų numeruotą raštą, išduodamą turėtojui. Nieko nežadama. Tai ir yra pažadas.">Give to the genesis. Receive a unique numbered note, issued to the bearer. Nothing is promised. That is the promise.</p>
+      <button type="button" class="copy-button" id="get-card" data-sentry-action="donation_note_clicked" data-en="Get Donation Note" data-lt="GAUTI RĖMĖJO SERTIFIKATĄ">Get Donation Note</button>
+    </section>
+
+    <section id="claim" class="panel" aria-labelledby="claim-label">
+      <h2 id="claim-label" class="label" data-en="For those who take" data-lt="TIEMS, KURIE IMA">For those who take</h2>
+      <p class="prose" data-en="Some LUKO for anyone who asks. No questions. No note. Nothing expected." data-lt="Šiek tiek LUKO kiekvienam, kas paprašo. Jokių klausimų. Jokio rašto. Nieko nesitikima.">Some LUKO for anyone who asks. No questions. No note. Nothing expected.</p>
+      <button type="button" class="copy-button" id="claim-luko" data-sentry-action="claim_clicked" disabled data-en="Claim 19 LUKO" data-lt="ATSIIMTI 19 LUKO">Claim 19 LUKO</button>
+      <p class="footnote" data-en="Claims are not yet open." data-lt="Atsiėmimas dar neatidarytas.">Claims are not yet open.</p>
+    </section>
+    </div>
+
+    <section id="disclosures" class="panel" aria-labelledby="disclosures-label">
+      <h2 id="disclosures-label" class="label" data-en="Disclosures" data-lt="IŠLYGOS">Disclosures</h2>
+      <p class="disclosure" data-en="LUKO confers no rights, no yield, and no utility. It was issued without consideration." data-lt="LUKO nesuteikia jokių teisių, jokios grąžos ir jokio pritaikomumo. Išleista be atlygio ir jokių įsipareigojimų.">LUKO confers no rights, no yield, and no utility. It was issued without consideration.</p>
+      <p class="disclosure closing-line" data-en="This is everything. Nothing else is included. Nothing else was required." data-lt="Tai yra viskas. Daugiau nieko nėra įtraukta. Daugiau nieko ir nereikėjo.">This is everything. Nothing else is included. Nothing else was required.</p>
+    </section>
+
+    <section id="documentation" class="panel" aria-labelledby="documentation-label">
+      <h2 id="documentation-label" class="label" data-en="Documentation" data-lt="DOKUMENTACIJA">Documentation</h2>
+      <p class="prose" data-en="A formal specification of the contract. Final." data-lt="Formali kontrakto specifikacija. Galutinė.">A formal specification of the contract. Final.</p>
+      <a class="doc-link" href="/specification" data-sentry-action="spec_opened" data-en="Read the specification →" data-lt="Skaityti specifikaciją →">Read the specification →</a>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Built by LKSPec · <span data-en="All is stated · Nothing is missed · Look again" data-lt="Viskas pasakyta · Nieko nepraleista · Pažvelk dar kartą">All is stated · Nothing is missed · Look again</span></p>
+    <p class="footer-note">LKSPec is the publishing identity of <a href="https://www.linkedin.com/in/bykovas/" rel="noopener me">Denisas Bykovas</a>.<span class="footer-sep">·</span><a href="https://x.com/MeetLUKO" rel="noopener me" data-sentry-action="outbound_x">x.com/MeetLUKO</a></p>
+  </footer>
+
+  <dialog id="wallet-dialog" aria-labelledby="wallet-dialog-label">
+    <h2 id="wallet-dialog-label" class="label">Wallet</h2>
+    <div id="wallet-dialog-body"></div>
+    <div class="dialog-actions">
+      <button type="button" class="copy-button" id="wallet-dialog-close">Close</button>
+    </div>
+  </dialog>
+
+  <dialog id="card-dialog" aria-labelledby="card-dialog-label">
+    <h2 id="card-dialog-label" class="label" data-en="Donation Note" data-lt="Rėmėjo sertifikatas">Donation Note</h2>
+    <div id="card-dialog-body"></div>
+    <div class="dialog-actions">
+      <button type="button" class="copy-button" id="card-dialog-close" data-en="Close" data-lt="Uždaryti">Close</button>
+    </div>
+  </dialog>
+
+  <script src="app.js?v=10" defer></script>
+  <script src="wallet.js?v=8" type="module"></script>
+  <script src="donation.js?v=8" type="module"></script>
+</body>
+</html>

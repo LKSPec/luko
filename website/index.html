@@ -3,25 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>LUKO — Genesis token on Base</title>
-  <meta name="description" content="LUKO is a fixed-supply ERC-20 token on Base. Total supply 1,000,000. No further minting. No owner privileges.">
+  <title data-en="LUKO — a new cryptocurrency on Base" data-lt="LUKO — nauja kriptovaliuta Base tinkle">LUKO — a new cryptocurrency on Base</title>
+  <meta name="description" content="LUKO is a new cryptocurrency on Base. One million LUKO, issued once and for all, by two equal founders. The emission is finished. The project is not.">
   <link rel="icon" href="assets/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
-  <meta property="og:title" content="LUKO — Genesis token on Base">
-  <meta property="og:description" content="Fixed-supply ERC-20 token on Base. Total supply 1,000,000. No further minting. No owner privileges.">
+  <meta property="og:title" content="LUKO — nauja kriptovaliuta Base tinkle">
+  <meta property="og:description" content="Milijonas LUKO išleistas vieną kartą ir visam laikui. Emisija baigta. Projektas — ne.">
   <meta property="og:url" content="https://meetluko.eu/">
-  <meta property="og:image" content="https://meetluko.eu/api/og">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="LUKO">
+  <meta property="og:image" content="https://meetluko.eu/assets/og-point-1200x630.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:type" content="image/png">
-  <meta property="og:image:alt" content="LUKO — fixed-supply ERC-20 on Base">
-  <meta name="twitter:image" content="https://meetluko.eu/api/og">
-  <meta name="twitter:title" content="LUKO — Genesis token on Base">
-  <meta name="twitter:description" content="Fixed-supply ERC-20 token on Base. Total supply 1,000,000. No further minting. No owner privileges.">
+  <meta property="og:image:alt" content="LUKO — milijonas monetų, nė vienos daugiau">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="LUKO">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="LUKO — nauja kriptovaliuta Base tinkle">
+  <meta name="twitter:description" content="Milijonas LUKO išleistas vieną kartą ir visam laikui. Emisija baigta. Projektas — ne.">
+  <meta name="twitter:image" content="https://meetluko.eu/assets/og-point-1200x630.png">
   <!-- SENTRY_DSN -->
   <script
     src="https://js-de.sentry-cdn.com/7738fc80396b4b68af0041def3125cb0.min.js"
@@ -69,259 +69,291 @@
       if (!(event.target instanceof Element)) return;
       var target = event.target.closest("a, button, [role='button']");
       if (!target) return;
-
       var action = target.getAttribute("data-sentry-action");
-      if (!action && /\/genesis(?:\.html)?\/?$/.test(location.pathname)) {
-        var marker = [
-          target.id,
-          target.getAttribute("name"),
-          target.getAttribute("aria-label"),
-          target.textContent
-        ].join(" ").toLowerCase();
-        if (marker.indexOf("claim") !== -1) action = "claim_clicked";
-        if (!action && marker.indexOf("connect") !== -1) action = "connect_clicked";
-      }
-
       if (action) track(action);
     }, true);
   </script>
-  <link rel="stylesheet" href="styles.css?v=23">
+  <!-- This page runs its own type system: Anton display, Space Grotesk body,
+       DM Mono labels. Loaded here rather than in styles.css so the pages that
+       use Archivo never pay for these files. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="styles.css?v=24">
 </head>
-<body>
-  <a class="skip-link" href="#main">Skip to content</a>
+<body class="pt-body">
+  <a class="skip-link" href="#main" data-en="Skip to content" data-lt="Pereiti prie turinio">Skip to content</a>
 
-  <header class="site-header">
-    <a class="lockup" href="https://meetluko.eu/" aria-label="LUKO home">
-      <img src="assets/logo-mark-dark.svg" alt="" width="26" height="26">
-      <span class="wordmark">LUKO</span>
+  <header class="pt-header" id="top">
+    <a class="pt-lockup" href="#top" aria-label="LUKO">
+      <span class="pt-chip"><img src="assets/logo-mark-dark.svg" alt="" width="25" height="25"></span>
+      <span class="pt-wordmark">LUKO</span>
     </a>
-    <nav class="site-nav" aria-label="Sections">
-      <a href="/market">Market</a>
-      <a href="/deed" data-en="Deed" data-lt="Aktas">Deed</a>
-      <a href="/point" data-en="Point" data-lt="Taškas">Point</a>
+    <nav class="pt-nav" aria-label="Sections">
+      <a href="#klausimai" data-en="Questions" data-lt="Klausimai">Questions</a>
+      <a href="#emisija" data-en="Emission" data-lt="Emisija">Emission</a>
+      <a href="#steigejai" data-en="Founders" data-lt="Steigėjai">Founders</a>
+      <a href="#genezes-naktis" data-en="Genesis" data-lt="Genezė">Genesis</a>
+      <a href="#patikrinti" data-en="Verify" data-lt="Patikrinti">Verify</a>
+      <a class="pt-nav-out" href="/oficial" data-en="Official →" data-lt="Oficialu →">Official →</a>
       <span class="language-toggle" role="group" aria-label="Language">
         <button type="button" class="language-option is-active" data-language="en" data-sentry-action="lang_switch" aria-pressed="true">EN</button>
         <span aria-hidden="true">/</span>
         <button type="button" class="language-option" data-language="lt" data-sentry-action="lang_switch" aria-pressed="false">LT</button>
       </span>
+      <a class="pt-header-cta"
+         href="https://basescan.org/token/0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1"
+         rel="noopener"
+         data-sentry-action="point_verify"
+         data-en="VERIFY ON-CHAIN" data-lt="PATIKRINTI GRANDINĖJE">VERIFY ON-CHAIN</a>
     </nav>
   </header>
 
   <main id="main">
-    <section class="hero" aria-labelledby="hero-title">
-      <img class="hero-mark" src="assets/luko-logo.png" alt="LUKO mark" width="96" height="96">
-      <div class="hero-copy">
-        <h1 id="hero-title">LUKO</h1>
-        <p class="hero-kicker">Genesis token · ERC-20 · Base</p>
+    <section class="pt-hero" aria-labelledby="luko-title">
+      <div class="pt-hero-copy">
+        <div class="pt-hero-lockup">
+          <span class="pt-chip pt-chip--hero"><img src="assets/logo-mark-dark.svg" alt=""></span>
+          <h1 class="pt-h1" id="luko-title">LUKO</h1>
+        </div>
+        <p class="pt-kicker"><span data-en="A NEW CRYPTOCURRENCY" data-lt="NAUJA KRIPTOVALIUTA">A NEW CRYPTOCURRENCY</span><br><span data-en="ON BASE." data-lt="BASE TINKLE.">ON BASE.</span></p>
+        <p class="pt-lead"><span data-en="One million LUKO, issued once and for all." data-lt="Milijonas LUKO išleistas vieną kartą ir visam laikui.">One million LUKO, issued once and for all.</span><br><span class="pt-accent" data-en="The emission is finished. The project is not." data-lt="Emisija baigta. Projektas — ne.">The emission is finished. The project is not.</span></p>
+        <div class="pt-actions">
+          <a class="pt-btn pt-btn--solid"
+             href="https://www.geckoterminal.com/base/pools/0x2222a01b83db8c533b062aeb6de4f61d6ae792f2"
+             rel="noopener"
+             data-sentry-action="point_market"
+             data-en="VERIFY ON THE MARKET" data-lt="PATIKRINTI RINKOJE">VERIFY ON THE MARKET</a>
+          <a class="pt-btn pt-btn--outline"
+             href="https://basescan.org/token/0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1"
+             rel="noopener"
+             data-sentry-action="point_verify"
+             data-en="VERIFY ON-CHAIN" data-lt="PATIKRINTI GRANDINĖJE">VERIFY ON-CHAIN</a>
+          <a class="pt-btn pt-btn--outline" href="/deed" data-en="FOUNDERS' DEED" data-lt="STEIGĖJŲ AKTAS">FOUNDERS' DEED</a>
+        </div>
+      </div>
+      <div class="pt-hero-facts">
+        <div class="pt-hero-row">
+          <span class="pt-label" data-en="Launched" data-lt="Paleista">Launched</span>
+          <span class="pt-hero-value">2026 · VII · 31</span>
+        </div>
+        <div class="pt-hero-row pt-hero-row--green">
+          <span class="pt-label" data-en="Emission" data-lt="Emisija">Emission</span>
+          <span class="pt-hero-value" data-en="1,000,000 · ONCE" data-lt="1&nbsp;000&nbsp;000 · VIENĄ KARTĄ">1,000,000 · ONCE</span>
+        </div>
+        <div class="pt-hero-row pt-hero-row--people">
+          <span class="pt-label" data-en="Two equal founders" data-lt="Du lygiaverčiai steigėjai">Two equal founders</span>
+          <div class="pt-person">
+            <span class="pt-portrait pt-portrait--lp" aria-hidden="true">LP</span>
+            <span class="pt-person-name">LUKAS PECIUKONIS</span>
+          </div>
+          <div class="pt-person">
+            <img class="pt-portrait" src="assets/founder-denisas.png" alt="" width="52" height="52">
+            <span class="pt-person-name">DENISAS BYKOVAS</span>
+          </div>
+        </div>
+        <div class="pt-hero-address">0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1</div>
       </div>
     </section>
 
-    <section class="statement" aria-label="Statement">
-      <p class="statement-line" data-en="Nothing is chosen here. That is the choice." data-lt="Čia nieko nesprendžiama. Tai ir yra sprendimas.">Nothing is chosen here. That is the choice.</p>
+    <section class="pt-qa" id="klausimai" aria-labelledby="qa-title">
+      <span class="pt-label" data-en="Short and direct" data-lt="Trumpai ir tiesiai">Short and direct</span>
+      <h2 class="pt-section-title" id="qa-title"><span data-en="QUESTIONS AND" data-lt="KLAUSIMAI IR">QUESTIONS AND</span> <span class="pt-accent" data-en="ANSWERS." data-lt="ATSAKYMAI.">ANSWERS.</span></h2>
+      <div class="pt-cards">
+        <article class="pt-card">
+          <h3 class="pt-q" data-en="Is LUKO a real cryptocurrency?" data-lt="Ar LUKO yra tikra kriptovaliuta?">Is LUKO a real cryptocurrency?</h3>
+          <p class="pt-a" data-en="Yes. LUKO is an ERC-20 token on Base. The contract is public and the emission is visible on-chain." data-lt="Taip. LUKO yra ERC-20 tokenas Base tinkle. Kontraktas viešas, o emisija matoma grandinėje.">Yes. LUKO is an ERC-20 token on Base. The contract is public and the emission is visible on-chain.</p>
+        </article>
+        <article class="pt-card pt-card--pink">
+          <h3 class="pt-q" data-en="Can more LUKO be created?" data-lt="Ar galima sukurti daugiau LUKO?">Can more LUKO be created?</h3>
+          <p class="pt-a" data-en="No. All 1,000,000 LUKO were issued at genesis. The contract holds no mechanism for any further emission." data-lt="Ne. Visa 1&nbsp;000&nbsp;000 LUKO emisija išleista genezės metu. Papildomos emisijos mechanizmo kontrakte nėra.">No. All 1,000,000 LUKO were issued at genesis. The contract holds no mechanism for any further emission.</p>
+        </article>
+        <article class="pt-card">
+          <h3 class="pt-q" data-en="Who are LUKO's founders?" data-lt="Kas yra LUKO steigėjai?">Who are LUKO's founders?</h3>
+          <p class="pt-a" data-en="Lukas Peciukonis and Denisas Bykovas. Both hold equal founder status from LUKO's genesis." data-lt="Lukas Peciukonis ir Denisas Bykovas. Abu turi lygiavertį steigėjo statusą nuo LUKO genezės.">Lukas Peciukonis and Denisas Bykovas. Both hold equal founder status from LUKO's genesis.</p>
+        </article>
+        <article class="pt-card pt-card--green">
+          <h3 class="pt-q" data-en="Can the founders sell their LUKO?" data-lt="Ar steigėjai gali parduoti savo LUKO?">Can the founders sell their LUKO?</h3>
+          <p class="pt-a" data-en="Yes, the tokens can be disposed of freely. Founder status is a separate matter — final and non-transferable." data-lt="Taip, tokenais galima disponuoti laisvai. Steigėjo statusas yra atskiras dalykas — galutinis ir neperleidžiamas.">Yes, the tokens can be disposed of freely. Founder status is a separate matter — final and non-transferable.</p>
+        </article>
+        <article class="pt-card">
+          <h3 class="pt-q" data-en="Can LUKO be acquired?" data-lt="Ar LUKO galima įsigyti?">Can LUKO be acquired?</h3>
+          <p class="pt-a" data-en="Yes. LUKO has a public market on Base. Some LUKO may also be distributed directly." data-lt="Taip. LUKO turi viešą rinką Base tinkle. Dalis LUKO taip pat gali būti platinama tiesiogiai.">Yes. LUKO has a public market on Base. Some LUKO may also be distributed directly.</p>
+        </article>
+        <article class="pt-card pt-card--pink">
+          <h3 class="pt-q" data-en="Is LUKO an investment?" data-lt="Ar LUKO yra investicija?">Is LUKO an investment?</h3>
+          <p class="pt-a" data-en="LUKO is not offered as an investment. The project promises no return, no price and no future value." data-lt="LUKO nėra siūloma kaip investicija. Projektas nežada grąžos, kainos ar būsimos vertės.">LUKO is not offered as an investment. The project promises no return, no price and no future value.</p>
+        </article>
+      </div>
     </section>
 
-    <section id="token" class="panel" aria-labelledby="token-label">
-      <h2 id="token-label" class="label" data-en="Token" data-lt="TOKEN">Token</h2>
-      <dl class="facts">
-        <div class="fact"><dt data-en="Total supply" data-lt="Bendras kiekis">Total supply</dt><dd class="accent">1,000,000 LUKO</dd></div>
-        <div class="fact"><dt data-en="Network" data-lt="Tinklas">Network</dt><dd>Base</dd></div>
-        <div class="fact"><dt data-en="Standard" data-lt="Standartas">Standard</dt><dd>ERC-20</dd></div>
-        <div class="fact"><dt data-en="Further minting" data-lt="Papildoma emisija">Further minting</dt><dd data-en="Impossible" data-lt="Neįmanomas">Impossible</dd></div>
-        <div class="fact"><dt data-en="Owner privileges" data-lt="Savininko privilegijos">Owner privileges</dt><dd data-en="None" data-lt="Nėra">None</dd></div>
-        <div class="fact"><dt data-en="Genesis allocation" data-lt="Genezės paskirstymas">Genesis allocation</dt><dd data-en="Published below" data-lt="Paskelbta žemiau">Published below</dd></div>
-      </dl>
-      <p class="coin-line" data-en="1 LUKO = 1 LUKO. The rest is not denominated." data-lt="1 LUKO = 1 LUKO. Visa kita nominalo neturi.">1 LUKO = 1 LUKO. The rest is not denominated.</p>
-    </section>
-
-    <section id="allocation" class="panel" aria-labelledby="allocation-label">
-      <h2 id="allocation-label" class="label" data-en="Genesis allocation" data-lt="Genesis · Pradžia ir paskirstymas">Genesis allocation</h2>
-      <div class="allocation-layout">
-        <div class="allocation-chart-col">
-          <svg class="allocation-chart" viewBox="0 0 200 200" role="img" aria-label="Genesis allocation: Founder Λ 19%, Founder Δ 19%, Market 19%, Operations 19%, Reserve 24%">
-            <g fill="none" stroke-width="26">
-              <circle cx="100" cy="100" r="80" stroke="#C9A86A" stroke-dasharray="95.5 407.15" transform="rotate(-90 100 100)"></circle>
-              <circle cx="100" cy="100" r="80" stroke="#9A7E4E" stroke-dasharray="95.5 407.15" transform="rotate(-21.6 100 100)"></circle>
-              <circle cx="100" cy="100" r="80" stroke="#3B3226" stroke-dasharray="95.5 407.15" transform="rotate(46.8 100 100)"></circle>
-              <circle cx="100" cy="100" r="80" stroke="#4E4940" stroke-dasharray="95.5 407.15" transform="rotate(115.2 100 100)"></circle>
-              <circle cx="100" cy="100" r="80" stroke="#6E6759" stroke-dasharray="120.6 382.05" transform="rotate(183.6 100 100)"></circle>
-            </g>
-            <text x="145" y="33.8" text-anchor="middle" dominant-baseline="middle" font-size="9" fill="#0A0A0A">19%</text>
-            <text x="178.1" y="117.4" text-anchor="middle" dominant-baseline="middle" font-size="9" fill="#0A0A0A">19%</text>
-            <text x="112.5" y="179" text-anchor="middle" dominant-baseline="middle" font-size="9" fill="#EDE7DA">19%</text>
-            <text x="31.1" y="140.7" text-anchor="middle" dominant-baseline="middle" font-size="9" fill="#EDE7DA">19%</text>
-            <text x="45.3" y="41.7" text-anchor="middle" dominant-baseline="middle" font-size="9" fill="#0A0A0A">24%</text>
-            <text x="100" y="96" text-anchor="middle" font-size="17" font-weight="200" letter-spacing="1" fill="#E8E4DC">1,000,000</text>
-            <text x="100" y="114" text-anchor="middle" font-size="8" letter-spacing="3" fill="#C9A86A">LUKO</text>
-          </svg>
+    <section class="pt-emission" id="emisija" aria-labelledby="emission-title">
+      <div class="pt-strip">
+        <div class="pt-cell">
+          <span class="pt-cell-value" data-en="1,000,000" data-lt="1&nbsp;000&nbsp;000">1,000,000</span>
+          <span class="pt-label" data-en="Issued" data-lt="Išleista">Issued</span>
         </div>
-        <div class="table-scroll">
-          <table class="allocation-table">
-            <thead>
-              <tr>
-                <th data-en="Allocation" data-lt="Paskirstymas">Allocation</th>
-                <th data-en="Amount" data-lt="Kiekis">Amount</th>
-                <th data-en="Percent" data-lt="Dalis">Percent</th>
-                <th data-en="Immediate" data-lt="Iš karto">Immediate</th>
-                <th data-en="Vesting" data-lt="Palaipsniui">Vesting</th>
-                <th data-en="Status" data-lt="Būsena">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><span class="row-swatch" style="background:#C9A86A"></span><span data-en="Founder — Λ" data-lt="Steigėjas — Λ">Founder — Λ</span></td>
-                <td>190,000</td><td>19%</td><td>50,000</td><td>140,000</td>
-                <td class="accent" data-en="Active" data-lt="Aktyvus">Active</td>
-              </tr>
-              <tr>
-                <td><span class="row-swatch" style="background:#9A7E4E"></span><span data-en="Founder — Δ" data-lt="Steigėjas — Δ">Founder — Δ</span></td>
-                <td>190,000</td><td>19%</td><td>50,000</td><td>140,000</td>
-                <td class="accent" data-en="Active" data-lt="Aktyvus">Active</td>
-              </tr>
-              <tr>
-                <td><span class="row-swatch" style="background:#3B3226"></span><span data-en="Market" data-lt="Apyvarta rinkoje">Market</span></td>
-                <td>190,000</td><td>19%</td><td>100,000</td><td>90,000</td>
-                <td class="accent" data-en="Active" data-lt="Aktyvus">Active</td>
-              </tr>
-              <tr>
-                <td><span class="row-swatch" style="background:#4E4940"></span><span data-en="Operations" data-lt="Operacijos">Operations</span></td>
-                <td>190,000</td><td>19%</td><td>190,000</td><td class="muted">—</td>
-                <td class="muted" data-en="Held" data-lt="Laikoma">Held</td>
-              </tr>
-              <tr>
-                <td><span class="row-swatch" style="background:#6E6759"></span><span data-en="Reserve" data-lt="Rezervas">Reserve</span></td>
-                <td>240,000</td><td>24%</td><td>240,000</td><td class="muted">—</td>
-                <td class="muted" data-en="Held" data-lt="Laikoma">Held</td>
-              </tr>
-              <tr class="total-row">
-                <td data-en="Total" data-lt="Iš viso">Total</td>
-                <td>1,000,000</td><td>100%</td><td>630,000</td><td>370,000</td><td class="muted">—</td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="pt-cell pt-cell--pink">
+          <span class="pt-cell-value">0</span>
+          <span class="pt-label" data-en="Will be issued in addition" data-lt="Bus išleista papildomai">Will be issued in addition</span>
+        </div>
+        <div class="pt-cell">
+          <span class="pt-cell-value">2</span>
+          <span class="pt-label" data-en="Founders" data-lt="Steigėjai">Founders</span>
+        </div>
+        <div class="pt-cell pt-cell--green">
+          <span class="pt-cell-value pt-cell-value--sm" data-en="19% + 19%" data-lt="19&nbsp;% + 19&nbsp;%">19% + 19%</span>
+          <span class="pt-label" data-en="Founders' shares" data-lt="Steigėjų dalys">Founders' shares</span>
         </div>
       </div>
-      <p class="coin-line" data-en="Operations proceed without announcement." data-lt="Operacijos vyksta be pranešimo.">Operations proceed without announcement.</p>
+      <div class="pt-split">
+        <p class="pt-display" id="emission-title" data-en="LUKO EXISTS ONLY IN THE AMOUNT ISSUED ON DAY ONE." data-lt="LUKO EGZISTUOJA TIEK, KIEK BUVO IŠLEISTA PIRMĄ DIENĄ.">LUKO EXISTS ONLY IN THE AMOUNT ISSUED ON DAY ONE.</p>
+        <div class="pt-stack">
+          <p class="pt-body-copy" data-en="The emission happened once. The contract has no mechanism by which more LUKO could later be created — not for the founders, not for any other holder, for nobody." data-lt="Emisija įvyko vieną kartą. Kontrakte nėra mechanizmo, kuriuo vėliau būtų galima sukurti daugiau LUKO — nei steigėjams, nei kitam valdytojui, niekam.">The emission happened once. The contract has no mechanism by which more LUKO could later be created — not for the founders, not for any other holder, for nobody.</p>
+          <p class="pt-pull pt-accent" data-en="A million means a million." data-lt="Milijonas reiškia milijoną.">A million means a million.</p>
+        </div>
+      </div>
     </section>
 
-    <section id="genesis" class="panel" aria-labelledby="issuance-label">
-      <h2 id="issuance-label" class="label" data-en="Issuance" data-lt="IŠLEIDIMAS">Issuance</h2>
-      <p class="prose" data-en="One million LUKO, created on 31 July 2026 — twenty-four days before — in a single transaction at block 49364826 on Base, complete in the same moment. There was never going to be more." data-lt="Vienas milijonas LUKO — sukurtas 2026 m. liepos 31 d. — likus dvidešimt keturioms dienoms — viena transakcija, block 49364826, užbaigtas tą pačią akimirką. Daugiau neturėjo būti ir niekada nebus.">One million LUKO, created on 31 July 2026 — twenty-four days before — in a single transaction at block 49364826 on Base, complete in the same moment. There was never going to be more.</p>
-    </section>
-
-    <section id="mandate" class="panel" aria-labelledby="mandate-label">
-      <h2 id="mandate-label" class="label" data-en="Mandate" data-lt="MANDATAS">Mandate</h2>
-      <p class="prose" data-en="LUKO has no mandate. That is the mandate." data-lt="LUKO neturi mandato. Tai ir yra mandatas.">LUKO has no mandate. That is the mandate.</p>
-      <p class="prose" data-en="This is not an oversight. Nothing here is." data-lt="Tai ne atsitiktinumas. Atsitiktinumų čia nėra.">This is not an oversight. Nothing here is.</p>
-    </section>
-
-    <section class="band" aria-label="Fixed">
-      <p data-en="Everything here is fixed. Nothing here is settled." data-lt="Viskas čia fiksuota. Niekas čia nenulemta.">Everything here is fixed. Nothing here is settled.</p>
-    </section>
-
-    <section id="control" class="panel" aria-labelledby="control-label">
-      <h2 id="control-label" class="label" data-en="Control" data-lt="VALDYMAS">Control</h2>
-      <p class="prose" data-en="No owner. No admin keys. Nothing can be changed — including by whoever deployed it. Verified on Base." data-lt="Be owner'io. Be admin keys. Nieko pakeisti negalima — net tam, kuris sukurė. Verified on Base.">No owner. No admin keys. Nothing can be changed — including by whoever deployed it. Verified on Base.</p>
-      <p class="prose" data-en="Immutability is a property of the contract. It is not advice." data-lt="Nekeičiamumas yra kontrakto esmė. Tai ne patarimas.">Immutability is a property of the contract. It is not advice.</p>
-      <p class="footnote" data-en="The contract specifies eighteen decimal places. Standard. Unremarkable." data-lt="Kontrakte nurodyta aštuoniolika skaičių po kablelio. Tai standartas. Nieko ypatingo.">The contract specifies eighteen decimal places. Standard. Unremarkable.</p>
-      <p class="footnote nineteen" data-en="Precision ends at eighteen. Some things make more sense at nineteen. What begins there is in your hands." data-lt="Bet tikslumas baigiasi ties aštuoniolika. Kai kurie dalykai prasmingesni tampa tik ties devyniolika. Kas prasideda ten — yra tavo rankose.">Precision ends at eighteen. Some things make more sense at nineteen. What begins there is in your hands.</p>
-    </section>
-
-    <section id="links" class="panel" aria-labelledby="links-label">
-      <h2 id="links-label" class="label" data-en="Links" data-lt="NUORODOS">Links</h2>
-      <div class="link-rows">
-        <div class="link-row contract-row">
-          <span class="link-name">Contract</span>
-          <div class="contract">
-            <code class="address" id="contract-address">0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1</code>
-            <div class="contract-actions">
-              <button type="button" class="copy-button" id="copy-address" data-sentry-action="copy_contract" hidden>Copy</button>
-              <button type="button" class="copy-button" id="add-luko" data-sentry-action="add_luko_clicked" hidden>Add LUKO</button>
-              <a href="https://basescan.org/token/0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1" rel="noopener" data-sentry-action="outbound_basescan">View on BaseScan →</a>
+    <section class="pt-founders" id="steigejai" aria-labelledby="founders-title">
+      <div class="pt-stack">
+        <div>
+          <span class="pt-label" data-en="Two founders" data-lt="Du steigėjai">Two founders</span>
+          <h2 class="pt-section-title pt-section-title--sm" id="founders-title"><span data-en="EQUAL FROM" data-lt="LYGIAVERČIAI NUO">EQUAL FROM</span><br><span data-en="THE FIRST MINUTE." data-lt="PIRMOS MINUTĖS.">THE FIRST MINUTE.</span></h2>
+        </div>
+        <div class="pt-founder-cards">
+          <div class="pt-founder">
+            <span class="pt-portrait pt-portrait--lg pt-portrait--lp" aria-hidden="true">LP</span>
+            <div class="pt-founder-text">
+              <span class="pt-founder-name">LUKAS PECIUKONIS</span>
+              <span class="pt-label" data-en="Founder · 190,000 LUKO · 19%" data-lt="Steigėjas · 190&nbsp;000 LUKO · 19&nbsp;%">Founder · 190,000 LUKO · 19%</span>
+            </div>
+          </div>
+          <div class="pt-founder">
+            <img class="pt-portrait pt-portrait--lg" src="assets/founder-denisas.png" alt="" width="62" height="62">
+            <div class="pt-founder-text">
+              <span class="pt-founder-name">DENISAS BYKOVAS</span>
+              <span class="pt-label" data-en="Founder · 190,000 LUKO · 19%" data-lt="Steigėjas · 190&nbsp;000 LUKO · 19&nbsp;%">Founder · 190,000 LUKO · 19%</span>
             </div>
           </div>
         </div>
-        <div class="link-row">
-          <span class="link-name" data-en="Holders" data-lt="Turėtojai">Holders</span>
-          <a href="https://basescan.org/token/tokenholderchart/0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1" rel="noopener" data-sentry-action="outbound_basescan">Holder chart on BaseScan →</a>
-        </div>
-        <div class="link-row">
-          <span class="link-name">Market</span>
-          <a href="https://aerodrome.finance/swap?from=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913&amp;to=0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1" rel="noopener" data-sentry-action="outbound_aerodrome">Trade on Aerodrome →</a>
-        </div>
-        <div class="link-row">
-          <span class="link-name">Chart</span>
-          <a href="https://dexscreener.com/base/0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1" rel="noopener" data-sentry-action="outbound_dexscreener">DexScreener →</a>
-        </div>
-        <div class="link-row">
-          <span class="link-name">Chart</span>
-          <a href="https://www.geckoterminal.com/base/pools/0x2222A01b83Db8c533B062AEb6DE4F61D6Ae792F2" data-sentry-action="outbound_geckoterminal">GeckoTerminal →</a>
-        </div>
-        <div class="link-row">
-          <span class="link-name">GitHub</span>
-          <a href="https://github.com/LKSPec/luko" rel="noopener">github.com/LKSPec/luko</a>
-        </div>
-        <div class="link-row">
-          <span class="link-name">X</span>
-          <a href="https://x.com/MeetLUKO" rel="noopener me" data-sentry-action="outbound_x">x.com/MeetLUKO</a>
-        </div>
-        <div class="link-row">
-          <span class="link-name">Network</span>
-          <a href="https://base.org" rel="noopener">Base</a>
-        </div>
+      </div>
+      <div class="pt-stack pt-stack--centred">
+        <p class="pt-body-copy" data-en="Founder status is not merely a quantity of tokens. The founders' deed gives each an equal, indivisible share of the LUKO name, mark and works, and the status itself is final and non-transferable." data-lt="Steigėjo statusas nėra vien tokenų kiekis. Steigėjų aktas kiekvienam nustato lygią, nedalomą dalį LUKO vardo, ženklo ir kūrinių, o pats statusas yra galutinis ir neperleidžiamas.">Founder status is not merely a quantity of tokens. The founders' deed gives each an equal, indivisible share of the LUKO name, mark and works, and the status itself is final and non-transferable.</p>
+          <p class="pt-pull"><span data-en="Tokens can be disposed of." data-lt="Tokenais galima disponuoti.">Tokens can be disposed of.</span> <span class="pt-accent" data-en="Founder status cannot." data-lt="Steigėjo statusu — ne.">Founder status cannot.</span></p>
+        <p class="pt-note" data-en="This is not a declaration by this website: the deed is recorded on the public Base chain and can be verified independently of this page." data-lt="Tai nėra šios svetainės deklaracija: aktas įrašytas viešoje Base grandinėje ir patikrinamas nepriklausomai nuo šio puslapio.">This is not a declaration by this website: the deed is recorded on the public Base chain and can be verified independently of this page.</p>
+        <a class="pt-btn pt-btn--outline pt-btn--inline" href="/deed" data-en="READ THE FOUNDERS' DEED" data-lt="SKAITYTI STEIGĖJŲ AKTĄ">READ THE FOUNDERS' DEED</a>
       </div>
     </section>
 
-    <div class="give-take-grid">
-    <section id="donation-note" class="panel" aria-labelledby="donation-note-label">
-      <h2 id="donation-note-label" class="label" data-en="For those who give" data-lt="TIEMS, KURIE DUODA">For those who give</h2>
-      <p class="prose" data-en="Give to the genesis. Receive a unique numbered note, issued to the bearer. Nothing is promised. That is the promise." data-lt="Paremk genesis. Gauk unikalų numeruotą raštą, išduodamą turėtojui. Nieko nežadama. Tai ir yra pažadas.">Give to the genesis. Receive a unique numbered note, issued to the bearer. Nothing is promised. That is the promise.</p>
-      <button type="button" class="copy-button" id="get-card" data-sentry-action="donation_note_clicked" data-en="Get Donation Note" data-lt="GAUTI RĖMĖJO SERTIFIKATĄ">Get Donation Note</button>
+    <section class="pt-principle" aria-labelledby="principle-title">
+      <div class="pt-principle-head">
+        <span class="pt-label pt-label--dark" data-en="Principle" data-lt="Principas">Principle</span>
+        <h2 class="pt-principle-title" id="principle-title"><span data-en="FIRST THE CURRENCY." data-lt="PIRMA VALIUTA.">FIRST THE CURRENCY.</span><br><span class="pt-green" data-en="THEN THE PROJECT." data-lt="TADA — PROJEKTAS.">THEN THE PROJECT.</span></h2>
+      </div>
+      <div class="pt-principle-copy">
+        <div class="pt-stack">
+          <p class="pt-pull" data-en="Most crypto projects start from what they promise to do. LUKO started from what is already done." data-lt="Daugelis kripto projektų pradeda nuo to, ką žada padaryti. LUKO pradėjo nuo to, kas jau padaryta.">Most crypto projects start from what they promise to do. LUKO started from what is already done.</p>
+          <p class="pt-body-copy pt-dim" data-en="The currency itself came first: the name, the emission, the contract and the founder structure. That part is finished." data-lt="Pirmiausia atsirado pati valiuta: vardas, emisija, kontraktas ir steigėjų struktūra. Ši dalis baigta.">The currency itself came first: the name, the emission, the contract and the founder structure. That part is finished.</p>
+        </div>
+        <div class="pt-stack">
+          <p class="pt-body-copy pt-dim" data-en="Now the project is being built around LUKO — use, infrastructure, integrations and new ways for LUKO to work beyond the contract itself. Nothing that does not yet exist will be promised here." data-lt="Dabar aplink LUKO kuriamas projektas — naudojimas, infrastruktūra, integracijos ir nauji būdai LUKO veikti už paties kontrakto ribų. Čia nebus žadama tai, ko dar nėra.">Now the project is being built around LUKO — use, infrastructure, integrations and new ways for LUKO to work beyond the contract itself. Nothing that does not yet exist will be promised here.</p>
+          <p class="pt-pull" data-en="When something starts working, it becomes part of LUKO." data-lt="Kai kažkas pradės veikti, tai taps LUKO dalimi.">When something starts working, it becomes part of LUKO.</p>
+        </div>
+      </div>
+      <div class="pt-principle-close">
+        <span class="pt-closing pt-closing--dim" data-en="GENESIS IS CLOSED." data-lt="GENEZĖ UŽDARYTA.">GENESIS IS CLOSED.</span>
+        <span class="pt-closing" data-en="EVERYTHING ELSE IS ONLY BEGINNING." data-lt="VISA KITA TIK PRASIDEDA.">EVERYTHING ELSE IS ONLY BEGINNING.</span>
+      </div>
     </section>
 
-    <section id="claim" class="panel" aria-labelledby="claim-label">
-      <h2 id="claim-label" class="label" data-en="For those who take" data-lt="TIEMS, KURIE IMA">For those who take</h2>
-      <p class="prose" data-en="Some LUKO for anyone who asks. No questions. No note. Nothing expected." data-lt="Šiek tiek LUKO kiekvienam, kas paprašo. Jokių klausimų. Jokio rašto. Nieko nesitikima.">Some LUKO for anyone who asks. No questions. No note. Nothing expected.</p>
-      <button type="button" class="copy-button" id="claim-luko" data-sentry-action="claim_clicked" disabled data-en="Claim 19 LUKO" data-lt="ATSIIMTI 19 LUKO">Claim 19 LUKO</button>
-      <p class="footnote" data-en="Claims are not yet open." data-lt="Atsiėmimas dar neatidarytas.">Claims are not yet open.</p>
+    <section class="pt-genesis" id="genezes-naktis" aria-labelledby="genesis-title">
+      <div class="pt-genesis-head">
+        <h2 class="pt-genesis-title" id="genesis-title" data-en="2 H 31 MIN" data-lt="2 VAL. 31 MIN.">2 H 31 MIN</h2>
+        <span class="pt-label" data-en="From the name to genesis" data-lt="Nuo vardo iki genezės">From the name to genesis</span>
+      </div>
+      <div class="pt-strip pt-strip--steps">
+        <div class="pt-cell pt-cell--step">
+          <span class="pt-time">21:10</span>
+          <span class="pt-step-copy" data-en="First came the name — LUKO." data-lt="Pirmiausia atsirado vardas — LUKO.">First came the name — LUKO.</span>
+        </div>
+        <div class="pt-cell pt-cell--step">
+          <span class="pt-time">22:30</span>
+          <span class="pt-step-copy" data-en="The rules of genesis were set: one million, one emission, no further emission." data-lt="Nustatytos genezės taisyklės: vienas milijonas, viena emisija, jokios papildomos emisijos.">The rules of genesis were set: one million, one emission, no further emission.</span>
+        </div>
+        <div class="pt-cell pt-cell--step">
+          <span class="pt-time">23:40</span>
+          <span class="pt-step-copy" data-en="A last check of the contract, before an action that cannot be undone." data-lt="Paskutinis kontrakto patikrinimas prieš veiksmą, kurio nebegalima atšaukti.">A last check of the contract, before an action that cannot be undone.</span>
+        </div>
+        <div class="pt-cell pt-cell--step pt-cell--green">
+          <span class="pt-time pt-time--now">23:41</span>
+          <span class="pt-step-copy" data-en="One million LUKO issued on Base. All at once. Once." data-lt="Vienas milijonas LUKO išleistas Base tinkle. Visi iš karto. Vieną kartą.">One million LUKO issued on Base. All at once. Once.</span>
+        </div>
+      </div>
+      <p class="pt-genesis-close"><span data-en="FROM THAT MINUTE THE EMISSION'S HISTORY ENDED." data-lt="NUO TOS MINUTĖS EMISIJOS ISTORIJA BAIGTA.">FROM THAT MINUTE THE EMISSION'S HISTORY ENDED.</span> <span class="pt-accent" data-en="LUKO'S HISTORY BEGAN." data-lt="LUKO ISTORIJA — PRASIDĖJO.">LUKO'S HISTORY BEGAN.</span></p>
     </section>
-    </div>
 
-    <section id="disclosures" class="panel" aria-labelledby="disclosures-label">
-      <h2 id="disclosures-label" class="label" data-en="Disclosures" data-lt="IŠLYGOS">Disclosures</h2>
-      <p class="disclosure" data-en="LUKO confers no rights, no yield, and no utility. It was issued without consideration." data-lt="LUKO nesuteikia jokių teisių, jokios grąžos ir jokio pritaikomumo. Išleista be atlygio ir jokių įsipareigojimų.">LUKO confers no rights, no yield, and no utility. It was issued without consideration.</p>
-      <p class="disclosure closing-line" data-en="This is everything. Nothing else is included. Nothing else was required." data-lt="Tai yra viskas. Daugiau nieko nėra įtraukta. Daugiau nieko ir nereikėjo.">This is everything. Nothing else is included. Nothing else was required.</p>
+    <section class="pt-records" id="patikrinti" aria-labelledby="records-title">
+      <div class="pt-records-head">
+        <div>
+          <span class="pt-label" data-en="Records on-chain" data-lt="Įrašai grandinėje">Records on-chain</span>
+          <h2 class="pt-section-title" id="records-title"><span data-en="DON'T BELIEVE." data-lt="NE TIKĖTI.">DON'T BELIEVE.</span><br><span class="pt-accent" data-en="VERIFY." data-lt="PATIKRINTI.">VERIFY.</span></h2>
+        </div>
+        <p class="pt-records-note" data-en="LUKO need not be judged by what this website says about itself. The primary facts are on the public Base chain." data-lt="LUKO nereikia vertinti pagal tai, ką apie save rašo ši svetainė. Pirminiai faktai yra viešoje Base grandinėje.">LUKO need not be judged by what this website says about itself. The primary facts are on the public Base chain.</p>
+      </div>
+      <div class="pt-rows">
+        <a class="pt-row"
+           href="https://basescan.org/token/0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1"
+           rel="noopener"
+           data-sentry-action="point_verify">
+          <span class="pt-row-name" data-en="CONTRACT" data-lt="KONTRAKTAS">CONTRACT</span>
+          <span class="pt-row-desc" data-en="The real LUKO contract, its code and the entire emission." data-lt="Tikras LUKO kontraktas, jo kodas ir visa emisija.">The real LUKO contract, its code and the entire emission.</span>
+          <span class="pt-row-go" data-en="Open →" data-lt="Atidaryti →">Open →</span>
+        </a>
+        <a class="pt-row" href="/deed">
+          <span class="pt-row-name" data-en="FOUNDERS' DEED" data-lt="STEIGĖJŲ AKTAS">FOUNDERS' DEED</span>
+          <span class="pt-row-desc" data-en="The status, shares and rights of two equal founders." data-lt="Dviejų lygiaverčių steigėjų statusas, dalys ir teisės.">The status, shares and rights of two equal founders.</span>
+          <span class="pt-row-go" data-en="Open →" data-lt="Atidaryti →">Open →</span>
+        </a>
+        <a class="pt-row" href="/market">
+          <span class="pt-row-name" data-en="GENESIS AND MARKET" data-lt="GENEZĖ IR RINKA">GENESIS AND MARKET</span>
+          <span class="pt-row-desc" data-en="The first block, the emission and LUKO's beginning on-chain." data-lt="Pirmasis blokas, emisija ir LUKO pradžia grandinėje.">The first block, the emission and LUKO's beginning on-chain.</span>
+          <span class="pt-row-go" data-en="Verify →" data-lt="Patikrinti →">Verify →</span>
+        </a>
+      </div>
+      <div class="pt-records-address">0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1</div>
     </section>
 
-    <section id="documentation" class="panel" aria-labelledby="documentation-label">
-      <h2 id="documentation-label" class="label" data-en="Documentation" data-lt="DOKUMENTACIJA">Documentation</h2>
-      <p class="prose" data-en="A formal specification of the contract. Final." data-lt="Formali kontrakto specifikacija. Galutinė.">A formal specification of the contract. Final.</p>
-      <a class="doc-link" href="/specification" data-sentry-action="spec_opened" data-en="Read the specification →" data-lt="Skaityti specifikaciją →">Read the specification →</a>
+    <section class="pt-next" aria-labelledby="next-title">
+      <div>
+        <span class="pt-label" data-en="What's next" data-lt="Kas toliau">What's next</span>
+        <h2 class="pt-section-title pt-section-title--sm" id="next-title" data-en="THE PROJECT IS ALREADY UNDER WAY." data-lt="PROJEKTAS JAU VYKSTA.">THE PROJECT IS ALREADY UNDER WAY.</h2>
+      </div>
+      <div class="pt-stack">
+        <p class="pt-body-copy" data-en="Whatever is built around LUKO will be announced when it exists — not when it is imagined. No invented roadmap, no promised dates, no promised returns." data-lt="Tai, kas bus sukurta aplink LUKO, bus skelbiama tada, kai egzistuos — ne tada, kai bus sugalvota. Be išgalvoto roadmap'o, be pažadėtų datų, be pažadėtos grąžos.">Whatever is built around LUKO will be announced when it exists — not when it is imagined. No invented roadmap, no promised dates, no promised returns.</p>
+        <p class="pt-display pt-display--sm" data-en="DONE → SHOWN → VERIFIABLE." data-lt="PADARYTA → PARODYTA → PATIKRINAMA.">DONE → SHOWN → VERIFIABLE.</p>
+      </div>
     </section>
   </main>
 
-  <footer class="site-footer">
-    <p>Built by LKSPec · <span data-en="All is stated · Nothing is missed · Look again" data-lt="Viskas pasakyta · Nieko nepraleista · Pažvelk dar kartą">All is stated · Nothing is missed · Look again</span></p>
-    <p class="footer-note">LKSPec is the publishing identity of <a href="https://www.linkedin.com/in/bykovas/" rel="noopener me">Denisas Bykovas</a>.<span class="footer-sep">·</span><a href="https://x.com/MeetLUKO" rel="noopener me" data-sentry-action="outbound_x">x.com/MeetLUKO</a></p>
+  <footer class="pt-footer">
+    <div class="pt-footer-brand">
+      <span class="pt-lockup">
+        <span class="pt-chip pt-chip--sm"><img src="assets/logo-mark-dark.svg" alt="" width="23" height="23"></span>
+        <span class="pt-wordmark pt-wordmark--sm">LUKO</span>
+      </span>
+      <span class="pt-label">Base · 2026</span>
+    </div>
+    <span class="pt-footer-claim" data-en="1,000,000. ONCE." data-lt="1&nbsp;000&nbsp;000. VIENĄ KARTĄ.">1,000,000. ONCE.</span>
+    <div class="pt-footer-links">
+      <a href="https://basescan.org/token/0x4a9DA2831A691E7C4aca594CaFd58c35e0131fD1" rel="noopener" data-en="Contract" data-lt="Kontraktas">Contract</a>
+      <a href="/deed" data-en="Founders' deed" data-lt="Steigėjų aktas">Founders' deed</a>
+      <a href="/market" data-en="Market" data-lt="Rinka">Market</a>
+      <a href="https://x.com/MeetLUKO" rel="noopener me" data-sentry-action="outbound_x">X</a>
+    </div>
+    <p class="pt-footer-meta">Built by LKSPec · <a href="https://www.linkedin.com/in/bykovas/" rel="noopener me">Denisas Bykovas</a></p>
   </footer>
 
-  <dialog id="wallet-dialog" aria-labelledby="wallet-dialog-label">
-    <h2 id="wallet-dialog-label" class="label">Wallet</h2>
-    <div id="wallet-dialog-body"></div>
-    <div class="dialog-actions">
-      <button type="button" class="copy-button" id="wallet-dialog-close">Close</button>
-    </div>
-  </dialog>
-
-  <dialog id="card-dialog" aria-labelledby="card-dialog-label">
-    <h2 id="card-dialog-label" class="label" data-en="Donation Note" data-lt="Rėmėjo sertifikatas">Donation Note</h2>
-    <div id="card-dialog-body"></div>
-    <div class="dialog-actions">
-      <button type="button" class="copy-button" id="card-dialog-close" data-en="Close" data-lt="Uždaryti">Close</button>
-    </div>
-  </dialog>
-
   <script src="app.js?v=10" defer></script>
-  <script src="wallet.js?v=8" type="module"></script>
-  <script src="donation.js?v=8" type="module"></script>
 </body>
 </html>
