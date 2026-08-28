@@ -498,6 +498,66 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
   font-weight: 200;
   color: var(--luko-offwhite);
 }
+/* "available now" sub-line under the streaming value: vested-so-far in LUKO
+   (ticks client-side) and, once price is known, its USD value. Distinguishes
+   the total streaming allocation from the portion already available. */
+.market-value-avail {
+  font-size: 12px;
+  color: var(--luko-faint);
+  margin-top: 4px;
+}
+/* Footnote reference marker (superscript "1") next to the price and stake,
+   linking to the #price-note explanation at the foot of the page. */
+.note-ref {
+  font-size: 11px;
+  line-height: 1;
+  vertical-align: super;
+  margin-left: 3px;
+  color: var(--luko-gold);
+  text-decoration: none;
+  border-bottom: none;
+}
+.note-ref:hover { text-decoration: underline; }
+/* Price-calculation footnote at the foot of the market page. */
+.market-note {
+  max-width: 640px;
+  margin: 8px auto 0;
+  padding: 0 20px;
+  color: var(--luko-faint);
+  font-size: 12px;
+  line-height: 1.55;
+}
+.market-note p { margin: 0; }
+.market-note-verify { margin-top: 6px; }
+.market-note a {
+  color: var(--luko-gold);
+  border-bottom: 1px solid rgba(201, 168, 106, 0.25);
+}
+/* Point — placeholder page: centered logo + "coming soon" caption. */
+.point-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 24px;
+  padding: 72px 0 56px;
+  min-height: 42vh;
+}
+.point-logo { width: 96px; height: 96px; }
+.point-title {
+  font-size: 34px;
+  font-weight: 200;
+  letter-spacing: 0.14em;
+  margin: 0;
+  color: var(--luko-offwhite);
+}
+.point-soon { color: var(--luko-faint); font-size: 16px; letter-spacing: 0.02em; margin: 0; }
+@media (min-width: 720px) {
+  .point-logo { width: 128px; height: 128px; }
+  .point-title { font-size: 44px; }
+  .point-soon { font-size: 18px; }
+}
 .swatch { width: 9px; height: 9px; border-radius: 2px; flex: 0 0 auto; }
 .swatch-immediate { background: var(--luko-gold); }
 .swatch-streaming { background: #6E5F45; }
@@ -737,3 +797,493 @@ main section[id], #top { scroll-margin-top: 76px; }
 .deed-list ol li { margin-bottom: 4px; padding-left: 6px; }
 .deed-list code { font-family: var(--font-mono); font-size: 11px; color: var(--luko-offwhite); word-break: break-all; }
 .deed-list .gold, .gold { color: var(--luko-gold); }
+
+/* ---------------------------------------------------------------------------
+   LUKO main page. Its own visual identity: apricot paper with a dot screen,
+   Anton display type, neon fills — deliberately not the black/champagne system
+   that oficial.html, market.html, deed.html and specification.html share, so
+   every rule here is scoped to `.pt-body` and inert on those pages.
+   Mobile-first; one breakpoint at 900px, with clamp() carrying the type between.
+   --------------------------------------------------------------------------- */
+.pt-body {
+  --pt-bg: #FFDFAF;
+  --pt-ink: #1E1408;
+  --pt-ink-hover: #3A2A16;
+  --pt-ink-soft: #7A5F3C;
+  --pt-rule: #1E140833;
+  --pt-rule-dark: #FFDFAF33;
+  --pt-dim-dark: #FFDFAFCC;
+  --pt-note-dark: #FFDFAF99;
+  --pt-half-dark: #FFDFAF8A;
+  --pt-magenta: #B0007F;
+  --pt-pink: #FF4BD8;
+  --pt-green: #8BFF6B;
+  --pt-display-font: Anton, "Arial Narrow", "Helvetica Neue", sans-serif;
+  --pt-sans: "Space Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --pt-mono: "DM Mono", ui-monospace, Menlo, monospace;
+  --pt-gutter: clamp(18px, 4vw, 56px);
+
+  background: var(--pt-bg);
+  background-image: radial-gradient(#00000018 1px, transparent 1px);
+  background-size: 4px 4px;
+  color: var(--pt-ink);
+  font-family: var(--pt-sans);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* The site-wide link rules assume the dark system; unwind them. :where() keeps
+   this reset at zero specificity for the anchor, so a bordered link keeps the
+   border it asks for instead of losing it to this rule. */
+.pt-body :where(a) {
+  color: inherit;
+  border-bottom: 0;
+  transition: background-color var(--motion), color var(--motion), border-color var(--motion);
+}
+.pt-body :where(a:hover) { color: inherit; border-bottom-color: transparent; }
+.pt-body ::selection { background: rgba(176, 0, 127, 0.22); }
+.pt-body :focus-visible { outline: 2px solid var(--pt-magenta); outline-offset: 2px; }
+.pt-body .skip-link {
+  background: var(--pt-ink);
+  border-color: var(--pt-ink);
+  color: var(--pt-bg);
+  font-family: var(--pt-mono);
+}
+/* Sections run edge to edge by design, so `main` gives up the site's wrapper. */
+.pt-body main { max-width: none; margin: 0; padding: 0; }
+.pt-body main section[id] { scroll-margin-top: 12px; }
+
+/* Shared primitives ------------------------------------------------------- */
+.pt-label {
+  display: block;
+  font-family: var(--pt-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--pt-ink-soft);
+}
+.pt-label--dark { color: var(--pt-note-dark); letter-spacing: 0.2em; }
+.pt-accent { color: var(--pt-magenta); }
+.pt-green { color: var(--pt-green); }
+.pt-dim { color: var(--pt-dim-dark); }
+.pt-section-title {
+  margin: 12px 0 0;
+  font-family: var(--pt-display-font);
+  font-weight: 400;
+  font-size: clamp(30px, 4.2vw, 56px);
+  line-height: 1.08;
+}
+.pt-section-title--sm { font-size: clamp(28px, 3.6vw, 48px); line-height: 1.1; }
+.pt-display {
+  margin: 0;
+  font-family: var(--pt-display-font);
+  font-weight: 400;
+  font-size: clamp(24px, 2.9vw, 38px);
+  line-height: 1.18;
+}
+.pt-display--sm { font-size: clamp(20px, 2.2vw, 28px); line-height: 1.2; }
+.pt-body-copy { margin: 0; font-size: clamp(15px, 1.5vw, 17px); line-height: 1.6; text-wrap: pretty; }
+.pt-pull { margin: 0; font-size: clamp(17px, 1.9vw, 22px); line-height: 1.45; text-wrap: pretty; }
+.pt-note { margin: 0; font-size: 14px; line-height: 1.6; color: var(--pt-ink-soft); text-wrap: pretty; }
+.pt-stack { display: flex; flex-direction: column; gap: 16px; }
+.pt-stack--centred { align-self: center; }
+
+/* The mark is champagne and vanishes on apricot, so it always sits on an
+   ink disc — never on the paper itself. */
+.pt-chip {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--pt-ink);
+  border-radius: 50%;
+}
+.pt-chip img { display: block; width: 25px; height: 25px; }
+.pt-chip--sm { width: 40px; height: 40px; }
+.pt-chip--sm img { width: 23px; height: 23px; }
+.pt-chip--hero { width: clamp(76px, 8vw, 112px); height: clamp(76px, 8vw, 112px); }
+.pt-chip--hero img { width: 56%; height: 56%; }
+.pt-lockup { display: flex; align-items: center; gap: 12px; }
+.pt-wordmark { font-family: var(--pt-display-font); font-size: 20px; letter-spacing: 0.04em; }
+.pt-wordmark--sm { font-size: 18px; }
+
+/* Buttons. The solid one carries a border in its own colour so a solid and an
+   outlined button standing side by side measure exactly the same box. */
+.pt-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 15px 24px;
+  border: 3px solid var(--pt-ink);
+  font-family: var(--pt-display-font);
+  font-size: clamp(15px, 1.5vw, 18px);
+  line-height: 1.15;
+}
+.pt-body .pt-btn--solid { background: var(--pt-ink); color: var(--pt-bg); }
+.pt-body .pt-btn--solid:hover { background: var(--pt-ink-hover); border-color: var(--pt-ink-hover); }
+.pt-body .pt-btn--outline:hover { background: var(--pt-ink); color: var(--pt-bg); }
+.pt-btn--inline {
+  align-self: start;
+  padding: 14px 22px;
+  font-family: var(--pt-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+}
+
+/* Header ------------------------------------------------------------------ */
+.pt-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 18px var(--pt-gutter);
+  border-bottom: 2px solid var(--pt-ink);
+}
+.pt-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px clamp(12px, 1.8vw, 26px);
+  font-family: var(--pt-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+/* 12px above and below a 20px line clears the 44px tap target on a phone. */
+.pt-nav > a { padding: 12px 0; }
+.pt-nav > a:hover { color: var(--pt-magenta); }
+.pt-nav-out { color: var(--pt-ink-soft); }
+.pt-body .pt-header-cta {
+  flex: none;
+  padding: 13px 18px;
+  background: var(--pt-ink);
+  color: var(--pt-bg);
+}
+.pt-body .pt-header-cta:hover { background: var(--pt-ink-hover); color: var(--pt-bg); }
+.pt-body .language-toggle {
+  font-family: var(--pt-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--pt-ink-soft);
+}
+.pt-body .language-option { font-family: inherit; color: var(--pt-ink-soft); }
+.pt-body .language-option:hover,
+.pt-body .language-option.is-active { color: var(--pt-ink); }
+
+/* Hero -------------------------------------------------------------------- */
+/* Vertical rules are drawn as border-left pulled back by its own width inside
+   an overflow-hidden grid: when the grid collapses to one column the rule
+   slides off-canvas instead of stranding a line across the layout. */
+.pt-hero {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(330px, 100%), 1fr));
+  border-bottom: 2px solid var(--pt-ink);
+  overflow: hidden;
+}
+.pt-hero-copy { padding: clamp(28px, 4.2vw, 60px) var(--pt-gutter) clamp(26px, 3.4vw, 44px); min-width: 0; }
+.pt-hero-lockup { display: flex; align-items: center; gap: clamp(14px, 1.8vw, 24px); }
+.pt-h1 {
+  margin: 0;
+  font-family: var(--pt-display-font);
+  font-weight: 400;
+  font-size: clamp(56px, 7vw, 108px);
+  /* 0.95 is safe for LUKO alone — no diacritic reaches above the caps. */
+  line-height: 0.95;
+  letter-spacing: 0.01em;
+}
+.pt-kicker {
+  margin: clamp(18px, 2.2vw, 28px) 0 0;
+  font-family: var(--pt-display-font);
+  font-size: clamp(24px, 2.8vw, 40px);
+  line-height: 1.1;
+}
+.pt-lead {
+  margin: clamp(16px, 2vw, 22px) 0 0;
+  font-size: clamp(18px, 1.9vw, 22px);
+  line-height: 1.45;
+  max-width: 520px;
+  text-wrap: pretty;
+}
+/* Three CTAs: equal boxes that fill the row when they fit and stack cleanly
+   when they don't, so the third never leaves a stranded half-width button. */
+.pt-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr));
+  gap: 12px;
+  margin-top: clamp(20px, 2.6vw, 32px);
+}
+.pt-hero-facts {
+  border-left: 2px solid var(--pt-ink);
+  margin-left: -2px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.pt-hero-row {
+  padding: clamp(16px, 2vw, 24px) clamp(18px, 3vw, 34px);
+  border-bottom: 2px solid var(--pt-ink);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+}
+.pt-hero-row--green { background: var(--pt-green); }
+.pt-hero-row--green .pt-label { color: var(--pt-ink); }
+.pt-hero-row--people { flex-direction: column; align-items: stretch; gap: 12px; flex: 1; justify-content: center; }
+.pt-hero-value { font-family: var(--pt-display-font); font-size: clamp(18px, 1.9vw, 24px); text-align: right; }
+.pt-person { display: flex; align-items: center; gap: 12px; }
+.pt-person-name { font-family: var(--pt-display-font); font-size: clamp(17px, 1.8vw, 22px); }
+.pt-portrait {
+  flex: none;
+  display: block;
+  width: 52px;
+  height: 52px;
+  object-fit: cover;
+  object-position: 50% 16%;
+  background: var(--pt-ink);
+}
+.pt-portrait--lg { width: 62px; height: 62px; }
+.pt-hero-address {
+  padding: clamp(14px, 1.8vw, 20px) clamp(18px, 3vw, 34px);
+  font-family: var(--pt-mono);
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--pt-ink-soft);
+  word-break: break-all;
+}
+
+/* Questions --------------------------------------------------------------- */
+.pt-qa { padding: clamp(30px, 4vw, 52px) var(--pt-gutter); border-bottom: 2px solid var(--pt-ink); }
+.pt-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  gap: 14px;
+  margin-top: clamp(22px, 3vw, 34px);
+}
+.pt-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px;
+  border: 3px solid var(--pt-ink);
+}
+/* Filled cards carry a border in their own colour so every box measures the
+   same, fill or no fill, and the rows stay aligned. */
+.pt-card--pink { background: var(--pt-pink); border-color: var(--pt-pink); }
+.pt-card--green { background: var(--pt-green); border-color: var(--pt-green); }
+.pt-q {
+  margin: 0;
+  font-family: var(--pt-display-font);
+  font-weight: 400;
+  font-size: clamp(18px, 1.9vw, 22px);
+  line-height: 1.2;
+}
+.pt-a { margin: 0; font-size: 15px; line-height: 1.6; text-wrap: pretty; }
+
+/* Emission ---------------------------------------------------------------- */
+.pt-emission { border-bottom: 2px solid var(--pt-ink); }
+.pt-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
+  overflow: hidden;
+}
+.pt-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: clamp(22px, 2.8vw, 34px) clamp(16px, 2.4vw, 32px);
+  border-left: 2px solid var(--pt-ink);
+  margin-left: -2px;
+}
+.pt-cell--pink { background: var(--pt-pink); }
+.pt-cell--green { background: var(--pt-green); }
+.pt-cell--pink .pt-label,
+.pt-cell--green .pt-label { color: var(--pt-ink); }
+.pt-cell-value { font-family: var(--pt-display-font); font-size: clamp(36px, 4.2vw, 58px); line-height: 1; }
+.pt-cell-value--sm { font-size: clamp(32px, 3.6vw, 50px); }
+.pt-split {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+  gap: clamp(18px, 3vw, 48px);
+  padding: clamp(24px, 3.4vw, 44px) var(--pt-gutter);
+  border-top: 2px solid var(--pt-ink);
+}
+.pt-split .pt-stack { gap: 14px; }
+
+/* Founders ---------------------------------------------------------------- */
+.pt-founders {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  gap: clamp(20px, 3vw, 48px);
+  padding: clamp(28px, 3.8vw, 52px) var(--pt-gutter);
+  border-bottom: 2px solid var(--pt-ink);
+}
+.pt-founders > .pt-stack { gap: clamp(18px, 2.4vw, 26px); }
+.pt-founder-cards { display: flex; flex-direction: column; gap: 12px; max-width: 460px; }
+.pt-founder { display: flex; align-items: center; gap: 14px; padding: 14px; border: 3px solid var(--pt-ink); }
+.pt-founder-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.pt-founder-name { font-family: var(--pt-display-font); font-size: 20px; line-height: 1.15; }
+.pt-founder .pt-label { letter-spacing: 0.12em; }
+
+/* Principle — the dark band ------------------------------------------------ */
+.pt-principle { background: var(--pt-ink); color: var(--pt-bg); }
+.pt-principle-head { padding: clamp(34px, 5vw, 76px) var(--pt-gutter) clamp(22px, 3vw, 34px); }
+.pt-principle-title {
+  margin: 14px 0 0;
+  font-family: var(--pt-display-font);
+  font-weight: 400;
+  font-size: clamp(34px, 5.4vw, 76px);
+  line-height: 1.06;
+}
+.pt-principle-copy {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  gap: clamp(20px, 3vw, 48px);
+  padding: 0 var(--pt-gutter) clamp(26px, 3.4vw, 42px);
+}
+.pt-principle-copy .pt-stack { gap: 14px; }
+.pt-principle-copy .pt-pull { font-size: clamp(17px, 1.8vw, 20px); line-height: 1.5; }
+.pt-principle-copy .pt-body-copy { font-size: 15px; line-height: 1.65; }
+.pt-principle-close {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: clamp(10px, 2.4vw, 26px);
+  padding: clamp(20px, 2.6vw, 32px) var(--pt-gutter) clamp(32px, 4.4vw, 56px);
+  border-top: 1px solid var(--pt-rule-dark);
+}
+.pt-closing { font-family: var(--pt-display-font); font-size: clamp(22px, 2.8vw, 36px); }
+.pt-closing--dim { color: var(--pt-half-dark); }
+
+/* Genesis ----------------------------------------------------------------- */
+.pt-genesis { border-bottom: 2px solid var(--pt-ink); }
+.pt-genesis-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding: clamp(30px, 4vw, 52px) var(--pt-gutter) clamp(18px, 2.4vw, 26px);
+}
+.pt-genesis-title {
+  margin: 0;
+  font-family: var(--pt-display-font);
+  font-weight: 400;
+  font-size: clamp(34px, 5vw, 68px);
+  line-height: 1.05;
+}
+.pt-genesis-head .pt-label { font-size: 12px; }
+.pt-strip--steps { grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr)); }
+.pt-cell--step {
+  gap: 12px;
+  padding: clamp(20px, 2.4vw, 30px) clamp(16px, 2.2vw, 28px);
+  border-top: 2px solid var(--pt-ink);
+}
+.pt-time { font-family: var(--pt-mono); font-size: 14px; color: var(--pt-ink-soft); }
+.pt-time--now { color: var(--pt-ink); }
+.pt-step-copy { font-size: 15px; line-height: 1.55; text-wrap: pretty; }
+.pt-genesis-close {
+  margin: 0;
+  padding: clamp(22px, 3vw, 36px) var(--pt-gutter) clamp(28px, 3.8vw, 48px);
+  font-family: var(--pt-display-font);
+  font-size: clamp(22px, 2.8vw, 36px);
+  line-height: 1.2;
+  max-width: 900px;
+}
+
+/* On-chain records -------------------------------------------------------- */
+.pt-records { border-bottom: 2px solid var(--pt-ink); }
+.pt-records-head {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+  gap: clamp(16px, 3vw, 44px);
+  padding: clamp(30px, 4vw, 52px) var(--pt-gutter) clamp(20px, 2.6vw, 30px);
+}
+.pt-records-note { margin: 0; align-self: end; font-size: 15px; line-height: 1.6; text-wrap: pretty; }
+.pt-rows { display: flex; flex-direction: column; }
+.pt-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr));
+  gap: 10px 12px;
+  align-items: baseline;
+  padding: clamp(22px, 2.4vw, 28px) var(--pt-gutter);
+  border-top: 2px solid var(--pt-ink);
+}
+.pt-rows .pt-row:last-child { border-bottom: 2px solid var(--pt-ink); }
+.pt-body .pt-row:hover { background: var(--pt-ink); color: var(--pt-bg); }
+.pt-row-name { font-family: var(--pt-display-font); font-size: clamp(21px, 2.3vw, 28px); }
+.pt-row-desc { font-size: 15px; line-height: 1.55; }
+.pt-row-go { font-family: var(--pt-mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; }
+.pt-records-address {
+  padding: 16px var(--pt-gutter) clamp(24px, 3vw, 34px);
+  font-family: var(--pt-mono);
+  font-size: 11px;
+  color: var(--pt-ink-soft);
+  word-break: break-all;
+}
+
+/* What's next ------------------------------------------------------------- */
+.pt-next {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+  gap: clamp(18px, 3vw, 48px);
+  padding: clamp(30px, 4vw, 52px) var(--pt-gutter);
+  border-bottom: 2px solid var(--pt-ink);
+}
+
+/* Footer ------------------------------------------------------------------ */
+.pt-footer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  gap: clamp(20px, 3vw, 40px);
+  padding: clamp(28px, 3.6vw, 48px) var(--pt-gutter) clamp(32px, 4vw, 52px);
+  /* A phone's bottom chrome floats over the viewport; add whatever the device
+     reserves. Separate declaration so a browser without env() keeps the rest. */
+  padding-bottom: calc(clamp(32px, 4vw, 52px) + env(safe-area-inset-bottom, 0px));
+}
+.pt-footer-brand { display: flex; flex-direction: column; gap: 10px; }
+.pt-footer-claim {
+  align-self: center;
+  font-family: var(--pt-display-font);
+  font-size: clamp(20px, 2.2vw, 26px);
+  line-height: 1.2;
+}
+.pt-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  align-self: center;
+  font-family: var(--pt-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.pt-footer-links a:hover { color: var(--pt-magenta); }
+.pt-footer-meta {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-family: var(--pt-mono);
+  font-size: 11px;
+  color: var(--pt-ink-soft);
+}
+.pt-footer-meta a { text-decoration: underline; text-underline-offset: 3px; }
+.pt-footer-meta a:hover { color: var(--pt-magenta); }
+
+@media (prefers-reduced-motion: reduce) {
+  .pt-body a,
+  .pt-body button { transition: none; }
+}
+
+/* Desktop ----------------------------------------------------------------- */
+@media (min-width: 900px) {
+  /* Cap the running text so lines don't over-run on a wide screen; the
+     sections themselves stay edge to edge. */
+  .pt-records-note,
+  .pt-next .pt-body-copy,
+  .pt-founders .pt-body-copy { max-width: 560px; }
+  .pt-split .pt-body-copy { max-width: 680px; }
+}

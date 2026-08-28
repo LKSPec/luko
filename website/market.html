@@ -85,7 +85,7 @@
       if (action) track(action);
     }, true);
   </script>
-  <link rel="stylesheet" href="styles.css?v=16">
+  <link rel="stylesheet" href="styles.css?v=25">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -98,6 +98,7 @@
     <nav class="site-nav" aria-label="Sections">
       <a href="/">Token</a>
       <a href="/deed" data-en="Deed" data-lt="Aktas">Deed</a>
+      <a href="/oficial" data-en="Official" data-lt="Oficialu">Official</a>
       <span class="language-toggle" role="group" aria-label="Language">
         <button type="button" class="language-option is-active" data-language="en" data-sentry-action="lang_switch" aria-pressed="true">EN</button>
         <span aria-hidden="true">/</span>
@@ -121,10 +122,9 @@
         <div class="fact"><dt data-en="Immediate allocation" data-lt="Iš karto paskirta">Immediate allocation</dt><dd class="accent">50,000 LUKO</dd></div>
         <div class="fact"><dt data-en="Streaming allocation" data-lt="Palaipsniui gaunama">Streaming allocation</dt><dd class="accent">140,000 LUKO</dd></div>
         <div class="fact"><dt data-en="Stream ends" data-lt="Išmokėjimo pabaiga">Stream ends</dt><dd>24 Aug 2027</dd></div>
-        <div class="fact"><dt data-en="Stream status" data-lt="Būsena">Stream status</dt><dd class="pending" data-en="Active (pending)" data-lt="Aktyvus (eigoje)">Active (pending)</dd></div>
-        <div class="fact"><dt data-en="Vested so far" data-lt="Jau pasiekiama dalis">Vested so far</dt><dd class="pending">—</dd></div>
-        <!-- lambda-stream-url -->
-        <div class="fact"><dt>Sablier</dt><dd class="pending" data-en="Pending" data-lt="Laukiama">Pending</dd></div>
+        <div class="fact"><dt data-en="Stream status" data-lt="Būsena">Stream status</dt><dd class="pending" id="stream-status-lambda" data-en="Starts 2 Aug 2026" data-lt="Starts 2 Aug 2026">Starts 2 Aug 2026</dd></div>
+        <div class="fact"><dt data-en="Vested so far" data-lt="Jau pasiekiama dalis">Vested so far</dt><dd class="accent" id="vested-amount-lambda">—</dd></div>
+        <div class="fact"><dt data-en="Verify on-chain" data-lt="Patikrinti on-chain">Verify on-chain</dt><dd><a href="https://app.sablier.com/vesting/stream/LK3-8453-932" rel="noopener" data-en="View on Sablier →" data-lt="Žiūrėti Sablier →">View on Sablier →</a></dd></div>
       </dl>
     </section>
 
@@ -144,13 +144,13 @@
     <section id="market" class="panel" aria-labelledby="market-label">
       <h2 id="market-label" class="label" data-en="Live market" data-lt="RINKA">Live market</h2>
       <dl class="facts">
-        <div class="fact"><dt data-en="Price" data-lt="Kaina">Price</dt><dd id="market-price">—</dd></div>
+        <div class="fact"><dt><span data-en="Price" data-lt="Kaina">Price</span><a class="note-ref" href="#price-note" title="Live pool price — see note below" aria-label="How the price is calculated">1</a></dt><dd id="market-price">—</dd></div>
         <div class="fact"><dt data-en="Market LUKO" data-lt="Rinkoje LUKO">Market LUKO</dt><dd id="market-luko">—</dd></div>
         <div class="fact"><dt data-en="Market USDC" data-lt="Rinkoje USDC">Market USDC</dt><dd id="market-usdc">—</dd></div>
       </dl>
       <div class="market-value-block">
         <div class="market-stake">
-          <div class="label" data-en="One founder's full stake" data-lt="Vieno steigėjo visa dalis">One founder's full stake</div>
+          <div class="label"><span data-en="One founder's full stake" data-lt="Vieno steigėjo visa dalis">One founder's full stake</span><a class="note-ref" href="#price-note" title="Live pool price — see note below" aria-label="How the price is calculated">1</a></div>
           <div class="market-stake-row">
             <span class="market-value-big" id="market-value-190">—</span>
             <span class="market-stake-units">190,000 LUKO</span>
@@ -168,6 +168,7 @@
           <div class="market-value-item">
             <div class="label"><span data-en="Streaming · 140,000" data-lt="Palaipsniui · 140,000">Streaming · 140,000</span><span class="swatch swatch-streaming"></span></div>
             <div class="market-value-mid" id="market-value-140">—</div>
+            <div class="market-value-avail"><span data-en="available now" data-lt="jau prieinama">available now</span> · <span id="market-avail-140">—</span></div>
           </div>
         </div>
       </div>
@@ -183,6 +184,11 @@
       </div>
     </section>
 
+    <aside class="market-note" id="price-note" aria-label="How the price is calculated">
+      <p class="market-note-body"><sup>1</sup> <span data-en="Price is read live on-chain as the reserve ratio (USDC ÷ LUKO) of the LUKO/USDC Aerodrome pool on Base, taking 1 USDC ≈ $1. Every USD figure on this page is derived from it — no third-party price feed. This is the pool's current price; wallets and aggregators can lag it briefly on a thin pool, so their numbers may differ." data-lt="Kaina skaitoma tiesiogiai on-chain kaip LUKO/USDC „Aerodrome“ baseino (Base) rezervų santykis (USDC ÷ LUKO), laikant 1 USDC ≈ $1. Visi šio puslapio USD skaičiai iš jos išvedami — jokio išorinio kainos šaltinio. Tai dabartinė baseino kaina; piniginės ir agregatoriai plonam baseinui gali trumpam vėluoti, todėl jų skaičiai gali skirtis.">Price is read live on-chain as the reserve ratio (USDC ÷ LUKO) of the LUKO/USDC Aerodrome pool on Base, taking 1 USDC ≈ $1. Every USD figure on this page is derived from it — no third-party price feed. This is the pool's current price; wallets and aggregators can lag it briefly on a thin pool, so their numbers may differ.</span></p>
+      <p class="market-note-verify"><span data-en="Verify:" data-lt="Patikrinti:">Verify:</span> <a href="https://basescan.org/address/0x2222A01b83Db8c533B062AEb6DE4F61D6Ae792F2#readContract" rel="noopener"><span data-en="pool reserves on BaseScan" data-lt="baseino rezervai BaseScan">pool reserves on BaseScan</span></a> · <a href="https://www.geckoterminal.com/base/pools/0x2222A01b83Db8c533B062AEb6DE4F61D6Ae792F2" rel="noopener">GeckoTerminal</a></p>
+    </aside>
+
 
   </main>
 
@@ -192,6 +198,6 @@
   </footer>
 
   <script src="app.js?v=10" defer></script>
-  <script src="market.js?v=5" type="module"></script>
+  <script src="market.js?v=8" type="module"></script>
 </body>
 </html>

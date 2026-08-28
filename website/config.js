@@ -22,7 +22,10 @@ export const CONFIG = {
     sablierLockup: "0xc19a09A66887017F603E5dF420ed3Cb9a5c07C0A",
     /* Donation recipient. Dedicated wallet, holds nothing else, so every
        inbound LUKO transfer is unambiguously a donation. */
-    donation:      "0x33D857fb6f06aaFc498De09654Da82A8f68BE233"
+    donation:      "0x33D857fb6f06aaFc498De09654Da82A8f68BE233",
+    /* LUKOCovenant — the on-chain deed both founders sign. deed.html reads its
+       signature timestamps and seal status live (verified source on BaseScan). */
+    covenant:      "0x2e4c8DcbdDA4eDbEdC2E1052185111592ca11d0e"
   },
 
   network: {
@@ -67,7 +70,13 @@ export const CONFIG = {
       total: 140000,
       sablierUrl: "https://app.sablier.com/vesting/stream/LK3-8453-902"
     },
-    /* Λ — filled by a commit once the stream is live (after 16 Aug 2026). */
-    lambda: null
+    /* Λ — mirror of Δ (same schedule/total), distinct on-chain stream id. */
+    lambda: {
+      id:    932,
+      start: 1785697200,   /* Aug 2 2026, 22:00 Europe/Vilnius (19:00 UTC) */
+      end:   1819055100,   /* Aug 24 2027, 00:05 Europe/Vilnius */
+      total: 140000,
+      sablierUrl: "https://app.sablier.com/vesting/stream/LK3-8453-932"
+    }
   }
 };

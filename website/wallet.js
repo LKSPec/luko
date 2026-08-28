@@ -2,7 +2,7 @@
    wallet_watchAsset. Providers are discovered through EIP-6963 with
    window.ethereum as a legacy fallback. The site never requests accounts.
    The page is fully usable without this script. */
-import { CONFIG } from "./config.js";
+import { CONFIG } from "./config.js?v=2";
 
 (function () {
   "use strict";

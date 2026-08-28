@@ -1,7 +1,7 @@
 /* Live market data for the genesis page, read directly from Base public RPC.
    No third-party price APIs, no keys. The page renders "—" placeholders and
    stays usable without this script. */
-import { CONFIG } from "./config.js";
+import { CONFIG } from "./config.js?v=2";
 
 (function () {
   "use strict";
@@ -11,6 +11,7 @@ import { CONFIG } from "./config.js";
   var LUKO_ADDRESS = CONFIG.addresses.luko;
   var USDC_ADDRESS = CONFIG.addresses.usdc;
   var BALANCE_OF = "0x70a08231"; /* balanceOf(address) */
+  var lastPrice = null; /* latest USDC/LUKO price, set on each market fetch */
 
   if (typeof BigInt === "undefined" || !window.fetch) return;
 
@@ -70,6 +71,23 @@ import { CONFIG } from "./config.js";
     setValue("market-value", "$" + formatFixed(50000 * price, 2));
     setValue("market-value-140", "$" + formatFixed(140000 * price, 2));
     setValue("market-value-190", "$" + formatFixed(190000 * price, 2));
+    lastPrice = price;
+    renderAvailable();
+  }
+
+  /* "available now" under the streaming value: the vested-so-far portion of one
+     founder's 140,000 streaming allocation, in LUKO (ticks client-side from the
+     stream schedule) and, once a price is known, its USD value. Makes the split
+     between the full allocation and the already-available part explicit. */
+  function renderAvailable() {
+    var el = document.getElementById("market-avail-140");
+    if (!el) return;
+    var d = CONFIG.streams.delta;
+    var nowSec = Date.now() / 1000;
+    var vested = Math.min(Math.max(vestedAt(d, nowSec), 0), d.total);
+    var text = formatFixed(vested, 0) + " LUKO";
+    if (lastPrice !== null) text += " · ~$" + formatFixed(vested * lastPrice, 2);
+    el.textContent = text;
   }
 
   /* Load with a single retry; refresh every 30 s. Failures keep "—". */
@@ -93,22 +111,18 @@ import { CONFIG } from "./config.js";
      the counter runs entirely client-side with no runtime RPC call. The
      config values must match the on-chain stream exactly; a "Verify on-chain"
      link next to the counter points at the Sablier stream page. */
-  var DELTA = CONFIG.streams.delta;
-  var VEST_START = DELTA.start;
-  var VEST_END = DELTA.end;
-  var VEST_TOTAL = DELTA.total;
-
-  function vestedAt(nowSec) {
-    if (nowSec <= VEST_START) return 0;
-    if (nowSec >= VEST_END) return VEST_TOTAL;
-    return VEST_TOTAL * (nowSec - VEST_START) / (VEST_END - VEST_START);
+  function vestedAt(cfg, nowSec) {
+    if (nowSec <= cfg.start) return 0;
+    if (nowSec >= cfg.end) return cfg.total;
+    return cfg.total * (nowSec - cfg.start) / (cfg.end - cfg.start);
   }
 
-  function renderVested() {
+  function renderVestedFor(cfg, statusId, vestedId) {
+    if (!cfg) return;
     var nowSec = Date.now() / 1000;
-    var status = document.getElementById("stream-status");
-    if (nowSec < VEST_START) {
-      setValue("vested-amount", "—");
+    var status = document.getElementById(statusId);
+    if (nowSec < cfg.start) {
+      setValue(vestedId, "—");
       return;
     }
     if (status && status.dataset.en !== "Active") {
@@ -117,10 +131,16 @@ import { CONFIG } from "./config.js";
       status.textContent = document.documentElement.lang === "lt" ? status.dataset.lt : status.dataset.en;
       status.className = "accent";
     }
-    var vested = Math.min(Math.max(vestedAt(nowSec), 0), VEST_TOTAL);
-    setValue("vested-amount", formatFixed(vested, 2) + " LUKO");
+    var vested = Math.min(Math.max(vestedAt(cfg, nowSec), 0), cfg.total);
+    setValue(vestedId, formatFixed(vested, 2) + " LUKO");
   }
 
-  renderVested();
-  setInterval(renderVested, 1000);
+  function renderStreams() {
+    renderVestedFor(CONFIG.streams.delta, "stream-status", "vested-amount");
+    renderVestedFor(CONFIG.streams.lambda, "stream-status-lambda", "vested-amount-lambda");
+    renderAvailable();
+  }
+
+  renderStreams();
+  setInterval(renderStreams, 1000);
 })();
