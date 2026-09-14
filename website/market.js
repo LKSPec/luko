@@ -75,14 +75,14 @@ import { CONFIG } from "./config.js?v=2";
     renderAvailable();
   }
 
-  /* "available now" under the streaming value: the vested-so-far portion of the
+  /* "available now" under the streaming value: the vested-so-far portion of one
      founder's 140,000 streaming allocation, in LUKO (ticks client-side from the
      stream schedule) and, once a price is known, its USD value. Makes the split
      between the full allocation and the already-available part explicit. */
   function renderAvailable() {
     var el = document.getElementById("market-avail-140");
     if (!el) return;
-    var d = CONFIG.streams.lambda;
+    var d = CONFIG.streams.delta;
     var nowSec = Date.now() / 1000;
     var vested = Math.min(Math.max(vestedAt(d, nowSec), 0), d.total);
     var text = formatFixed(vested, 0) + " LUKO";
