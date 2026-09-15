@@ -580,20 +580,38 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
   filter: hue-rotate(-125deg) saturate(0.55) brightness(0.96);
 }
 
-/* Allocation — chart + table */
-.allocation-layout { display: flex; flex-direction: column; gap: 28px; }
-.allocation-chart-col { display: flex; flex-direction: column; gap: 20px; align-items: center; }
+/* Allocation — table, chart and holdings bars. Phones stack them in that
+   order; tablets put the table on top with chart and bars side by side;
+   wide screens place chart | table | bars in one row. */
+.allocation-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "table" "chart" "holdings";
+  gap: 28px;
+}
+.allocation-layout > .table-scroll { grid-area: table; }
+.allocation-chart-col { grid-area: chart; display: flex; justify-content: center; }
 .allocation-chart { width: 208px; height: 208px; }
-/* Current holdings: name, bar, amount on one line; bar under the name when
-   the space is narrow (phones, and the chart column beside the table) */
-.holdings { width: 100%; max-width: 440px; container-type: inline-size; }
+/* Current holdings: name, bar, amount, share on one line; bar under the
+   name when the space is narrow */
+.holdings {
+  grid-area: holdings;
+  justify-self: center;
+  width: 100%;
+  max-width: 440px;
+  container-type: inline-size;
+  /* a faint rule sets the bars apart: above them when stacked, beside them
+     in a row (drawn in the middle of the gap) */
+  padding-top: 24px;
+  border-top: 1px solid var(--luko-hairline-raised);
+}
 .holdings .label { margin-bottom: 10px; }
 .holdings-list {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: max-content minmax(24px, 1fr) max-content max-content;
+  grid-template-columns: max-content minmax(24px, 1fr) max-content max-content max-content;
   column-gap: 10px;
   row-gap: 7px;
   align-items: center;
@@ -606,23 +624,25 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
 .holdings-bar { display: block; height: 9px; }
 .holdings-fill { display: block; height: 100%; min-width: 2px; }
 .holdings-amount { text-align: right; white-space: nowrap; }
+.holdings-share,
 .holdings-note { color: var(--luko-faint); white-space: nowrap; }
 .holdings-row-locked > * { margin-top: 12px; }
 .holdings-row-locked .holdings-fill { box-shadow: inset 0 0 0 1px var(--luko-faint); }
 @container (max-width: 359px) {
   .holdings-list { display: block; font-size: 11px; }
   .holdings-row {
-    display: grid;
-    grid-template-columns: 1fr max-content max-content;
-    grid-template-areas: "name amount note" "bar bar bar";
-    column-gap: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: 5px;
     row-gap: 4px;
     margin-bottom: 9px;
   }
-  .holdings-name { grid-area: name; }
-  .holdings-amount { grid-area: amount; }
-  .holdings-note { grid-area: note; }
-  .holdings-bar { grid-area: bar; height: 6px; }
+  .holdings-name { flex: 1 1 auto; }
+  .holdings-note:empty { display: none; }
+  /* a note that does not fit wraps under the amount, not under the name */
+  .holdings-note { margin-left: auto; }
+  .holdings-bar { order: 1; flex: 0 0 100%; height: 6px; }
   .holdings-row-locked { margin-top: 16px; }
   .holdings-row-locked > * { margin-top: 0; }
 }
@@ -693,13 +713,6 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
   border-top: 1px solid var(--luko-hairline-raised);
   color: var(--luko-offwhite);
 }
-/* Dollar value under a Holds now figure */
-.allocation-table .now-usd {
-  display: block;
-  margin-top: 3px;
-  font-size: 10px;
-  color: var(--luko-faint);
-}
 @media (max-width: 719px) {
   .allocation-table { font-size: 10px; white-space: normal; }
   .allocation-table th {
@@ -708,22 +721,21 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
     letter-spacing: 0.08em;
   }
   .allocation-table td { padding: 9px 4px; }
-  .allocation-table .now-usd { margin-top: 2px; font-size: 8px; }
   /* The swatch stays with the first word; a long name wraps after it */
   .allocation-table td:first-child { white-space: nowrap; }
   .allocation-table td:first-child > span:last-child { white-space: normal; }
 }
-/* Allocation, Amount, Percent and Holds now always show. The rest appear as
-   the width allows: Vesting first, then Status, then Immediate. */
-@media (max-width: 475px) {
+/* Allocation, Amount and Percent always show. The rest appear as the width
+   allows: Vesting first, then Status, then Immediate. */
+@media (max-width: 413px) {
   .allocation-table th:nth-child(4),
   .allocation-table td:nth-child(4) { display: none; }
 }
-@media (max-width: 418px) {
-  .allocation-table th:nth-child(7),
-  .allocation-table td:nth-child(7) { display: none; }
+@media (max-width: 357px) {
+  .allocation-table th:nth-child(6),
+  .allocation-table td:nth-child(6) { display: none; }
 }
-@media (max-width: 381px) {
+@media (max-width: 320px) {
   .allocation-table th:nth-child(5),
   .allocation-table td:nth-child(5) { display: none; }
 }
@@ -732,15 +744,34 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
   .allocation-table th,
   .allocation-table td { padding-left: 8px; padding-right: 8px; }
 }
-@media (min-width: 720px) and (max-width: 819px) {
-  .allocation-table th:nth-child(4),
-  .allocation-table td:nth-child(4) { display: none; }
+@media (min-width: 600px) {
+  .allocation-layout {
+    grid-template-columns: max-content minmax(0, 1fr);
+    grid-template-areas: "table table" "chart holdings";
+    column-gap: 40px;
+    align-items: center;
+  }
+  .holdings {
+    justify-self: stretch;
+    width: auto;
+    margin-left: -20px;
+    padding: 0 0 0 20px;
+    border-top: 0;
+    border-left: 1px solid var(--luko-hairline-raised);
+  }
 }
-/* Chart beside the table only once the seven columns fit next to it */
 @media (min-width: 1120px) {
-  .allocation-layout { flex-direction: row; align-items: flex-start; gap: 40px; }
-  .allocation-chart-col { flex-shrink: 0; }
-  .table-scroll { flex: 1; }
+  .allocation-layout {
+    grid-template-columns: max-content minmax(0, 1fr) 190px;
+    grid-template-areas: "chart table holdings";
+    column-gap: 28px;
+    align-items: start;
+  }
+  .holdings { margin-left: -14px; padding-left: 14px; }
+  .allocation-chart { width: 168px; height: 168px; }
+  /* tighter cells so chart, table and bars fit one row */
+  .allocation-table th,
+  .allocation-table td { padding-left: 8px; padding-right: 8px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
