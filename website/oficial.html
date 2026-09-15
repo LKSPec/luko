@@ -85,7 +85,7 @@
       if (action) track(action);
     }, true);
   </script>
-  <link rel="stylesheet" href="styles.css?v=26">
+  <link rel="stylesheet" href="styles.css?v=27">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -146,21 +146,23 @@
               <circle cx="100" cy="100" r="80" stroke="#6E6759" stroke-dasharray="120.6 382.05" transform="rotate(183.6 100 100)"></circle>
             </g>
             <!-- Inner ring: current state, drawn by state.js from /api/state -->
-            <g fill="none" stroke-width="8">
-              <circle cx="100" cy="100" r="57" stroke="#1E1B16"></circle>
-              <circle data-ring="lambda" cx="100" cy="100" r="57" stroke="#C9A86A" stroke-dasharray="0 358.14"></circle>
-              <circle data-ring="delta" cx="100" cy="100" r="57" stroke="#9A7E4E" stroke-dasharray="0 358.14"></circle>
-              <circle data-ring="market" cx="100" cy="100" r="57" stroke="#3B3226" stroke-dasharray="0 358.14"></circle>
-              <circle data-ring="operations" cx="100" cy="100" r="57" stroke="#4E4940" stroke-dasharray="0 358.14"></circle>
-              <circle data-ring="reserve" cx="100" cy="100" r="57" stroke="#6E6759" stroke-dasharray="0 358.14"></circle>
-              <circle data-ring="other" cx="100" cy="100" r="57" stroke="#E8E4DC" stroke-dasharray="0 358.14"></circle>
+            <g fill="none" stroke-width="16">
+              <circle cx="100" cy="100" r="55" stroke="#1E1B16"></circle>
+              <circle data-ring="lambda" cx="100" cy="100" r="55" stroke="#C9A86A" stroke-dasharray="0 345.58"></circle>
+              <circle data-ring="delta" cx="100" cy="100" r="55" stroke="#9A7E4E" stroke-dasharray="0 345.58"></circle>
+              <circle data-ring="market" cx="100" cy="100" r="55" stroke="#3B3226" stroke-dasharray="0 345.58"></circle>
+              <circle data-ring="operations" cx="100" cy="100" r="55" stroke="#4E4940" stroke-dasharray="0 345.58"></circle>
+              <circle data-ring="reserve" cx="100" cy="100" r="55" stroke="#6E6759" stroke-dasharray="0 345.58"></circle>
+              <circle data-ring="other" cx="100" cy="100" r="55" stroke="#E8E4DC" stroke-dasharray="0 345.58"></circle>
+              <circle data-ring="vesting" cx="100" cy="100" r="55" stroke="#2A261E" stroke-dasharray="0 345.58"></circle>
             </g>
+            <g id="ring-labels" text-anchor="middle" dominant-baseline="middle" font-size="7.5"></g>
             <text x="145" y="33.8" text-anchor="middle" dominant-baseline="middle" font-size="9" fill="#0A0A0A">19%</text>
             <text x="178.1" y="117.4" text-anchor="middle" dominant-baseline="middle" font-size="9" fill="#0A0A0A">19%</text>
             <text x="112.5" y="179" text-anchor="middle" dominant-baseline="middle" font-size="9" fill="#EDE7DA">19%</text>
             <text x="31.1" y="140.7" text-anchor="middle" dominant-baseline="middle" font-size="9" fill="#EDE7DA">19%</text>
             <text x="45.3" y="41.7" text-anchor="middle" dominant-baseline="middle" font-size="9" fill="#0A0A0A">24%</text>
-            <text x="100" y="96" text-anchor="middle" font-size="17" font-weight="200" letter-spacing="1" fill="#E8E4DC">1,000,000</text>
+            <text x="100" y="97" text-anchor="middle" font-size="15" font-weight="200" letter-spacing="1" fill="#E8E4DC">1,000,000</text>
             <text x="100" y="114" text-anchor="middle" font-size="8" letter-spacing="3" fill="#C9A86A">LUKO</text>
           </svg>
         </div>
@@ -173,7 +175,7 @@
                 <th data-en="Percent" data-lt="Dalis">Percent</th>
                 <th data-en="Immediate" data-lt="Iš karto">Immediate</th>
                 <th data-en="Vesting" data-lt="Palaipsniui">Vesting</th>
-                <th data-en="Now" data-lt="Dabar">Now</th>
+                <th data-en="Holds now" data-lt="Laiko dabar">Holds now</th>
                 <th data-en="Status" data-lt="Būsena">Status</th>
               </tr>
             </thead>
@@ -340,6 +342,6 @@
   <script src="app.js?v=10" defer></script>
   <script src="wallet.js?v=8" type="module"></script>
   <script src="donation.js?v=8" type="module"></script>
-  <script src="state.js?v=1" type="module"></script>
+  <script src="state.js?v=3" type="module"></script>
 </body>
 </html>

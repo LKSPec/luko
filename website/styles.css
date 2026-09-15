@@ -627,6 +627,9 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
   color: var(--luko-faint);
   text-align: right;
   border-bottom: 1px solid var(--luko-hairline);
+  /* two-word headers may break onto a second line when space runs out */
+  white-space: normal;
+  vertical-align: bottom;
 }
 .allocation-table td {
   padding: 11px 12px;
@@ -654,18 +657,32 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
     letter-spacing: 0.08em;
   }
   .allocation-table td { padding: 9px 4px; }
-  /* Percent and Immediate (3rd and 4th) are hidden on phones; Now always shows */
-  .allocation-table th:nth-child(3),
-  .allocation-table td:nth-child(3),
+  /* The swatch stays with the first word; a long name wraps after it */
+  .allocation-table td:first-child { white-space: nowrap; }
+  .allocation-table td:first-child > span:last-child { white-space: normal; }
+}
+/* Allocation, Amount, Percent and Holds now always show. The rest appear as
+   the width allows: Vesting first, then Status, then Immediate. */
+@media (max-width: 475px) {
   .allocation-table th:nth-child(4),
   .allocation-table td:nth-child(4) { display: none; }
 }
+@media (max-width: 418px) {
+  .allocation-table th:nth-child(7),
+  .allocation-table td:nth-child(7) { display: none; }
+}
+@media (max-width: 381px) {
+  .allocation-table th:nth-child(5),
+  .allocation-table td:nth-child(5) { display: none; }
+}
 @media (min-width: 720px) and (max-width: 859px) {
-  /* Percent is hidden and cells are tighter on narrow tablets */
-  .allocation-table th:nth-child(3),
-  .allocation-table td:nth-child(3) { display: none; }
+  /* Tighter cells on narrow tablets */
   .allocation-table th,
   .allocation-table td { padding-left: 8px; padding-right: 8px; }
+}
+@media (min-width: 720px) and (max-width: 819px) {
+  .allocation-table th:nth-child(4),
+  .allocation-table td:nth-child(4) { display: none; }
 }
 /* Chart beside the table only once the seven columns fit next to it */
 @media (min-width: 1120px) {

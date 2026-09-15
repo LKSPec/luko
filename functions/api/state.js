@@ -1,41 +1,36 @@
 /* Cloudflare Pages Function — where the genesis supply sits now.
  *
- * GET /api/state → JSON with the current LUKO total of each genesis
- * allocation, read live from Base:
- *   allocation = LUKO balances of its wallets
- *              + what its Sablier streams still hold
- *                (deposited − withdrawn − refunded)
- *   other      = totalSupply − all allocations, i.e. every holder not listed
+ * GET /api/state → JSON with what each genesis allocation's wallets hold,
+ * read live from Base with balanceOf:
+ *   allocation = LUKO on its wallets (nothing still locked in vesting)
+ *   vesting    = LUKO held by the Sablier vesting contract
+ *   other      = totalSupply − allocations − vesting, i.e. every holder not listed
  *
- * Totals are whole LUKO, rounded so they add up exactly to the supply. The
- * wallet lists stay here and are never returned. All reads are pinned to one
- * block. The dRPC free plan rejects JSON-RPC batches of more than three
- * calls, so calls go out as parallel batches of three. Keyed endpoint first
- * (RPC_URL / DRPC_API_KEY), then the public pool. Cached at the edge for 60 s.
+ * Totals are whole LUKO, rounded so allocations + other + vesting add up
+ * exactly to the supply. The wallet lists stay here and are never returned.
+ * All reads are pinned to one block. The dRPC free plan rejects JSON-RPC
+ * batches of more than three calls, so calls go out as parallel batches of
+ * three. Keyed endpoint first (RPC_URL / DRPC_API_KEY), then the public pool.
+ * Cached at the edge for 60 s.
  */
 
 import { CONFIG } from "../../website/config.js";
 
 const LUKO_ADDRESS = CONFIG.addresses.luko;
-const LOCKUP_ADDRESS = CONFIG.addresses.sablierLockup;
+const VESTING_ADDRESS = CONFIG.addresses.sablierLockup;
 const UNIT = 10n ** 18n;
 
 const TOTAL_SUPPLY = "0x18160ddd";    /* totalSupply() */
 const BALANCE_OF = "0x70a08231";      /* balanceOf(address) */
-const DEPOSITED = "0xa80fc071";       /* getDepositedAmount(uint256) */
-const WITHDRAWN = "0xd511609f";       /* getWithdrawnAmount(uint256) */
-const REFUNDED = "0xd4dbd20b";        /* getRefundedAmount(uint256) */
 
 /* Order matches the allocation table. */
 const ALLOCATIONS = [
   {
     key: "lambda",
-    streams: [CONFIG.streams.lambda.id],
     wallets: ["0x30fd96c5ae61f0fb3d97e6159ab023710163efbf"]
   },
   {
     key: "delta",
-    streams: [CONFIG.streams.delta.id],
     wallets: [
       "0xe8fc8769934f9461f7adf6f440ff3883e28021eb",
       "0xbc170538038adc0651292e28a42dab4286641e02"
@@ -43,8 +38,6 @@ const ALLOCATIONS = [
   },
   {
     key: "market",
-    /* Stream 904 pays out to the reserve wallet; what it still holds is Market. */
-    streams: [904],
     wallets: [
       CONFIG.addresses.pool,
       "0x6e2dc3b1361f28d0ad262c57fae47be907fac1c4"   /* pool fees */
@@ -52,7 +45,6 @@ const ALLOCATIONS = [
   },
   {
     key: "operations",
-    streams: [],
     wallets: [
       "0x33d857fb6f06aafc498de09654da82a8f68be233",
       "0x46bcf5c09ef3831020d06ed879d69098a5a3c68e",
@@ -63,7 +55,6 @@ const ALLOCATIONS = [
   },
   {
     key: "reserve",
-    streams: [],
     wallets: ["0xf0adec1e81c31bbb253b819c67cbb1826fb7109e"]
   }
 ];
@@ -82,9 +73,8 @@ function rpcUrls(env) {
   return urls;
 }
 
-function word(value) {
-  const hex = typeof value === "number" ? value.toString(16) : value.slice(2).toLowerCase();
-  return hex.padStart(64, "0");
+function balanceCalldata(holder) {
+  return BALANCE_OF + holder.slice(2).toLowerCase().padStart(64, "0");
 }
 
 /* Results in call order; throws if any call fails. */
@@ -144,48 +134,44 @@ async function readState(url) {
   const [head] = await send(url, [["eth_blockNumber", []]]);
   /* a few blocks behind the head, so every load-balanced node already has it */
   const tag = "0x" + (parseInt(head, 16) - 2).toString(16);
-  const call = (to, data) => ["eth_call", [{ to, data }, tag]];
+  const call = (data) => ["eth_call", [{ to: LUKO_ADDRESS, data }, tag]];
 
-  const calls = [["eth_getBlockByNumber", [tag, false]], call(LUKO_ADDRESS, TOTAL_SUPPLY)];
+  const calls = [
+    ["eth_getBlockByNumber", [tag, false]],
+    call(TOTAL_SUPPLY),
+    call(balanceCalldata(VESTING_ADDRESS))
+  ];
   for (const allocation of ALLOCATIONS) {
-    for (const wallet of allocation.wallets) calls.push(call(LUKO_ADDRESS, BALANCE_OF + word(wallet)));
-    for (const id of allocation.streams) {
-      calls.push(call(LOCKUP_ADDRESS, DEPOSITED + word(id)));
-      calls.push(call(LOCKUP_ADDRESS, WITHDRAWN + word(id)));
-      calls.push(call(LOCKUP_ADDRESS, REFUNDED + word(id)));
-    }
+    for (const wallet of allocation.wallets) calls.push(call(balanceCalldata(wallet)));
   }
   const results = await send(url, calls);
 
   const block = results[0];
   const supply = BigInt(results[1]);
-  let cursor = 2;
-  const next = () => BigInt(results[cursor++]);
+  const vesting = BigInt(results[2]);
+  let cursor = 3;
   const totals = {};
-  let tracked = 0n;
-  let vesting = 0n;
+  let listed = vesting;
   for (const allocation of ALLOCATIONS) {
     let sum = 0n;
-    for (let i = 0; i < allocation.wallets.length; i++) sum += next();
-    for (let i = 0; i < allocation.streams.length; i++) {
-      const deposited = next();
-      const withdrawn = next();
-      const refunded = next();
-      const left = deposited - withdrawn - refunded;
-      sum += left;
-      vesting += left;
-    }
+    for (let i = 0; i < allocation.wallets.length; i++) sum += BigInt(results[cursor++]);
     totals[allocation.key] = sum;
-    tracked += sum;
+    listed += sum;
   }
-  totals.other = supply > tracked ? supply - tracked : 0n;
+  totals.other = supply > listed ? supply - listed : 0n;
+  totals.vesting = vesting;
+
+  const whole = wholeTokens(totals, supply);
+  const allocations = {};
+  for (const allocation of ALLOCATIONS) allocations[allocation.key] = whole[allocation.key];
+  allocations.other = whole.other;
 
   return {
     block: parseInt(block.number, 16),
     timestamp: parseInt(block.timestamp, 16),
     supply: Number(supply / UNIT),
-    vesting: Number(vesting / UNIT),
-    allocations: wholeTokens(totals, supply)
+    vesting: whole.vesting,
+    allocations
   };
 }
 
