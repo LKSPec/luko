@@ -5,6 +5,7 @@
  *   allocation = LUKO on its wallets (nothing still locked in vesting)
  *   vesting    = LUKO held by the Sablier vesting contract
  *   other      = totalSupply − allocations − vesting, i.e. every holder not listed
+ *   price      = USDC per LUKO, the reserve ratio of the LUKO/USDC pool
  *
  * Totals are whole LUKO, rounded so allocations + other + vesting add up
  * exactly to the supply. The wallet lists stay here and are never returned.
@@ -17,6 +18,8 @@
 import { CONFIG } from "../../website/config.js";
 
 const LUKO_ADDRESS = CONFIG.addresses.luko;
+const USDC_ADDRESS = CONFIG.addresses.usdc;
+const POOL_ADDRESS = CONFIG.addresses.pool;
 const VESTING_ADDRESS = CONFIG.addresses.sablierLockup;
 const UNIT = 10n ** 18n;
 
@@ -134,27 +137,34 @@ async function readState(url) {
   const [head] = await send(url, [["eth_blockNumber", []]]);
   /* a few blocks behind the head, so every load-balanced node already has it */
   const tag = "0x" + (parseInt(head, 16) - 2).toString(16);
-  const call = (data) => ["eth_call", [{ to: LUKO_ADDRESS, data }, tag]];
+  const call = (to, data) => ["eth_call", [{ to, data }, tag]];
 
   const calls = [
     ["eth_getBlockByNumber", [tag, false]],
-    call(TOTAL_SUPPLY),
-    call(balanceCalldata(VESTING_ADDRESS))
+    call(LUKO_ADDRESS, TOTAL_SUPPLY),
+    call(LUKO_ADDRESS, balanceCalldata(VESTING_ADDRESS)),
+    call(USDC_ADDRESS, balanceCalldata(POOL_ADDRESS))
   ];
   for (const allocation of ALLOCATIONS) {
-    for (const wallet of allocation.wallets) calls.push(call(balanceCalldata(wallet)));
+    for (const wallet of allocation.wallets) calls.push(call(LUKO_ADDRESS, balanceCalldata(wallet)));
   }
   const results = await send(url, calls);
 
   const block = results[0];
   const supply = BigInt(results[1]);
   const vesting = BigInt(results[2]);
-  let cursor = 3;
+  const poolUsdc = BigInt(results[3]);
+  let poolLuko = 0n;
+  let cursor = 4;
   const totals = {};
   let listed = vesting;
   for (const allocation of ALLOCATIONS) {
     let sum = 0n;
-    for (let i = 0; i < allocation.wallets.length; i++) sum += BigInt(results[cursor++]);
+    for (const wallet of allocation.wallets) {
+      const balance = BigInt(results[cursor++]);
+      if (wallet.toLowerCase() === POOL_ADDRESS.toLowerCase()) poolLuko = balance;
+      sum += balance;
+    }
     totals[allocation.key] = sum;
     listed += sum;
   }
@@ -166,11 +176,15 @@ async function readState(url) {
   for (const allocation of ALLOCATIONS) allocations[allocation.key] = whole[allocation.key];
   allocations.other = whole.other;
 
+  /* USDC has 6 decimals, LUKO 18: scale by 10^30 so the ratio keeps 18 decimals */
+  const price = poolLuko > 0n ? Number(poolUsdc * 10n ** 30n / poolLuko) / 1e18 : null;
+
   return {
     block: parseInt(block.number, 16),
     timestamp: parseInt(block.timestamp, 16),
     supply: Number(supply / UNIT),
     vesting: whole.vesting,
+    price,
     allocations
   };
 }

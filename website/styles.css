@@ -584,6 +584,50 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
 .allocation-layout { display: flex; flex-direction: column; gap: 28px; }
 .allocation-chart-col { display: flex; flex-direction: column; gap: 20px; align-items: center; }
 .allocation-chart { width: 208px; height: 208px; }
+/* Current holdings: name, bar, amount on one line; bar under the name when
+   the space is narrow (phones, and the chart column beside the table) */
+.holdings { width: 100%; max-width: 440px; container-type: inline-size; }
+.holdings .label { margin-bottom: 10px; }
+.holdings-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: max-content minmax(24px, 1fr) max-content max-content;
+  column-gap: 10px;
+  row-gap: 7px;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--luko-offwhite);
+}
+.holdings-row { display: contents; }
+.holdings-name { color: var(--luko-muted); white-space: nowrap; }
+.holdings-bar { display: block; height: 9px; }
+.holdings-fill { display: block; height: 100%; min-width: 2px; }
+.holdings-amount { text-align: right; white-space: nowrap; }
+.holdings-note { color: var(--luko-faint); white-space: nowrap; }
+.holdings-row-locked > * { margin-top: 12px; }
+.holdings-row-locked .holdings-fill { box-shadow: inset 0 0 0 1px var(--luko-faint); }
+@container (max-width: 359px) {
+  .holdings-list { display: block; font-size: 11px; }
+  .holdings-row {
+    display: grid;
+    grid-template-columns: 1fr max-content max-content;
+    grid-template-areas: "name amount note" "bar bar bar";
+    column-gap: 6px;
+    row-gap: 4px;
+    margin-bottom: 9px;
+  }
+  .holdings-name { grid-area: name; }
+  .holdings-amount { grid-area: amount; }
+  .holdings-note { grid-area: note; }
+  .holdings-bar { grid-area: bar; height: 6px; }
+  .holdings-row-locked { margin-top: 16px; }
+  .holdings-row-locked > * { margin-top: 0; }
+}
+/* Notes under the allocation table stay quiet next to the figures */
+#allocation .coin-line { color: var(--luko-muted); }
 .allocation-legend {
   list-style: none;
   margin: 0;
@@ -649,6 +693,13 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
   border-top: 1px solid var(--luko-hairline-raised);
   color: var(--luko-offwhite);
 }
+/* Dollar value under a Holds now figure */
+.allocation-table .now-usd {
+  display: block;
+  margin-top: 3px;
+  font-size: 10px;
+  color: var(--luko-faint);
+}
 @media (max-width: 719px) {
   .allocation-table { font-size: 10px; white-space: normal; }
   .allocation-table th {
@@ -657,6 +708,7 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
     letter-spacing: 0.08em;
   }
   .allocation-table td { padding: 9px 4px; }
+  .allocation-table .now-usd { margin-top: 2px; font-size: 8px; }
   /* The swatch stays with the first word; a long name wraps after it */
   .allocation-table td:first-child { white-space: nowrap; }
   .allocation-table td:first-child > span:last-child { white-space: normal; }
