@@ -1158,6 +1158,17 @@ main section[id], #top { scroll-margin-top: 76px; }
   background: var(--pt-ink);
 }
 .pt-portrait--lg { width: 62px; height: 62px; }
+/* A holding shown by its sign, not a face: same square, same ink ground. */
+.pt-portrait--mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--pt-bg);
+  font-family: var(--pt-display-font);
+  font-size: 24px;
+  line-height: 1;
+}
+.pt-portrait--lg.pt-portrait--mark { font-size: 28px; }
 .pt-hero-address {
   padding: clamp(14px, 1.8vw, 20px) clamp(18px, 3vw, 34px);
   font-family: var(--pt-mono);
